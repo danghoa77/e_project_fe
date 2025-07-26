@@ -1,6 +1,6 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
-import type { User } from '../types';
+import type { User } from '@/types';
 
 interface AuthState {
     user: User | null;
@@ -11,7 +11,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
-    isLoading: true, // Ban đầu, ta mặc định là đang kiểm tra
+    isLoading: true,
     setUser: (user) => set({ user, isLoading: false }),
     logout: () => set({ user: null, isLoading: false }),
 }));
