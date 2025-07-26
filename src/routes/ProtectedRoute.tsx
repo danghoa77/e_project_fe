@@ -11,9 +11,9 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     const { user, isLoading } = useAuthStore();
     const location = useLocation();
 
-    // Nếu đang trong quá trình kiểm tra xác thực, hiển thị trạng thái chờ
+
     if (isLoading) {
-        return <div>Đang tải...</div>; // Hoặc một component Spinner đẹp hơn
+        return <div>Loading...</div>;
     }
 
     if (!user) {
