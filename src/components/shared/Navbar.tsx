@@ -7,6 +7,7 @@ import { Menu, Search, ShoppingBag, User, X, Plus, MapPin, MessageSquare } from 
 import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
 
+
 const navLinks = [
     { href: "/women", label: "Women" },
     { href: "/men", label: "Men" },
@@ -108,8 +109,16 @@ export const Navbar = () => {
                             </div>
 
                             <div className="flex items-center gap-x-3">
-                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent"><User className="h-7 w-7" strokeWidth={1} /><span className="hidden md:inline text-sm">Account</span></Button>
-                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent"><ShoppingBag className="h-7 w-7" strokeWidth={1} /><span className="hidden md:inline text-sm">Cart</span></Button>
+                                <Button asChild variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent">
+                                    <Link to="/login">
+                                        <User className="h-7 w-7" strokeWidth={1} />
+                                        <span className="hidden md:inline text-sm">Account</span>
+                                    </Link>
+                                </Button>
+                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent">
+                                    <ShoppingBag className="h-7 w-7" strokeWidth={1} />
+                                    <span className="hidden md:inline text-sm">Cart</span>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -117,7 +126,7 @@ export const Navbar = () => {
 
                 <div>
                     <div className="w-1/3 border-t-1 border-neutral-900 mx-auto" />
-                    <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-6 ">
+                    <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5 ">
                         {navLinks.map((link) => (
                             <NavLink key={link.href} to={link.href} className={({ isActive }) => `transition-colors font-sans font-medium text-[14px] leading-[16px] tracking-[1px] hover:text-neutral-900 pb-1 ${isActive ? "text-neutral-900" : "text-neutral-600"}`}>{link.label}</NavLink>
                         ))}

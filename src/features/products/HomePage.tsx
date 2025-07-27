@@ -95,7 +95,7 @@ const pageData = [
             title: "Where there's silk, there's sunshine",
             subtitle: "A vibrant energy radiates from the Spring-Summer 2025 silk collection.",
             buttonText: "Discover the Collection",
-            buttonLink: "#"
+            buttonLink: "/products"
         }
     },
     {

@@ -9,7 +9,7 @@ import type { User } from '@/types/index';
 // Hàm gọi API để lấy thông tin người dùng
 const fetchUserProfile = async (): Promise<User> => {
     // Backend sẽ đọc session cookie từ request này
-    const { data } = await axios.get('/api/auth/me'); // Thay bằng endpoint thật của bạn
+    const { data } = await axios.get('/auth/me'); // Thay bằng endpoint thật của bạn
     return data;
 };
 
