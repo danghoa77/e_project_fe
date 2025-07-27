@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
 
+
 const categories = [
     { name: "Women", subcategories: ["Shoes", "Ready-to-Wear", "Bags", "Silk", "Belts"] },
     { name: "Men", subcategories: ["Shoes", "Ready-to-Wear", "Ties", "Hats"] },
@@ -69,24 +70,16 @@ const mockProducts: Product[] = Array.from({ length: 35 }, (_, i) => {
 
 const fetchMockProducts = async (filters: FilterState): Promise<{ products: Product[]; total: number }> => {
     let filtered = [...mockProducts];
-    if (filters.category) filtered = filtered.filter(p => p.category === filters.category);
-    if (filters.price) filtered = filtered.filter(p => {
-        const price = p.variants[0].salePrice || p.variants[0].price;
-        return price >= filters.price!.min && price <= filters.price!.max;
-    });
-    if (filters.size) filtered = filtered.filter(p => p.variants[0].size === filters.size);
+    if (filters.category) { filtered = filtered.filter(p => p.category === filters.category); }
+    if (filters.price) { filtered = filtered.filter(p => { const price = p.variants[0].salePrice || p.variants[0].price; return price >= filters.price!.min && price <= filters.price!.max; }); }
+    if (filters.size) { filtered = filtered.filter(p => p.variants[0].size === filters.size); }
     if (filters.sortBy) {
         const key = filters.sortBy.replace('-', '');
         const order = filters.sortBy.startsWith('-') ? -1 : 1;
         filtered.sort((a, b) => {
             let valA, valB;
-            if (key === 'price') {
-                valA = a.variants[0].salePrice || a.variants[0].price;
-                valB = b.variants[0].salePrice || b.variants[0].price;
-            } else {
-                valA = new Date(a.createdAt).getTime();
-                valB = new Date(b.createdAt).getTime();
-            }
+            if (key === 'price') { valA = a.variants[0].salePrice || a.variants[0].price; valB = b.variants[0].salePrice || b.variants[0].price; }
+            else { valA = new Date(a.createdAt).getTime(); valB = new Date(b.createdAt).getTime(); }
             if (valA < valB) return -1 * order;
             if (valA > valB) return 1 * order;
             return 0;
@@ -97,27 +90,17 @@ const fetchMockProducts = async (filters: FilterState): Promise<{ products: Prod
     return new Promise(resolve => setTimeout(() => resolve({ products: paginated, total }), 500));
 };
 
+
 const ProductCard = ({ product }: { product: Product }) => {
     const displayVariant = product.variants[0];
     return (
         <Link to={`/product/${product._id}`} className="group text-left">
-            <div className="overflow-hidden bg-gray-100">
-                <img src={product.images[0]} alt={product.name} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" />
-            </div>
+            <div className="overflow-hidden bg-gray-100"><img src={product.images[0]} alt={product.name} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300" /></div>
             <div className="mt-4">
                 <h3 className="font-semibold text-sm text-neutral-800">{product.name}</h3>
-                <div className="flex items-center gap-2 mt-1">
-                    {displayVariant.salePrice ? (
-                        <>
-                            <p className="text-sm text-red-600">${displayVariant.salePrice.toFixed(2)}</p>
-                            <p className="text-sm text-neutral-500 line-through">${displayVariant.price.toFixed(2)}</p>
-                        </>
-                    ) : (
-                        <p className="text-sm text-neutral-800">${displayVariant.price.toFixed(2)}</p>
-                    )}
-                </div>
-                {displayVariant.stock < 10 && displayVariant.stock > 0 && <p className="text-xs text-amber-600 mt-1">Low in stock</p>}
-                {displayVariant.stock === 0 && <p className="text-xs text-red-600 mt-1">Out of stock</p>}
+                <div className="flex items-center gap-2 mt-1">{displayVariant.salePrice ? (<><p className="text-sm text-red-600">${displayVariant.salePrice.toFixed(2)}</p><p className="text-sm text-neutral-500 line-through">${displayVariant.price.toFixed(2)}</p></>) : (<p className="text-sm text-neutral-800">${displayVariant.price.toFixed(2)}</p>)}</div>
+                {displayVariant.stock < 10 && displayVariant.stock > 0 && (<p className="text-xs text-amber-600 mt-1">Low in stock</p>)}
+                {displayVariant.stock === 0 && (<p className="text-xs text-red-600 mt-1">Out of stock</p>)}
             </div>
         </Link>
     );
@@ -125,34 +108,20 @@ const ProductCard = ({ product }: { product: Product }) => {
 
 const ProductGrid = ({ products, isLoading, loadMore, hasMore }: { products: Product[], isLoading: boolean, loadMore: () => void, hasMore: boolean }) => {
     if (!isLoading && products.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center h-96 text-center text-neutral-500">
-                <XCircle className="h-12 w-12 mb-4" />
-                <h3 className="font-semibold text-lg">No Products Found</h3>
-                <p className="max-w-xs">There are no products that match your current filters. Try adjusting your selection.</p>
-            </div>
-        );
+        return (<div className="flex flex-col items-center justify-center h-96 text-center text-neutral-500"><XCircle className="h-12 w-12 mb-4" /><h3 className="font-semibold text-lg">No Products Found</h3><p className="max-w-xs">There are no products that match your current filters. Try adjusting your selection.</p></div>);
     }
     return (
         <div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
-                {products.map(product => <ProductCard key={product._id} product={product} />)}
-            </div>
-            {hasMore && (
-                <div className="text-center mt-12">
-                    <Button onClick={loadMore} disabled={isLoading} variant="outline" className="rounded-full px-8">
-                        {isLoading && products.length > 0 ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Load More"}
-                    </Button>
-                </div>
-            )}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">{products.map(product => <ProductCard key={product._id} product={product} />)}</div>
+            {hasMore && (<div className="text-center mt-12"><Button onClick={loadMore} disabled={isLoading} variant="outline" className="rounded-full px-8">{isLoading && products.length > 0 ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Load More"}</Button></div>)}
         </div>
     );
 };
 
+
 const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<FilterState>) => void }) => {
     const [priceRange, setPriceRange] = React.useState([0, MAX_PRICE]);
-    const handleFilter = (key: keyof FilterState, value: any) => onFilterChange({ [key]: value, page: 1 });
-    const handleSizeChange = (checked: boolean, size: string) => onFilterChange({ size: checked ? size : undefined, page: 1 });
+
     return (
         <div className="space-y-8">
             <div>
@@ -166,7 +135,7 @@ const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<F
                                     {cat.subcategories.map(sub => (
                                         <li key={sub}>
                                             <button
-                                                onClick={() => handleFilter('category', sub.toLowerCase().replace(/\s+/g, '-'))}
+                                                onClick={() => onFilterChange({ category: sub.toLowerCase().replace(/\s+/g, '-'), page: 1 })}
                                                 className="text-sm text-neutral-600 hover:text-neutral-900"
                                             >
                                                 {sub}
@@ -187,7 +156,7 @@ const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<F
                     step={10}
                     value={priceRange}
                     onValueChange={setPriceRange}
-                    onValueCommit={(value) => handleFilter('price', { min: value[0], max: value[1] })}
+                    onValueCommit={(value) => onFilterChange({ price: { min: value[0], max: value[1] }, page: 1 })}
                 />
                 <div className="flex justify-between text-sm text-neutral-600 mt-2">
                     <span>${priceRange[0]}</span>
@@ -199,7 +168,10 @@ const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<F
                 <div className="space-y-3">
                     {sizes.map(size => (
                         <div key={size} className="flex items-center space-x-2">
-                            <Checkbox id={size} onCheckedChange={(checked) => handleSizeChange(Boolean(checked), size)} />
+                            <Checkbox
+                                id={size}
+                                onCheckedChange={(checked) => onFilterChange({ size: checked ? size : undefined, page: 1 })}
+                            />
                             <label htmlFor={size} className="text-sm">{size}</label>
                         </div>
                     ))}
@@ -208,6 +180,8 @@ const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<F
         </div>
     );
 };
+
+
 
 export const ProductListPage = () => {
     const { category: initialCategory } = useParams();
@@ -239,6 +213,7 @@ export const ProductListPage = () => {
     const loadMore = () => setFilters(prev => ({ ...prev, page: prev.page + 1 }));
 
     const hasMore = products.length < total;
+    const categoryName = filters.category ? filters.category.replace(/-/g, ' ') : "All Products";
 
     return (
         <div className="bg-[#F7F2EC] font-sans">
@@ -256,23 +231,27 @@ export const ProductListPage = () => {
                         <FilterSidebar onFilterChange={handleFilterChange} />
                     </aside>
                     <main className="col-span-1 lg:col-span-3">
+                        <div className="text-center mb-12 lg:hidden">
+                            <h1 className="font-serif text-4xl md:text-5xl capitalize">{categoryName}</h1>
+                            <p className="text-neutral-600 mt-2">{total} products</p>
+                        </div>
                         <div className="flex justify-between items-center mb-8">
                             <Sheet>
                                 <SheetTrigger asChild>
-                                    <Button variant="outline" className="lg:hidden rounded-full">
-                                        <Filter className="mr-2 h-4 w-4" /> Filters
-                                    </Button>
+                                    <Button variant="outline" className="lg:hidden rounded-full"><Filter className="mr-2 h-4 w-4" /> Filters</Button>
                                 </SheetTrigger>
                                 <SheetContent side="left" className="w-[300px] sm:w-[400px] p-6 overflow-y-auto bg-[#fcf7f1]">
                                     <FilterSidebar onFilterChange={handleFilterChange} />
                                 </SheetContent>
                             </Sheet>
-                            <div className="w-[180px] ml-auto">
+                            <div className="hidden lg:block">
+                                <h1 className="font-serif text-4xl capitalize">{categoryName}</h1>
+                                <p className="text-neutral-600 mt-2 text-left">{total} products</p>
+                            </div>
+                            <div className="w-[180px]">
                                 <Select onValueChange={(value) => handleFilterChange({ sortBy: value })}>
                                     <SelectTrigger className="rounded-full"><SelectValue placeholder="Sort by" /></SelectTrigger>
-                                    <SelectContent>
-                                        {sortOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
-                                    </SelectContent>
+                                    <SelectContent>{sortOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}</SelectContent>
                                 </Select>
                             </div>
                         </div>

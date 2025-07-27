@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
+
 const topGridProducts = [
     { id: 1, name: "TIES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603541/274201T_2001_flat_wm_1_rluqfj.jpg' },
     { id: 2, name: "MEN'S SILK", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603505/284200T_2002_worn_1_kj8zpp.jpg' },
@@ -12,7 +13,6 @@ const topGridProducts = [
     { id: 7, name: "GAMES AND OUTDOOR", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603426/0009957_2019_back_wm_4_dkoswj.jpg' },
     { id: 8, name: "MEN'S SHOES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603858/252863ZHVD_front_wm_1_jakn4f.jpg' },
 ];
-
 const bottomGridProducts = [
     { id: 9, name: "Carré 90 Silk Twilly", price: 480, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603514/004211S_2005_flat_wm_3_opbqew.jpg' },
     { id: 10, name: "Portrait in Red", price: 330, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753604412/310911M_2001_wornsquare_1_zfo5vo.jpg' },
@@ -25,23 +25,39 @@ const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount);
 };
 
-const HeroVideoSection = ({ videoSrc }: { videoSrc: string }) => (
+
+type HeroVideoSectionData = { type: 'heroVideo'; props: { videoSrc: string; }; };
+type SloganSectionData = { type: 'slogan'; props: { title: string; subtitle: string; }; };
+type ProductGridSectionData = { type: 'productGrid'; props: { products: { id: number; name: string; image: string; }[]; }; };
+type HeadlineSectionData = { type: 'headline'; props: { title: string; subtitle: string; buttonText: string; buttonLink: string; }; };
+type FullWidthImageSectionData = { type: 'fullWidthImage'; props: { imageUrl: string; altText: string; }; };
+type EditorialProductGridSectionData = { type: 'editorialProductGrid'; props: { products: { id: number; name: string; price: number; image: string; }[]; }; };
+
+type PageSectionData =
+    | HeroVideoSectionData
+    | SloganSectionData
+    | ProductGridSectionData
+    | HeadlineSectionData
+    | FullWidthImageSectionData
+    | EditorialProductGridSectionData;
+
+
+
+const HeroVideoSection = (props: HeroVideoSectionData['props']) => (
     <section className="w-full">
-        <video src={videoSrc} className="w-full h-auto object-cover" autoPlay loop muted playsInline controls={false} />
+        <video src={props.videoSrc} className="w-full h-auto object-cover" autoPlay loop muted playsInline controls={false} />
     </section>
 );
-
-const SloganSection = ({ title, subtitle }: { title: string, subtitle: string }) => (
+const SloganSection = (props: SloganSectionData['props']) => (
     <section className="container mx-auto px-4 py-16 md:py-20 text-center">
-        <h2 className="text-2xl md:text-3xl uppercase tracking-[0.2em] text-neutral-800">{title}</h2>
-        <p className="mt-5 text-base text-neutral-600 max-w-2xl mx-auto font-serif leading-relaxed">{subtitle}</p>
+        <h2 className="text-2xl md:text-3xl uppercase tracking-[0.2em] text-neutral-800">{props.title}</h2>
+        <p className="mt-5 text-base text-neutral-600 max-w-2xl mx-auto font-serif leading-relaxed">{props.subtitle}</p>
     </section>
 );
-
-const ProductGridSection = ({ products }: { products: { id: number; name: string; image: string }[] }) => (
+const ProductGridSection = (props: ProductGridSectionData['props']) => (
     <section className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8">
-            {products.map(item => (
+            {props.products.map(item => (
                 <div key={item.id} className="text-left">
                     <img src={item.image} alt={item.name} className="w-full h-auto object-cover mb-3" />
                     <h3 className="text-xs text-neutral-700 uppercase tracking-wider">{item.name}</h3>
@@ -50,27 +66,24 @@ const ProductGridSection = ({ products }: { products: { id: number; name: string
         </div>
     </section>
 );
-
-const HeadlineSection = ({ title, subtitle, buttonText, buttonLink }: { title: string, subtitle: string, buttonText: string, buttonLink: string }) => (
+const HeadlineSection = (props: HeadlineSectionData['props']) => (
     <section className="container mx-auto px-4 py-12 md:py-16 text-center">
-        <h2 className="font-serif text-3xl md:text-4xl uppercase tracking-wider">{title}</h2>
-        <p className="mt-4 text-sm text-neutral-600 max-w-2xl mx-auto">{subtitle}</p>
+        <h2 className="font-serif text-3xl md:text-4xl uppercase tracking-wider">{props.title}</h2>
+        <p className="mt-4 text-sm text-neutral-600 max-w-2xl mx-auto">{props.subtitle}</p>
         <Button asChild variant="link" className="p-0 mt-6 text-sm uppercase tracking-widest text-neutral-800 hover:text-neutral-500 h-auto">
-            <Link to={buttonLink}>{buttonText}</Link>
+            <Link to={props.buttonLink}>{props.buttonText}</Link>
         </Button>
     </section>
 );
-
-const FullWidthImageSection = ({ imageUrl, altText }: { imageUrl: string, altText: string }) => (
+const FullWidthImageSection = (props: FullWidthImageSectionData['props']) => (
     <section className="w-full my-8">
-        <img src={imageUrl} alt={altText} className="w-full h-auto object-cover" />
+        <img src={props.imageUrl} alt={props.altText} className="w-full h-auto object-cover" />
     </section>
 );
-
-const EditorialProductGridSection = ({ products }: { products: { id: number; name: string; price: number; image: string }[] }) => (
+const EditorialProductGridSection = (props: EditorialProductGridSectionData['props']) => (
     <section className="container mx-auto px-4 pt-12 pb-16 md:pb-24">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {products.map(item => (
+            {props.products.map(item => (
                 <div key={item.id} className="text-left">
                     <img src={item.image} alt={item.name} className="w-full h-auto object-cover mb-4" />
                     <h3 className="font-semibold text-base">{item.name}</h3>
@@ -81,42 +94,19 @@ const EditorialProductGridSection = ({ products }: { products: { id: number; nam
     </section>
 );
 
-const pageData = [
+
+const pageData: PageSectionData[] = [
     { type: 'heroVideo', props: { videoSrc: 'https://res.cloudinary.com/dzskttedu/video/upload/v1753603101/Astonishing_orange_-_Herm%C3%A8s_tglwbm.mp4' } },
-    {
-        type: 'slogan', props: {
-            title: "FLYING STEED",
-            subtitle: "An equestrian case captures the image of a winged horse, and the myth of Pegasus rises from its ashes, once again."
-        }
-    },
+    { type: 'slogan', props: { title: "FLYING STEED", subtitle: "An equestrian case captures the image of a winged horse, and the myth of Pegasus rises from its ashes, once again." } },
     { type: 'productGrid', props: { products: topGridProducts } },
-    {
-        type: 'headline', props: {
-            title: "Where there's silk, there's sunshine",
-            subtitle: "A vibrant energy radiates from the Spring-Summer 2025 silk collection.",
-            buttonText: "Discover the Collection",
-            buttonLink: "/products"
-        }
-    },
-    {
-        type: 'fullWidthImage', props: {
-            imageUrl: "https://res.cloudinary.com/dzskttedu/image/upload/v1753603320/imgi_138_P_169_SUMMERMOOD_U_M_wniouk.webp",
-            altText: "Campaign"
-        }
-    },
-    {
-        type: 'headline', props: {
-            title: "Gallop in style",
-            subtitle: "Everything you need for the perfect equestrian outing, from signature silks to technical apparel.",
-            buttonText: "Shop the selection",
-            buttonLink: "#"
-        }
-    },
+    { type: 'headline', props: { title: "Where there's silk, there's sunshine", subtitle: "A vibrant energy radiates from the Spring-Summer 2025 silk collection.", buttonText: "Discover the Collection", buttonLink: "/products" } },
+    { type: 'fullWidthImage', props: { imageUrl: "https://res.cloudinary.com/dzskttedu/image/upload/v1753603320/imgi_138_P_169_SUMMERMOOD_U_M_wniouk.webp", altText: "Campaign" } },
+    { type: 'headline', props: { title: "Gallop in style", subtitle: "Everything you need for the perfect equestrian outing, from signature silks to technical apparel.", buttonText: "Shop the selection", buttonLink: "#" } },
     { type: 'editorialProductGrid', props: { products: bottomGridProducts } }
 ];
 
 export const HomePage = () => {
-    const renderSection = (section: any, index: number) => {
+    const renderSection = (section: PageSectionData, index: number) => {
         switch (section.type) {
             case 'heroVideo':
                 return <HeroVideoSection key={index} {...section.props} />;

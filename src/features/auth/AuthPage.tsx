@@ -80,9 +80,9 @@ const RegisterForm = () => {
                 <FormField control={form.control} name="password" render={({ field }) => (
                     <FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <FormField control={form.control} name="confirmPassword" render={({ field }) => (
+                {/* <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                     <FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
+                )} /> */}
                 <Button type="submit" className="w-full rounded-none bg-neutral-800 text-white hover:bg-neutral-700">Create Account</Button>
             </form>
         </Form>
