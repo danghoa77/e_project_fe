@@ -2,7 +2,8 @@ import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+// THAY ĐỔI: Cập nhật đường dẫn import cho buttonVariants
+import { buttonVariants } from "@/components/ui/button-variants"
 
 function AlertDialog({
   ...props
