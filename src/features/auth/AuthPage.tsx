@@ -26,28 +26,10 @@ const LoginForm = () => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
-                <FormField control={form.control} name="email" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="password" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
+                <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <Button type="submit" className="w-full rounded-none text-white bg-neutral-800 hover:bg-neutral-700">Login</Button>
-
-                <div className="flex items-center gap-2 md:gap-4">
-                    <div className="flex-grow border-t border-neutral-300"></div>
-                    <span className="text-[0.7rem] md:text-xs text-neutral-500 uppercase">Or continue with</span>
-                    <div className="flex-grow border-t border-neutral-300"></div>
-                </div>
-
+                <div className="flex items-center gap-2 md:gap-4"><div className="flex-grow border-t border-neutral-300"></div><span className="text-[0.7rem] md:text-xs text-neutral-500 uppercase">Or continue with</span><div className="flex-grow border-t border-neutral-300"></div></div>
                 <Button variant="outline" type="button" className="w-full rounded-none"><GoogleIcon /> Continue with Google</Button>
             </form>
         </Form>
@@ -61,28 +43,23 @@ const RegisterForm = () => {
     });
 
     function onSubmit(values: z.infer<typeof RegisterSchema>) {
-        const { confirmPassword, ...payload } = { ...values, role: 'customer' as const };
+        // THAY ĐỔI: Đổi tên `confirmPassword` thành `_` để ESLint bỏ qua lỗi unused-var
+        const { confirmPassword: _, ...payload } = { ...values, role: 'customer' as const };
         console.log("Payload to send to backend:", payload);
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
-                <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem><FormLabel>Name</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your Name" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="email" render={({ field }) => (
-                    <FormItem><FormLabel>Email</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="phone" render={({ field }) => (
-                    <FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="password" render={({ field }) => (
-                    <FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                {/* <FormField control={form.control} name="confirmPassword" render={({ field }) => (
+                <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>)} />
+
+                {/* THAY ĐỔI: Bỏ comment cho trường Confirm Password để form hoàn chỉnh */}
+                <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                     <FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>
-                )} /> */}
+                )} />
                 <Button type="submit" className="w-full rounded-none bg-neutral-800 text-white hover:bg-neutral-700">Create Account</Button>
             </form>
         </Form>
@@ -91,7 +68,7 @@ const RegisterForm = () => {
 
 export const AuthPage = () => {
     return (
-        <div className="font-sans flex items-center justify-center min-h-[calc(100vh-200px)] py-6 md:py-17 text-left px-4 md:px-0">
+        <div className="font-sans flex items-center justify-center min-h-[calc(100vh-200px)] py-6 md:py-12 text-left px-4 md:px-0">
             <Tabs defaultValue="login" className="w-full max-w-md">
                 <TabsList className="grid w-full grid-cols-2 bg-transparent p-0">
                     <TabsTrigger value="login" className="rounded-none bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 border-black text-sm md:text-base">Login</TabsTrigger>
