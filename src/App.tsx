@@ -4,27 +4,41 @@ import {
   RouterProvider,
   Outlet,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
+import * as React from 'react';
 import './index.css';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { useAuthStore } from './store/authStore';
 import { HomePage } from './features/products/HomePage';
 import { Navbar } from './components/shared/Navbar';
 import { Footer } from './components/shared/Footer';
+import { AuthPage } from './features/auth/AuthPage';
+import { ProductListPage } from './features/products/ProductListPage';
+import { ProductDetailPage } from './features/products/ProductDetailPage';
+import { Toaster } from "@/components/ui/sonner";
 
-const LoginPage = () => <div>Trang Đăng Nhập</div>;
 const ProfilePage = () => <div>Trang Hồ Sơ Khách Hàng</div>;
 const AdminDashboardPage = () => <div>Trang Quản Trị (Admin Dashboard)</div>;
 
-const AppLayout = () => (
-  <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
-    <Navbar />
-    <main>
-      <Outlet />
-    </main>
-    <Footer />
-  </div>
-);
+const AppLayout = () => {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return (
+    <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
+      <Navbar />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+      <Toaster richColors />
+    </div>
+  );
+};
 
 const AuthRedirect = () => {
   const { user } = useAuthStore();
@@ -40,7 +54,10 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'login', element: <LoginPage /> },
+      { path: 'login', element: <AuthPage /> },
+      { path: 'products', element: <ProductListPage /> },
+      { path: 'products/:category', element: <ProductListPage /> },
+      { path: 'product/:id', element: <ProductDetailPage /> },
       {
         element: <ProtectedRoute allowedRoles={['customer']} />,
         children: [

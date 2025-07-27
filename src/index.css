@@ -5,6 +5,10 @@
 @import "tailwindcss";
 
 
+.hide-search-cancel-button::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: none;
+}
 
 body {
   background-color: #F9F8F6;

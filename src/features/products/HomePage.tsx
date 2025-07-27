@@ -1,119 +1,133 @@
 // src/features/products/HomePage.tsx
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
-const editorialProducts = [
-    {
-        id: 'p4',
-        name: 'The Kaki Bomber Jacket',
-        category: 'Outerwear',
-        price: 95,
-        image: 'https://placehold.co/800x1000/EAE7E2/333?text=Look+1',
-        description: 'Crafted from premium kaki fabric, this jacket is the definition of timeless elegance and modern form.'
-    },
-    {
-        id: 'p2',
-        name: 'The Relaxed Fit Jeans',
-        category: 'Denim Collection',
-        price: 79,
-        image: 'https://placehold.co/800x1000/D9D9D9/333?text=Look+2',
-        description: 'A comfortable silhouette and durable denim make this an indispensable piece for any wardrobe.'
-    },
-    {
-        id: 'p1',
-        name: 'The Knit Crewneck T-Shirt',
-        category: 'Daily Essentials',
-        price: 35,
-        image: 'https://placehold.co/600x750/F0F0F0/333?text=Knit+T-shirt',
-    },
-    {
-        id: 'p3',
-        name: 'The Silk Shirt',
-        category: 'Workwear',
-        price: 55,
-        image: 'https://placehold.co/600x750/EBEBEB/333?text=Silk+Shirt',
-    },
+
+const topGridProducts = [
+    { id: 1, name: "TIES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603541/274201T_2001_flat_wm_1_rluqfj.jpg' },
+    { id: 2, name: "MEN'S SILK", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603505/284200T_2002_worn_1_kj8zpp.jpg' },
+    { id: 3, name: "WOMEN'S BELTS", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603891/011749UCAB_front_wm_1_loyemv.jpg' },
+    { id: 4, name: "WOMEN'S READY-TO-WEAR", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603878/5H3617DH91_worn_3_b191yc.jpg' },
+    { id: 5, name: "HATS", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603450/251051N_20S157_bk0n68.jpg' },
+    { id: 6, name: "WOMENT'S SILK", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603496/064205S_2010_worn_1_udagh5.jpg' },
+    { id: 7, name: "GAMES AND OUTDOOR", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603426/0009957_2019_back_wm_4_dkoswj.jpg' },
+    { id: 8, name: "MEN'S SHOES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603858/252863ZHVD_front_wm_1_jakn4f.jpg' },
+];
+const bottomGridProducts = [
+    { id: 9, name: "Carré 90 Silk Twilly", price: 480, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603514/004211S_2005_flat_wm_3_opbqew.jpg' },
+    { id: 10, name: "Portrait in Red", price: 330, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753604412/310911M_2001_wornsquare_1_zfo5vo.jpg' },
+    { id: 11, name: "The Geometric Square", price: 250, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753604415/103907M_2004_front_wm_1_hqy1gd.jpg' },
+    { id: 12, name: "A Dash of Blue", price: 120, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753604400/311474M_2001_wornsquare_1_mc1kqk.jpg' },
 ];
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    if (amount === 0) return '';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount);
 };
 
+
+type HeroVideoSectionData = { type: 'heroVideo'; props: { videoSrc: string; }; };
+type SloganSectionData = { type: 'slogan'; props: { title: string; subtitle: string; }; };
+type ProductGridSectionData = { type: 'productGrid'; props: { products: { id: number; name: string; image: string; }[]; }; };
+type HeadlineSectionData = { type: 'headline'; props: { title: string; subtitle: string; buttonText: string; buttonLink: string; }; };
+type FullWidthImageSectionData = { type: 'fullWidthImage'; props: { imageUrl: string; altText: string; }; };
+type EditorialProductGridSectionData = { type: 'editorialProductGrid'; props: { products: { id: number; name: string; price: number; image: string; }[]; }; };
+
+type PageSectionData =
+    | HeroVideoSectionData
+    | SloganSectionData
+    | ProductGridSectionData
+    | HeadlineSectionData
+    | FullWidthImageSectionData
+    | EditorialProductGridSectionData;
+
+
+
+const HeroVideoSection = (props: HeroVideoSectionData['props']) => (
+    <section className="w-full">
+        <video src={props.videoSrc} className="w-full h-auto object-cover" autoPlay loop muted playsInline controls={false} />
+    </section>
+);
+const SloganSection = (props: SloganSectionData['props']) => (
+    <section className="container mx-auto px-4 py-16 md:py-20 text-center">
+        <h2 className="text-2xl md:text-3xl uppercase tracking-[0.2em] text-neutral-800">{props.title}</h2>
+        <p className="mt-5 text-base text-neutral-600 max-w-2xl mx-auto font-serif leading-relaxed">{props.subtitle}</p>
+    </section>
+);
+const ProductGridSection = (props: ProductGridSectionData['props']) => (
+    <section className="container mx-auto px-4 py-12 md:py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8">
+            {props.products.map(item => (
+                <div key={item.id} className="text-left">
+                    <img src={item.image} alt={item.name} className="w-full h-auto object-cover mb-3" />
+                    <h3 className="text-xs text-neutral-700 uppercase tracking-wider">{item.name}</h3>
+                </div>
+            ))}
+        </div>
+    </section>
+);
+const HeadlineSection = (props: HeadlineSectionData['props']) => (
+    <section className="container mx-auto px-4 py-12 md:py-16 text-center">
+        <h2 className="font-serif text-3xl md:text-4xl uppercase tracking-wider">{props.title}</h2>
+        <p className="mt-4 text-sm text-neutral-600 max-w-2xl mx-auto">{props.subtitle}</p>
+        <Button asChild variant="link" className="p-0 mt-6 text-sm uppercase tracking-widest text-neutral-800 hover:text-neutral-500 h-auto">
+            <Link to={props.buttonLink}>{props.buttonText}</Link>
+        </Button>
+    </section>
+);
+const FullWidthImageSection = (props: FullWidthImageSectionData['props']) => (
+    <section className="w-full my-8">
+        <img src={props.imageUrl} alt={props.altText} className="w-full h-auto object-cover" />
+    </section>
+);
+const EditorialProductGridSection = (props: EditorialProductGridSectionData['props']) => (
+    <section className="container mx-auto px-4 pt-12 pb-16 md:pb-24">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {props.products.map(item => (
+                <div key={item.id} className="text-left">
+                    <img src={item.image} alt={item.name} className="w-full h-auto object-cover mb-4" />
+                    <h3 className="font-semibold text-base">{item.name}</h3>
+                    <p className="text-neutral-600 text-sm mt-1">{formatCurrency(item.price)}</p>
+                </div>
+            ))}
+        </div>
+    </section>
+);
+
+
+const pageData: PageSectionData[] = [
+    { type: 'heroVideo', props: { videoSrc: 'https://res.cloudinary.com/dzskttedu/video/upload/v1753603101/Astonishing_orange_-_Herm%C3%A8s_tglwbm.mp4' } },
+    { type: 'slogan', props: { title: "FLYING STEED", subtitle: "An equestrian case captures the image of a winged horse, and the myth of Pegasus rises from its ashes, once again." } },
+    { type: 'productGrid', props: { products: topGridProducts } },
+    { type: 'headline', props: { title: "Where there's silk, there's sunshine", subtitle: "A vibrant energy radiates from the Spring-Summer 2025 silk collection.", buttonText: "Discover the Collection", buttonLink: "/products" } },
+    { type: 'fullWidthImage', props: { imageUrl: "https://res.cloudinary.com/dzskttedu/image/upload/v1753603320/imgi_138_P_169_SUMMERMOOD_U_M_wniouk.webp", altText: "Campaign" } },
+    { type: 'headline', props: { title: "Gallop in style", subtitle: "Everything you need for the perfect equestrian outing, from signature silks to technical apparel.", buttonText: "Shop the selection", buttonLink: "#" } },
+    { type: 'editorialProductGrid', props: { products: bottomGridProducts } }
+];
+
 export const HomePage = () => {
-    const mainLook = editorialProducts[0];
-    const secondaryLook = editorialProducts[1];
-    const essentialItems = editorialProducts.slice(2);
+    const renderSection = (section: PageSectionData, index: number) => {
+        switch (section.type) {
+            case 'heroVideo':
+                return <HeroVideoSection key={index} {...section.props} />;
+            case 'slogan':
+                return <SloganSection key={index} {...section.props} />;
+            case 'productGrid':
+                return <ProductGridSection key={index} {...section.props} />;
+            case 'headline':
+                return <HeadlineSection key={index} {...section.props} />;
+            case 'fullWidthImage':
+                return <FullWidthImageSection key={index} {...section.props} />;
+            case 'editorialProductGrid':
+                return <EditorialProductGridSection key={index} {...section.props} />;
+            default:
+                return null;
+        }
+    };
 
     return (
-        <div className="bg-white text-neutral-800">
-            <section className="container mx-auto px-4 py-16 sm:py-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <div className="text-left">
-                        <p className="font-serif text-sm uppercase tracking-widest text-neutral-500">{mainLook.category}</p>
-                        <h1 className="font-serif text-4xl sm:text-5xl mt-4 leading-tight">
-                            {mainLook.name}
-                        </h1>
-                        <p className="mt-6 text-base text-neutral-600 max-w-md">
-                            {mainLook.description}
-                        </p>
-                        <Button asChild variant="link" className="p-0 mt-8 text-sm uppercase tracking-widest text-neutral-800 hover:text-neutral-500 h-auto justify-start">
-                            <a href="#">
-                                Discover More
-                            </a>
-                        </Button>
-                    </div>
-                    <div className="order-first md:order-last">
-                        <img src={mainLook.image} alt={mainLook.name} className="w-full h-auto object-cover" />
-                    </div>
-                </div>
-            </section>
-
-            <section className="bg-[#F7F7F7]">
-                <div className="container mx-auto px-4 py-16 sm:py-24">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <img src={secondaryLook.image} alt={secondaryLook.name} className="w-full h-auto object-cover" />
-                        </div>
-                        <div className="text-left">
-                            <p className="font-serif text-sm uppercase tracking-widest text-neutral-500">{secondaryLook.category}</p>
-                            <h1 className="font-serif text-4xl sm:text-5xl mt-4 leading-tight">
-                                {secondaryLook.name}
-                            </h1>
-                            <p className="mt-6 text-base text-neutral-600 max-w-md">
-                                {secondaryLook.description}
-                            </p>
-                            <Button asChild variant="link" className="p-0 mt-8 text-sm uppercase tracking-widest text-neutral-800 hover:text-neutral-500 h-auto justify-start">
-                                <a href="#">
-                                    Explore Details
-                                </a>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section className="container mx-auto px-4 py-16 sm:py-24">
-                <div className="text-center mb-12">
-                    <h2 className="font-serif text-3xl sm:text-4xl">The Essentials</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                    {essentialItems.map(item => (
-                        <div key={item.id} className="text-left">
-                            <img src={item.image} alt={item.name} className="w-full h-auto object-cover mb-4" />
-                            <h3 className="font-serif text-xl">{item.name}</h3>
-                            <p className="text-neutral-600 mt-1">{formatCurrency(item.price)}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            <section className="bg-white py-16 sm:py-24">
-                <div className="container mx-auto px-4 text-center max-w-3xl">
-                    <h2 className="font-serif text-3xl sm:text-4xl">The Art of Craft</h2>
-                    <p className="mt-6 text-base text-neutral-600 leading-relaxed">
-                        Each product is a work of art, created by the hands of the most skilled artisans with a commitment to exceptional quality and sustainability. We believe true beauty lies in the finest details and in value that lasts a lifetime.
-                    </p>
-                </div>
-            </section>
+        <div className="bg-[#F7F2EC] text-neutral-800">
+            {pageData.map((section, index) => renderSection(section, index))}
         </div>
     )
 }

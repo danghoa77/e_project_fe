@@ -7,6 +7,7 @@ import { Menu, Search, ShoppingBag, User, X, Plus, MapPin, MessageSquare } from 
 import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
 
+
 const navLinks = [
     { href: "/women", label: "Women" },
     { href: "/men", label: "Men" },
@@ -25,10 +26,13 @@ const serviceLinks = [
 ];
 
 const BrandLogo = () => (
-    <svg viewBox="0 0 150 50" xmlns="http://www.w3.org/2000/svg" className="w-28 md:w-36 h-auto">
-        <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontFamily="serif" fontSize="24" fontWeight="bold">
-            BRAND
-        </text>
+    <svg viewBox="0 0 300 100" className="w-41 md:w-64 h-auto">
+        <image
+            href="https://res.cloudinary.com/dzskttedu/image/upload/v1753605066/Logo_Hismes_Italy_v%E1%BB%9Bi_xe_ng%E1%BB%B1aa1-removebg-preview_ngtmst.png"
+            width="300"
+            height="100"
+            preserveAspectRatio="xMidYMid meet"
+        />
     </svg>
 );
 
@@ -49,7 +53,12 @@ export const Navbar = () => {
                         <div className={cn("absolute inset-0 md:hidden px-4", isMobileSearchOpen ? "flex items-center" : "hidden")}>
                             <div className="flex items-center w-full px-4">
                                 <Search className="h-5 w-5 text-neutral-500" />
-                                <input type="search" placeholder="Search" autoFocus className="w-full h-full px-2 bg-transparent border-0 border-b-2 border-neutral-400 focus:ring-0 focus:outline-none focus:border-neutral-800" />
+                                <input
+                                    type="search"
+                                    placeholder="Search"
+                                    autoFocus
+                                    className="w-full h-full px-2 bg-transparent border-0 border-b-2 border-neutral-400 focus:ring-0 focus:outline-none focus:border-neutral-800 hide-search-cancel-button"
+                                />
                                 <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(false)}>
                                     <X className="h-6 w-6" />
                                 </Button>
@@ -100,8 +109,16 @@ export const Navbar = () => {
                             </div>
 
                             <div className="flex items-center gap-x-3">
-                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent"><User className="h-7 w-7" strokeWidth={1} /><span className="hidden md:inline text-sm">Account</span></Button>
-                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent"><ShoppingBag className="h-7 w-7" strokeWidth={1} /><span className="hidden md:inline text-sm">Cart</span></Button>
+                                <Button asChild variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent">
+                                    <Link to="/login">
+                                        <User className="h-7 w-7" strokeWidth={1} />
+                                        <span className="hidden md:inline text-sm">Account</span>
+                                    </Link>
+                                </Button>
+                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent">
+                                    <ShoppingBag className="h-7 w-7" strokeWidth={1} />
+                                    <span className="hidden md:inline text-sm">Cart</span>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -109,7 +126,7 @@ export const Navbar = () => {
 
                 <div>
                     <div className="w-1/3 border-t-1 border-neutral-900 mx-auto" />
-                    <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-6 ">
+                    <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5 ">
                         {navLinks.map((link) => (
                             <NavLink key={link.href} to={link.href} className={({ isActive }) => `transition-colors font-sans font-medium text-[14px] leading-[16px] tracking-[1px] hover:text-neutral-900 pb-1 ${isActive ? "text-neutral-900" : "text-neutral-600"}`}>{link.label}</NavLink>
                         ))}
