@@ -43,8 +43,10 @@ const RegisterForm = () => {
     });
 
     function onSubmit(values: z.infer<typeof RegisterSchema>) {
-        // THAY ĐỔI: Đổi tên `confirmPassword` thành `_` để ESLint bỏ qua lỗi unused-var
-        const { confirmPassword: _, ...payload } = { ...values, role: 'customer' as const };
+        // THAY ĐỔI: Sử dụng `delete` để loại bỏ trường confirmPassword, tránh lỗi unused-var
+        const payload = { ...values, role: 'customer' as const };
+        delete (payload as { confirmPassword?: string }).confirmPassword;
+
         console.log("Payload to send to backend:", payload);
     }
 
@@ -55,8 +57,6 @@ const RegisterForm = () => {
                 <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>)} />
-
-                {/* THAY ĐỔI: Bỏ comment cho trường Confirm Password để form hoàn chỉnh */}
                 <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                     <FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
