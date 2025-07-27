@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// Dữ liệu cho các mục trong footer
+
 const footerSections = [
     {
         title: "SERVICES",
@@ -20,8 +20,8 @@ const footerSections = [
         links: ["Payment", "Shipping", "Collect in Store", "Returns & Exchanges"],
     },
     {
-        title: "LA MAISON HERMÈS",
-        links: ["Sustainable Development", "The Hermès Foundation", "Join Us"],
+        title: "LA MAISON HISMÈS",
+        links: ["Sustainable Development", "The Hismès Foundation", "Join Us"],
     },
     {
         title: "LEGAL",
@@ -37,7 +37,6 @@ export const Footer = () => {
                     {footerSections.map((section) => (
                         <Accordion key={section.title} type="single" collapsible className="w-full">
                             <AccordionItem value={section.title} className="border-b-0">
-                                {/* THAY ĐỔI: Thêm `flex-none` và `gap-2` để chữ và icon gần nhau */}
                                 <AccordionTrigger className="flex-none justify-start gap-2 text-sm uppercase tracking-widest hover:no-underline font-semibold py-2">
                                     {section.title}
                                 </AccordionTrigger>

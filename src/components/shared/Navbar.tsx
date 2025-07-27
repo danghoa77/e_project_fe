@@ -25,10 +25,13 @@ const serviceLinks = [
 ];
 
 const BrandLogo = () => (
-    <svg viewBox="0 0 150 50" xmlns="http://www.w3.org/2000/svg" className="w-28 md:w-36 h-auto">
-        <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontFamily="serif" fontSize="24" fontWeight="bold">
-            BRAND
-        </text>
+    <svg viewBox="0 0 300 100" className="w-41 md:w-64 h-auto">
+        <image
+            href="https://res.cloudinary.com/dzskttedu/image/upload/v1753605066/Logo_Hismes_Italy_v%E1%BB%9Bi_xe_ng%E1%BB%B1aa1-removebg-preview_ngtmst.png"
+            width="300"
+            height="100"
+            preserveAspectRatio="xMidYMid meet"
+        />
     </svg>
 );
 
@@ -49,7 +52,12 @@ export const Navbar = () => {
                         <div className={cn("absolute inset-0 md:hidden px-4", isMobileSearchOpen ? "flex items-center" : "hidden")}>
                             <div className="flex items-center w-full px-4">
                                 <Search className="h-5 w-5 text-neutral-500" />
-                                <input type="search" placeholder="Search" autoFocus className="w-full h-full px-2 bg-transparent border-0 border-b-2 border-neutral-400 focus:ring-0 focus:outline-none focus:border-neutral-800" />
+                                <input
+                                    type="search"
+                                    placeholder="Search"
+                                    autoFocus
+                                    className="w-full h-full px-2 bg-transparent border-0 border-b-2 border-neutral-400 focus:ring-0 focus:outline-none focus:border-neutral-800 hide-search-cancel-button"
+                                />
                                 <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(false)}>
                                     <X className="h-6 w-6" />
                                 </Button>
