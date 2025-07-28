@@ -5,7 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 import { LoginSchema, RegisterSchema } from "./schemas";
+import { getGoogleAuthUrl, loginUser, registerUser } from "./api";
+import { AxiosError } from "axios";
+
+// --- COMPONENTS ---
 
 const GoogleIcon = () => (
     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2">
@@ -16,38 +24,99 @@ const GoogleIcon = () => (
     </svg>
 );
 
+// LoginForm không thay đổi
 const LoginForm = () => {
+    const navigate = useNavigate();
+    const { setUser } = useAuthStore();
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema), defaultValues: { email: "", password: "" },
     });
 
-    function onSubmit(values: z.infer<typeof LoginSchema>) { console.log("Login values:", values); }
+    const loginMutation = useMutation({
+        mutationFn: loginUser,
+        onSuccess: (data) => {
+            toast.success("Đăng nhập thành công!");
+            setUser(data.user, data.accessToken);
+            navigate('/');
+        },
+        onError: (error: AxiosError) => {
+            const errorMessage = (error.response?.data as { message?: string })?.message || "Email hoặc mật khẩu không đúng.";
+            toast.error(errorMessage);
+        },
+    });
+
+    function onSubmit(values: z.infer<typeof LoginSchema>) {
+        loginMutation.mutate(values);
+    }
 
     return (
+
         <Form {...form}>
+
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
+
                 <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+
                 <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <Button type="submit" className="w-full rounded-none text-white bg-neutral-800 hover:bg-neutral-700">Login</Button>
-                <div className="flex items-center gap-2 md:gap-4"><div className="flex-grow border-t border-neutral-300"></div><span className="text-[0.7rem] md:text-xs text-neutral-500 uppercase">Or continue with</span><div className="flex-grow border-t border-neutral-300"></div></div>
-                <Button variant="outline" type="button" className="w-full rounded-none"><GoogleIcon /> Continue with Google</Button>
+
+                <Button type="submit" className="w-full rounded-none text-white bg-neutral-800 hover:bg-neutral-700" disabled={loginMutation.isPending}>
+
+                    {loginMutation.isPending ? "Đang đăng nhập..." : "Login"}
+
+                </Button>
+
+                <div className="flex items-center gap-2 md:gap-4"><div className="flex-grow border-t border-neutral-300"></div><span className="text-xs text-neutral-500 uppercase">Or continue with</span><div className="flex-grow border-t border-neutral-300"></div></div>
+
+                {/* Sửa nút Google */}
+
+                <a href={getGoogleAuthUrl()}>
+
+                    <Button variant="outline" type="button" className="w-full rounded-none"><GoogleIcon /> Continue with Google</Button>
+
+                </a>
+
             </form>
+
         </Form>
+
     );
+
 };
 
+// <<< BẮT ĐẦU PHẦN SỬA ĐỔI >>>
 const RegisterForm = () => {
+    // THÊM CÁC HOOKS CẦN THIẾT
+    const navigate = useNavigate();
+    const { setUser } = useAuthStore();
+
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: { name: "", email: "", phone: "", password: "", confirmPassword: "" },
     });
 
-    function onSubmit(values: z.infer<typeof RegisterSchema>) {
-        // THAY ĐỔI: Sử dụng `delete` để loại bỏ trường confirmPassword, tránh lỗi unused-var
-        const payload = { ...values, role: 'customer' as const };
-        delete (payload as { confirmPassword?: string }).confirmPassword;
+    const registerMutation = useMutation({
+        mutationFn: registerUser,
+        // <<< ĐÂY LÀ PHẦN THAY ĐỔI CHÍNH >>>
+        onSuccess: (data) => {
+            // data bây giờ là { user, accessToken } từ backend
+            toast.success("Tạo tài khoản thành công!");
 
-        console.log("Payload to send to backend:", payload);
+            // Cập nhật trạng thái và tự động đăng nhập
+            setUser(data.user, data.accessToken);
+
+            // Chuyển hướng về trang chủ
+            navigate('/');
+        },
+        onError: (error: AxiosError) => {
+            const errorMessage = (error.response?.data as { message?: string[] | string })?.message || "Đã xảy ra lỗi khi đăng ký.";
+            toast.error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+        }
+    });
+
+
+    function onSubmit(values: z.infer<typeof RegisterSchema>) {
+        const { confirmPassword, ...payload } = values;
+        registerMutation.mutate(payload);
     }
 
     return (
@@ -57,15 +126,20 @@ const RegisterForm = () => {
                 <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="your@email.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="Your Phone Number" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="confirmPassword" render={({ field }) => (
-                    <FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <Button type="submit" className="w-full rounded-none bg-neutral-800 text-white hover:bg-neutral-700">Create Account</Button>
+                <FormField control={form.control} name="confirmPassword" render={({ field }) => (<FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input className="border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" type="password" placeholder="••••••••" {...field} /></FormControl><FormMessage /></FormItem>)} />
+
+                {/* Sửa lại cả trạng thái loading của nút */}
+                <Button type="submit" className="w-full rounded-none bg-neutral-800 text-white hover:bg-neutral-700" disabled={registerMutation.isPending}>
+                    {registerMutation.isPending ? "Đang tạo tài khoản..." : "Create Account"}
+                </Button>
             </form>
         </Form>
     );
 }
+// <<< KẾT THÚC PHẦN SỬA ĐỔI >>>
 
+
+// AuthPage không thay đổi
 export const AuthPage = () => {
     return (
         <div className="font-sans flex items-center justify-center min-h-[calc(100vh-200px)] py-6 md:py-12 text-left px-4 md:px-0">

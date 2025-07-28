@@ -1,6 +1,6 @@
-// src/features/products/ProductListPage.tsx
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
+import type { Product, FilterState } from "../../types";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
-
 
 const categories = [
     { name: "Women", subcategories: ["Shoes", "Ready-to-Wear", "Bags", "Silk", "Belts"] },
@@ -21,35 +20,6 @@ const sortOptions = [
     { value: "price", label: "Price: Low to High" },
     { value: "-price", label: "Price: High to Low" },
 ];
-
-type ProductVariant = {
-    color: string;
-    price: number;
-    salePrice?: number;
-    size: string;
-    stock: number;
-};
-
-type Product = {
-    _id: string;
-    name: string;
-    category: string;
-    images: string[];
-    variants: ProductVariant[];
-    createdAt: string;
-};
-
-type FilterState = {
-    page: number;
-    limit: number;
-    category?: string;
-    sortBy?: string;
-    size?: string;
-    price?: {
-        min: number;
-        max: number;
-    };
-};
 
 const MAX_PRICE = 2500;
 
@@ -90,7 +60,6 @@ const fetchMockProducts = async (filters: FilterState): Promise<{ products: Prod
     return new Promise(resolve => setTimeout(() => resolve({ products: paginated, total }), 500));
 };
 
-
 const ProductCard = ({ product }: { product: Product }) => {
     const displayVariant = product.variants[0];
     return (
@@ -117,7 +86,6 @@ const ProductGrid = ({ products, isLoading, loadMore, hasMore }: { products: Pro
         </div>
     );
 };
-
 
 const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<FilterState>) => void }) => {
     const [priceRange, setPriceRange] = React.useState([0, MAX_PRICE]);
@@ -181,8 +149,6 @@ const FilterSidebar = ({ onFilterChange }: { onFilterChange: (filters: Partial<F
     );
 };
 
-
-
 export const ProductListPage = () => {
     const { category: initialCategory } = useParams();
     const [products, setProducts] = React.useState<Product[]>([]);
@@ -195,8 +161,12 @@ export const ProductListPage = () => {
             setIsLoading(true);
             try {
                 const data = await fetchMockProducts(filters);
-                if (filters.page === 1) setProducts(data.products || []);
-                else setProducts(prev => [...prev, ...(data.products || [])]);
+                if (filters.page === 1) {
+                    setProducts(data.products || []);
+                } else {
+                    // SỬA LỖI 1: Thêm kiểu 'Product[]' cho 'prev'
+                    setProducts((prev: Product[]) => [...prev, ...(data.products || [])]);
+                }
                 setTotal(data.total || 0);
             } catch (error) {
                 console.error("Failed to fetch products:", error);
@@ -209,8 +179,13 @@ export const ProductListPage = () => {
         fetchProducts();
     }, [filters]);
 
-    const handleFilterChange = (newFilters: Partial<FilterState>) => setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
-    const loadMore = () => setFilters(prev => ({ ...prev, page: prev.page + 1 }));
+    const handleFilterChange = (newFilters: Partial<FilterState>) => {
+        setFilters((prev: FilterState) => ({ ...prev, ...newFilters, page: 1 }));
+    };
+
+    const loadMore = () => {
+        setFilters((prev: FilterState) => ({ ...prev, page: prev.page + 1 }));
+    };
 
     const hasMore = products.length < total;
     const categoryName = filters.category ? filters.category.replace(/-/g, ' ') : "All Products";

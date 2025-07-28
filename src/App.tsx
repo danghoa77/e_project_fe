@@ -1,29 +1,36 @@
 // src/App.tsx
+
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
-  Navigate,
   useLocation,
 } from 'react-router-dom';
 import * as React from 'react';
 import './index.css';
-import ProtectedRoute from './routes/ProtectedRoute';
-import { useAuthStore } from './store/authStore';
-import { HomePage } from './features/products/HomePage';
+
+// Component và Page imports
 import { Navbar } from './components/shared/Navbar';
 import { Footer } from './components/shared/Footer';
+import { Toaster } from "@/components/ui/sonner";
+import { HomePage } from './features/products/HomePage';
 import { AuthPage } from './features/auth/AuthPage';
 import { ProductListPage } from './features/products/ProductListPage';
 import { ProductDetailPage } from './features/products/ProductDetailPage';
-import { Toaster } from "@/components/ui/sonner";
+import { OrderPage } from './features/orders/OrderPage';
+import { ProfilePage } from './features/profile/ProfilePage';
+import { AuthCallbackPage } from './features/auth/AuthCallbackPage';
+import { AuthLoader } from './features/auth/AuthLoader';
+import ProtectedRoute from './routes/ProtectedRoute';
 
-const ProfilePage = () => <div>Trang Hồ Sơ Khách Hàng</div>;
+// Component placeholder cho trang Admin
 const AdminDashboardPage = () => <div>Trang Quản Trị (Admin Dashboard)</div>;
 
+// Layout chính của ứng dụng
 const AppLayout = () => {
   const { pathname } = useLocation();
 
+  // Tự động cuộn lên đầu trang khi chuyển route
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -32,7 +39,10 @@ const AppLayout = () => {
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
       <Navbar />
       <main>
-        <Outlet />
+        {/* AuthLoader bọc Outlet để kiểm tra auth trước khi render trang */}
+        <AuthLoader>
+          <Outlet />
+        </AuthLoader>
       </main>
       <Footer />
       <Toaster richColors />
@@ -40,44 +50,65 @@ const AppLayout = () => {
   );
 };
 
-const AuthRedirect = () => {
-  const { user } = useAuthStore();
-  if (user) {
-    return user.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/" />;
-  }
-  return <Navigate to="/" />;
-};
-
+// Cấu hình router cho toàn bộ ứng dụng
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppLayout />,
+    element: <AppLayout />, // Sử dụng layout chính
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'login', element: <AuthPage /> },
-      { path: 'products', element: <ProductListPage /> },
-      { path: 'products/:category', element: <ProductListPage /> },
-      { path: 'product/:id', element: <ProductDetailPage /> },
       {
-        element: <ProtectedRoute allowedRoles={['customer']} />,
-        children: [
-          { path: 'profile', element: <ProfilePage /> },
-        ],
+        index: true, // Route cho trang chủ
+        element: <HomePage />,
+      },
+      {
+        path: 'login',
+        element: <AuthPage />,
+      },
+      {
+        path: 'products',
+        element: <ProductListPage />,
+      },
+      {
+        path: 'products/:category',
+        element: <ProductListPage />,
+      },
+      {
+        path: 'product/:id',
+        element: <ProductDetailPage />,
+      },
+      {
+        path: 'checkout', // Route này nên được bảo vệ
+        element: (
+          <ProtectedRoute allowedRoles={['customer']}>
+            <OrderPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'profile', // Route này được bảo vệ
+        element: (
+          <ProtectedRoute allowedRoles={['customer']}>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
   {
-    element: <ProtectedRoute allowedRoles={['admin']} />,
-    children: [
-      { path: 'admin', element: <AdminDashboardPage /> },
-    ],
+    path: '/admin', // Route cho admin, không dùng AppLayout
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminDashboardPage />
+      </ProtectedRoute>
+    ),
   },
   {
-    path: '/auth/callback',
-    element: <AuthRedirect />,
+    path: '/auth/callback', // Route xử lý callback từ Google OAuth
+    element: <AuthCallbackPage />,
   },
 ]);
 
+// Component App chính
 function App() {
   return <RouterProvider router={router} />;
 }

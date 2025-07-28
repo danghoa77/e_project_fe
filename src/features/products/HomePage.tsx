@@ -1,7 +1,7 @@
 // src/features/products/HomePage.tsx
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
+import type { PageSectionData, HeroVideoSectionData, SloganSectionData, ProductGridSectionData, HeadlineSectionData, EditorialProductGridSectionData, FullWidthImageSectionData } from '@/types';
 
 const topGridProducts = [
     { id: 1, name: "TIES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603541/274201T_2001_flat_wm_1_rluqfj.jpg' },
@@ -24,22 +24,6 @@ const formatCurrency = (amount: number) => {
     if (amount === 0) return '';
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount);
 };
-
-
-type HeroVideoSectionData = { type: 'heroVideo'; props: { videoSrc: string; }; };
-type SloganSectionData = { type: 'slogan'; props: { title: string; subtitle: string; }; };
-type ProductGridSectionData = { type: 'productGrid'; props: { products: { id: number; name: string; image: string; }[]; }; };
-type HeadlineSectionData = { type: 'headline'; props: { title: string; subtitle: string; buttonText: string; buttonLink: string; }; };
-type FullWidthImageSectionData = { type: 'fullWidthImage'; props: { imageUrl: string; altText: string; }; };
-type EditorialProductGridSectionData = { type: 'editorialProductGrid'; props: { products: { id: number; name: string; price: number; image: string; }[]; }; };
-
-type PageSectionData =
-    | HeroVideoSectionData
-    | SloganSectionData
-    | ProductGridSectionData
-    | HeadlineSectionData
-    | FullWidthImageSectionData
-    | EditorialProductGridSectionData;
 
 
 

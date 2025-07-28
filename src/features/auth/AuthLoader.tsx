@@ -1,37 +1,56 @@
-// src/features/auth/AuthLoader.tsx
-// lấy thông tin người dùng và cập nhật vào authStore 
-import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios'; // Giả sử bạn dùng axios
 import { useAuthStore } from '@/store/authStore';
-import type { User } from '@/types/index';
+import apiClient from '@/api/axios';
+import type { User } from '@/types';
+import { useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 // Hàm gọi API để lấy thông tin người dùng
 const fetchUserProfile = async (): Promise<User> => {
-    // Backend sẽ đọc session cookie từ request này
-    const { data } = await axios.get('/auth/me'); // Thay bằng endpoint thật của bạn
+    const { data } = await apiClient.get('/users/me');
     return data;
 };
 
-export const AuthLoader = ({ children }: { children: React.ReactNode }) => {
+// Component AuthLoader
+export const AuthLoader = ({ children }: { children: ReactNode }) => {
+    // Lấy token và hàm setUser từ store
+    const token = useAuthStore((state) => state.token);
     const setUser = useAuthStore((state) => state.setUser);
+    const logout = useAuthStore((state) => state.logout);
 
-    // Dùng useQuery để lấy dữ liệu, React Query sẽ tự quản lý caching
-    const { data: user, isError } = useQuery({
-        queryKey: ['me'], // Khóa để cache dữ liệu người dùng
+    // Sử dụng useQuery để gọi API, nhưng chỉ khi có token
+    const { data: user, isLoading, isError } = useQuery({
+        queryKey: ['me'],
         queryFn: fetchUserProfile,
-        retry: 1, // Chỉ thử lại 1 lần nếu lỗi
+        enabled: !!token, // Rất quan trọng: chỉ chạy query này khi token tồn tại
+        retry: 1, // Thử lại 1 lần nếu lỗi
+        staleTime: 5 * 60 * 1000, // Dữ liệu được coi là mới trong 5 phút
     });
 
     useEffect(() => {
-        if (user) {
-            setUser(user);
+        // Sau khi query kết thúc
+        if (!isLoading) {
+            if (user) {
+                // Nếu có dữ liệu user trả về, cập nhật lại store
+                // Giữ nguyên token cũ đang hợp lệ
+                setUser(user, token);
+            } else if (isError) {
+                // Nếu query lỗi (ví dụ: token hết hạn), thực hiện logout
+                logout();
+            }
         }
-        if (isError) {
-            // Nếu có lỗi (vd: 401 Unauthorized), tức là session không hợp lệ
-            setUser(null);
-        }
-    }, [user, isError, setUser]);
+    }, [user, isLoading, isError, token, setUser, logout]);
 
+    // Trong khi đang chờ API trả về, hiển thị màn hình loading
+    // Điều này ngăn việc các component con render với trạng thái đăng nhập sai
+    if (isLoading && token) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center">
+                <p className="text-lg">Authenticating...</p>
+            </div>
+        );
+    }
+
+    // Khi đã xử lý xong, hiển thị các component con
     return <>{children}</>;
 };
