@@ -1,14 +1,17 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
+export const API_BASE_URL = 'https://a3c630d951a9.ngrok-free.app';
+
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://82e7bf679657.ngrok-free.app',
+    baseURL: 'https://a3c630d951a9.ngrok-free.app',
     headers: {
         'ngrok-skip-browser-warning': 'true'
     }
 });
+apiClient.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';
 
-// Sử dụng interceptor để tự động thêm token vào mỗi request
+//interceptor token in request
 apiClient.interceptors.request.use(
     (config) => {
         const token = useAuthStore.getState().token;

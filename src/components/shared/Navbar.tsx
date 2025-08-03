@@ -8,7 +8,7 @@ import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
 import { CartSheet } from "../../features/cart/CartSheet";
 import { useCartStore } from "@/store/cartStore";
-import { useAuthStore } from "@/store/authStore"; // <-- 1. THÊM IMPORT
+import { useAuthStore } from "@/store/authStore";
 
 const navLinks = [
     { href: "/products/women", label: "Women" },

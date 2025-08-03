@@ -1,6 +1,8 @@
 // src/features/products/HomePage.tsx
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+
 import type { PageSectionData, HeroVideoSectionData, SloganSectionData, ProductGridSectionData, HeadlineSectionData, EditorialProductGridSectionData, FullWidthImageSectionData } from '@/types';
 
 const topGridProducts = [
@@ -13,6 +15,7 @@ const topGridProducts = [
     { id: 7, name: "GAMES AND OUTDOOR", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603426/0009957_2019_back_wm_4_dkoswj.jpg' },
     { id: 8, name: "MEN'S SHOES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603858/252863ZHVD_front_wm_1_jakn4f.jpg' },
 ];
+
 const bottomGridProducts = [
     { id: 9, name: "Carré 90 Silk Twilly", price: 480, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603514/004211S_2005_flat_wm_3_opbqew.jpg' },
     { id: 10, name: "Portrait in Red", price: 330, image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753604412/310911M_2001_wornsquare_1_zfo5vo.jpg' },
@@ -25,19 +28,19 @@ const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount);
 };
 
-
-
 const HeroVideoSection = (props: HeroVideoSectionData['props']) => (
     <section className="w-full">
         <video src={props.videoSrc} className="w-full h-auto object-cover" autoPlay loop muted playsInline controls={false} />
     </section>
 );
+
 const SloganSection = (props: SloganSectionData['props']) => (
     <section className="container mx-auto px-4 py-16 md:py-20 text-center">
         <h2 className="text-2xl md:text-3xl uppercase tracking-[0.2em] text-neutral-800">{props.title}</h2>
         <p className="mt-5 text-base text-neutral-600 max-w-2xl mx-auto font-serif leading-relaxed">{props.subtitle}</p>
     </section>
 );
+
 const ProductGridSection = (props: ProductGridSectionData['props']) => (
     <section className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8">
@@ -50,6 +53,7 @@ const ProductGridSection = (props: ProductGridSectionData['props']) => (
         </div>
     </section>
 );
+
 const HeadlineSection = (props: HeadlineSectionData['props']) => (
     <section className="container mx-auto px-4 py-12 md:py-16 text-center">
         <h2 className="font-serif text-3xl md:text-4xl uppercase tracking-wider">{props.title}</h2>
@@ -59,11 +63,13 @@ const HeadlineSection = (props: HeadlineSectionData['props']) => (
         </Button>
     </section>
 );
+
 const FullWidthImageSection = (props: FullWidthImageSectionData['props']) => (
     <section className="w-full my-8">
         <img src={props.imageUrl} alt={props.altText} className="w-full h-auto object-cover" />
     </section>
 );
+
 const EditorialProductGridSection = (props: EditorialProductGridSectionData['props']) => (
     <section className="container mx-auto px-4 pt-12 pb-16 md:pb-24">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -77,7 +83,6 @@ const EditorialProductGridSection = (props: EditorialProductGridSectionData['pro
         </div>
     </section>
 );
-
 
 const pageData: PageSectionData[] = [
     { type: 'heroVideo', props: { videoSrc: 'https://res.cloudinary.com/dzskttedu/video/upload/v1753603101/Astonishing_orange_-_Herm%C3%A8s_tglwbm.mp4' } },
@@ -113,5 +118,5 @@ export const HomePage = () => {
         <div className="bg-[#F7F2EC] text-neutral-800">
             {pageData.map((section, index) => renderSection(section, index))}
         </div>
-    )
-}
+    );
+};

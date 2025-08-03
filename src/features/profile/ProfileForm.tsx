@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import ProfileSchema from "./schemas";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../auth/api";
 
 export const ProfileForm = () => {
     const { user, logout } = useAuthStore();
@@ -25,11 +26,24 @@ export const ProfileForm = () => {
         toast.success("Profile updated successfully!");
     }
 
-    const handleLogout = () => {
-        logout();
-        toast.info("You have been logged out.");
-        navigate('/');
-    }
+    const handleLogout = async () => {
+        try {
+            // 1. Gọi API để server xóa session trong Redis
+            await logout();
+
+            // 2. Nếu API thành công, xóa token và thông tin user ở client
+            logout();
+
+            // 3. Thông báo và điều hướng
+            toast.info("You have been logged out.");
+            navigate('/');
+
+        } catch (error) {
+            // Xử lý nếu gọi API logout thất bại
+            console.error("Failed to logout:", error);
+            toast.error("Logout failed. Please try again.");
+        }
+    };
 
     if (!user) return <p>Loading user data...</p>;
 

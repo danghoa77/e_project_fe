@@ -54,57 +54,49 @@ const AppLayout = () => {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppLayout />, // Sử dụng layout chính
+    element: <Outlet />, // Một component gốc chỉ để render các route con
     children: [
       {
-        index: true, // Route cho trang chủ
-        element: <HomePage />,
+        path: '/', // Nhóm các route sử dụng AppLayout
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: 'login', element: <AuthPage /> },
+          { path: 'products', element: <ProductListPage /> },
+          { path: 'products/:category', element: <ProductListPage /> },
+          { path: 'product/:id', element: <ProductDetailPage /> },
+          {
+            path: 'checkout',
+            element: (
+              <ProtectedRoute allowedRoles={['customer']}>
+                <OrderPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'profile',
+            element: (
+              <ProtectedRoute allowedRoles={['customer']}>
+                <ProfilePage />
+              </ProtectedRoute>
+            ),
+          },
+        ],
       },
+      // Nhóm các route KHÔNG sử dụng AppLayout
       {
-        path: 'login',
-        element: <AuthPage />,
-      },
-      {
-        path: 'products',
-        element: <ProductListPage />,
-      },
-      {
-        path: 'products/:category',
-        element: <ProductListPage />,
-      },
-      {
-        path: 'product/:id',
-        element: <ProductDetailPage />,
-      },
-      {
-        path: 'checkout', // Route này nên được bảo vệ
+        path: 'admin',
         element: (
-          <ProtectedRoute allowedRoles={['customer']}>
-            <OrderPage />
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminDashboardPage />
           </ProtectedRoute>
         ),
       },
       {
-        path: 'profile', // Route này được bảo vệ
-        element: (
-          <ProtectedRoute allowedRoles={['customer']}>
-            <ProfilePage />
-          </ProtectedRoute>
-        ),
+        path: 'auth/callback', // Route callback giờ đã nằm trong cây router
+        element: <AuthCallbackPage />,
       },
     ],
-  },
-  {
-    path: '/admin', // Route cho admin, không dùng AppLayout
-    element: (
-      <ProtectedRoute allowedRoles={['admin']}>
-        <AdminDashboardPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/auth/callback', // Route xử lý callback từ Google OAuth
-    element: <AuthCallbackPage />,
   },
 ]);
 

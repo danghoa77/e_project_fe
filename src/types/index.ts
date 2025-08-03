@@ -15,7 +15,10 @@ export interface Address {
   isDefault?: boolean;
 }
 
-
+export interface LoginResponse {
+  user: User;
+  access_token: string;
+}
 export type CartItem = {
   productId: string;
   variantId: string;
@@ -32,22 +35,47 @@ export type Cart = {
 };
 
 
-export type ProductVariant = {
+// export type ProductVariant = {
+//   color: string;
+//   price: number;
+//   salePrice?: number;
+//   size: string;
+//   stock: number;
+// };
+
+// export type Product = {
+//   _id: string;
+//   name: string;
+//   category: string;
+//   images: string[];
+//   variants: ProductVariant[];
+//   createdAt: string;
+// };
+
+export interface CloudinaryImage {
+  url: string;
+  cloudinaryId: string;
+}
+
+export interface ProductVariant {
+  size: string;
   color: string;
   price: number;
   salePrice?: number;
-  size: string;
   stock: number;
-};
+}
 
-export type Product = {
+export interface Product {
   _id: string;
   name: string;
+  images: CloudinaryImage[];
   category: string;
-  images: string[];
   variants: ProductVariant[];
-  createdAt: string;
-};
+}
+export type ProductApiResponse = {
+  products: Product[];
+  total: number;
+}
 
 export type FilterState = {
   page: number;

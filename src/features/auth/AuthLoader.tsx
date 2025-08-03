@@ -1,56 +1,44 @@
-import { useQuery } from '@tanstack/react-query';
-import { useAuthStore } from '@/store/authStore';
-import apiClient from '@/api/axios';
-import type { User } from '@/types';
-import { useEffect } from 'react';
-import type { ReactNode } from 'react';
+// src/features/auth/AuthLoader.tsx
 
-// Hàm gọi API để lấy thông tin người dùng
-const fetchUserProfile = async (): Promise<User> => {
-    const { data } = await apiClient.get('/users/me');
-    return data;
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { getUserProfile } from './api';
+import { toast } from 'sonner';
+import Spinner from '@/components/ui/spinner';
+
+type AuthLoaderProps = {
+    children: React.ReactNode;
 };
 
-// Component AuthLoader
-export const AuthLoader = ({ children }: { children: ReactNode }) => {
-    // Lấy token và hàm setUser từ store
-    const token = useAuthStore((state) => state.token);
-    const setUser = useAuthStore((state) => state.setUser);
-    const logout = useAuthStore((state) => state.logout);
-
-    // Sử dụng useQuery để gọi API, nhưng chỉ khi có token
-    const { data: user, isLoading, isError } = useQuery({
-        queryKey: ['me'],
-        queryFn: fetchUserProfile,
-        enabled: !!token, // Rất quan trọng: chỉ chạy query này khi token tồn tại
-        retry: 1, // Thử lại 1 lần nếu lỗi
-        staleTime: 5 * 60 * 1000, // Dữ liệu được coi là mới trong 5 phút
-    });
+export const AuthLoader = ({ children }: AuthLoaderProps) => {
+    const { token, user, setUser, setLoading, isLoading } = useAuthStore();
 
     useEffect(() => {
-        // Sau khi query kết thúc
-        if (!isLoading) {
-            if (user) {
-                // Nếu có dữ liệu user trả về, cập nhật lại store
-                // Giữ nguyên token cũ đang hợp lệ
+        const fetchUser = async () => {
+            if (!token || user) return;
+            setLoading(true);
+            try {
+                const { data: user } = await getUserProfile();
                 setUser(user, token);
-            } else if (isError) {
-                // Nếu query lỗi (ví dụ: token hết hạn), thực hiện logout
-                logout();
+            } catch (err) {
+                toast.error('Phiên đăng nhập đã hết hạn!');
+                setUser(null, null);
+            } finally {
+                setLoading(false);
             }
-        }
-    }, [user, isLoading, isError, token, setUser, logout]);
+        };
 
-    // Trong khi đang chờ API trả về, hiển thị màn hình loading
-    // Điều này ngăn việc các component con render với trạng thái đăng nhập sai
-    if (isLoading && token) {
+        fetchUser();
+    }, [token]);
+
+    if (isLoading) {
         return (
-            <div className="flex h-screen w-full items-center justify-center">
-                <p className="text-lg">Authenticating...</p>
+            <div className="flex items-center justify-center h-[50vh]">
+                <Spinner />
+                <p className="ml-2 text-muted-foreground">Authenticating user...</p>
             </div>
         );
     }
 
-    // Khi đã xử lý xong, hiển thị các component con
     return <>{children}</>;
 };
