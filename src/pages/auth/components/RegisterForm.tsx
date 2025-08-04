@@ -37,11 +37,19 @@ export const RegisterForm = () => {
     });
 
     function onSubmit(values: z.infer<typeof RegisterSchema>) {
-        const { confirmPassword, ...dataFromForm } = values;
-        const payload = { ...dataFromForm, role: 'customer' };
+        const { password, confirmPassword, ...dataFromForm } = values;
+
+        if (password !== confirmPassword) {
+            form.setError("confirmPassword", {
+                type: "manual",
+                message: "Password does not match.",
+            });
+            return;
+        }
+
+        const payload = { ...dataFromForm, password, role: "customer" };
         registerMutation.mutate(payload);
     }
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">

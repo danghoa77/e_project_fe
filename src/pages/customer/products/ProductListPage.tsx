@@ -1,9 +1,8 @@
 // src/features/products/ProductListPage.tsx
 
 import { Link, useParams } from "react-router-dom";
-import { useDebounce } from "use-debounce";
 import { useEffect, useState } from "react";
-import type { Product, FilterState, ProductApiResponse } from "@/types/user";
+import type { Product, FilterState } from "@/types/product";
 import { MAX_PRICE, SORT_OPTIONS } from "./constants";
 import { ProductCard } from "./components/ProductCard";
 import { FilterSidebar } from "./components/FilterSidebar";
@@ -12,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
-import { cs } from "zod/v4/locales";
 import { fetchProducts } from "../api";
 export const ProductListPage = () => {
     const { category: initialCategory } = useParams();
@@ -28,7 +26,7 @@ export const ProductListPage = () => {
         price: { min: 0, max: MAX_PRICE },
     });
 
-    const [debouncedFilters] = useDebounce(filters, 500);
+    // const [debouncedFilters] = useDebounce(filters, 500);
 
     useEffect(() => {
         const fetchData = async () => {
