@@ -1,6 +1,6 @@
 // src/features/orders/pages/OrderPage.tsx
 
-import React, { useState, useMemo, useEffect } from 'react'; // Thêm useEffect
+import { useState, useMemo, useEffect } from 'react'; // Thêm useEffect
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { Product } from "@/types/user";
+import type { Product } from "@/types/product";
 
 export const ProductCard = ({ product }: { product: Product }) => {
     const displayVariant = product.variants[0];

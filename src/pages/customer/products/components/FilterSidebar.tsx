@@ -1,7 +1,7 @@
 // src/features/products/components/FilterSidebar.tsx
 
 import * as React from "react";
-import type { FilterState } from "@/types/user";
+import type { FilterState } from "@/types/product";
 import { CATEGORIES, SIZES, MAX_PRICE } from "../constants";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
