@@ -1,30 +1,26 @@
 // src/routes/ProtectedRoute.tsx
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
-import type { UserRole } from '../types';
+import type { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
+import type { UserRole } from '@/types/user';
 
 interface ProtectedRouteProps {
     allowedRoles: UserRole[];
+    children: ReactNode;
 }
 
-const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-    const { user, isLoading } = useAuthStore();
-    const location = useLocation();
-
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
+const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
+    const { user } = useAuthStore();
 
     if (!user) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/login" replace />;
     }
 
     if (!allowedRoles.includes(user.role)) {
         return <Navigate to="/" replace />;
     }
 
-    return <Outlet />;
+    return <>{children}</>;
 };
 
 export default ProtectedRoute;

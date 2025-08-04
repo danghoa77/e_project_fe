@@ -2,9 +2,9 @@
 import * as z from "zod";
 
 export const LoginSchema = z.object({
-    email: z.string().email({
-        message: "Please enter a valid email address.",
-    }),
+    email: z.string().email({ message: "Please enter a valid email address." }),
+
+
     password: z.string().min(1, {
         message: "Password is required.",
     }),
@@ -15,7 +15,7 @@ export const RegisterSchema = z.object({
     name: z.string().min(1, {
         message: "Name is required.",
     }),
-    email: z.string().email({
+    email: z.string().email().or(z.literal("")).refine((val) => val.includes("@"), {
         message: "Please enter a valid email address.",
     }),
     phone: z.string().min(10, {

@@ -6,16 +6,18 @@ import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/s
 import { Menu, Search, ShoppingBag, User, X, Plus, MapPin, MessageSquare } from "lucide-react";
 import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
-
+import { CartSheet } from "../../pages/customer/cart/CartSheet";
+import { useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
 
 const navLinks = [
-    { href: "/women", label: "Women" },
-    { href: "/men", label: "Men" },
-    { href: "/outdoor", label: "Home, Outdoor and Equestrian" },
-    { href: "/jewelry-watches", label: "Jewelry and Watches" },
-    { href: "/fragrances-makeup", label: "Fragrances and Make-up" },
-    { href: "/gifts", label: "Gifts and Petit H" },
-    { href: "/special-editions", label: "Special Editions and Services" },
+    { href: "/products/women", label: "Women" },
+    { href: "/products/men", label: "Men" },
+    { href: "/products/home-outdoor-and-equestrian", label: "Home, Outdoor and Equestrian" },
+    { href: "/products/jewelry-watches", label: "Jewelry and Watches" },
+    { href: "/products/fragrances-makeup", label: "Fragrances and Make-up" },
+    { href: "/products/gifts-and-petit-h", label: "Gifts and Petit H" },
+    { href: "/products/special-editions-and-services", label: "Special Editions and Services" },
     { href: "/about", label: "About BRAND" },
 ];
 
@@ -39,6 +41,8 @@ const BrandLogo = () => (
 export const Navbar = () => {
     const scrollDirection = useScroll();
     const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
+    const cartItemCount = useCartStore(state => state.cart.items.reduce((acc: number, item: any) => acc + item.quantity, 0));
+    const { user } = useAuthStore(); // <-- 2. LẤY USER TỪ STORE
 
     return (
         <header className="sticky top-0 z-50 w-full bg-[#fcf7f1] backdrop-blur-sm ">
@@ -110,22 +114,31 @@ export const Navbar = () => {
 
                             <div className="flex items-center gap-x-3">
                                 <Button asChild variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent">
-                                    <Link to="/login">
+                                    <Link to={user ? "/profile" : "/login"}>
                                         <User className="h-7 w-7" strokeWidth={1} />
                                         <span className="hidden md:inline text-sm">Account</span>
                                     </Link>
                                 </Button>
-                                <Button variant="ghost" className="flex items-center gap-2 p-0 h-auto hover:bg-transparent">
-                                    <ShoppingBag className="h-7 w-7" strokeWidth={1} />
-                                    <span className="hidden md:inline text-sm">Cart</span>
-                                </Button>
+                                <CartSheet>
+                                    <SheetTrigger asChild>
+                                        <Button variant="ghost" className="relative flex items-center gap-2 p-0 h-auto hover:bg-transparent">
+                                            <ShoppingBag className="h-7 w-7" strokeWidth={1} />
+                                            <span className="hidden md:inline text-sm">Cart</span>
+                                            {cartItemCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-neutral-800 text-xs font-bold text-white">
+                                                    {cartItemCount}
+                                                </span>
+                                            )}
+                                        </Button>
+                                    </SheetTrigger>
+                                </CartSheet>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <div className="w-1/3 border-t-1 border-neutral-900 mx-auto" />
+                    <div className="w-1/3 border-t border-neutral-900 mx-auto" />
                     <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5 ">
                         {navLinks.map((link) => (
                             <NavLink key={link.href} to={link.href} className={({ isActive }) => `transition-colors font-sans font-medium text-[14px] leading-[16px] tracking-[1px] hover:text-neutral-900 pb-1 ${isActive ? "text-neutral-900" : "text-neutral-600"}`}>{link.label}</NavLink>

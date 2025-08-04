@@ -1,13 +1,26 @@
+/*
+src/index.css
+*/
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Overpass+Mono:wght@300..700&display=swap');
 
 /* @import "tailwindcss/preflight";
 @tailwind utilities; */
 @import "tailwindcss";
 
-
-.hide-search-cancel-button::-webkit-search-cancel-button {
+a .hide-search-cancel-button::-webkit-search-cancel-button {
   -webkit-appearance: none;
   display: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 body {

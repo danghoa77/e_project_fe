@@ -1,17 +1,35 @@
 // src/store/authStore.ts
+
 import { create } from 'zustand';
-import type { User } from '@/types';
+import { persist } from 'zustand/middleware';
+import type { User } from '@/types/user';
 
 interface AuthState {
     user: User | null;
-    isLoading: boolean; // Trạng thái cho lần kiểm tra đăng nhập đầu tiên
-    setUser: (user: User | null) => void;
+    token: string | null;
+    isLoading: boolean;
+    setUser: (user: User | null, token: string | null) => void;
+    setLoading: (isLoading: boolean) => void;
     logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-    user: null,
-    isLoading: true,
-    setUser: (user) => set({ user, isLoading: false }),
-    logout: () => set({ user: null, isLoading: false }),
-}));
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set) => ({
+            user: null,
+            token: null,
+            isLoading: false,
+
+            setUser: (user, token) => set({ user, token }),
+            setLoading: (isLoading) => set({ isLoading }),
+            logout: () => set({ user: null, token: null }),
+        }),
+        {
+            name: 'auth-storage',
+            partialize: (state) => ({
+                user: state.user,
+                token: state.token,
+            }),
+        }
+    )
+);
