@@ -1,5 +1,5 @@
 // api.ts
-import type { ProductApiResponse } from "@/types/user";
+import type { ProductApiResponse } from "@/types/product";
 import apiClient from "@/lib/axios";
 
 
