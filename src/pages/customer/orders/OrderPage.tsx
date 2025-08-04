@@ -7,11 +7,12 @@ import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/store/cartStore';
-import { useUserStore } from '../../store/userStore';
-import type { Address } from '@/types';
-import AddressDialog from '../../components/shared/AddressDialog';
+import { useUserStore } from '../../../store/userStore';
+import { Address } from '@/types/user';
+import AddressDialog from '../../../components/shared/AddressDialog';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from "sonner";
+import { CartItem } from '@/types/cart';
 
 export const OrderPage = () => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ export const OrderPage = () => {
     const [paymentMethod, setPaymentMethod] = useState<'cash' | 'vnpay'>('cash');
 
     const itemsToCheckout = useMemo(() =>
-        cart.items.filter(item => selectedItems.includes(item.variantId)),
+        cart.items.filter((item: CartItem) => selectedItems.includes(item.variantId)),
         [cart.items, selectedItems]
     );
 
@@ -32,7 +33,7 @@ export const OrderPage = () => {
         }
     }, [itemsToCheckout, navigate]);
 
-    const subtotal = itemsToCheckout.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const subtotal = itemsToCheckout.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
 
     const handlePlaceOrder = () => {
         if (!shippingAddress) {
@@ -41,7 +42,7 @@ export const OrderPage = () => {
         }
 
         const orderPayload = {
-            items: itemsToCheckout.map(item => ({
+            items: itemsToCheckout.map((item: CartItem) => ({
                 productId: item.productId,
                 variantId: item.variantId,
                 quantity: item.quantity,
@@ -98,7 +99,7 @@ export const OrderPage = () => {
                     <div className="bg-white p-8 space-y-6">
                         <h2 className="font-serif text-2xl">Order Summary</h2>
                         <div className="max-h-96 overflow-y-auto pr-4 space-y-6">
-                            {itemsToCheckout.map(item => (
+                            {itemsToCheckout.map((item: CartItem) => (
                                 <div key={item.variantId} className="flex gap-4 items-center">
                                     <img src={item.image} alt={item.name} className="h-20 w-16 object-cover" />
                                     <div className="flex-1 text-sm"><p className="font-semibold">{item.name}</p><p className="text-neutral-500">Qty: {item.quantity}</p></div>

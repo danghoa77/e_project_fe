@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Address as AddressType } from '@/types'; // Giả sử Address đã ở trong types/index.ts
+import type { Address as AddressType } from '@/types/user'; // Giả sử Address đã ở trong types/index.ts
 
 // Mở rộng Address để có id
 export interface Address extends AddressType {

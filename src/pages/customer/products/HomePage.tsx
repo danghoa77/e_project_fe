@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-import type { PageSectionData, HeroVideoSectionData, SloganSectionData, ProductGridSectionData, HeadlineSectionData, EditorialProductGridSectionData, FullWidthImageSectionData } from '@/types';
+import type { PageSectionData, HeroVideoSectionData, SloganSectionData, ProductGridSectionData, HeadlineSectionData, EditorialProductGridSectionData, FullWidthImageSectionData } from '@/types/index';
 
 const topGridProducts = [
     { id: 1, name: "TIES", image: 'https://res.cloudinary.com/dzskttedu/image/upload/v1753603541/274201T_2001_flat_wm_1_rluqfj.jpg' },

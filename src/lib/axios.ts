@@ -4,9 +4,10 @@ import { useAuthStore } from '@/store/authStore';
 export const API_BASE_URL = 'https://a3c630d951a9.ngrok-free.app';
 
 const apiClient = axios.create({
-    baseURL: 'https://a3c630d951a9.ngrok-free.app',
+    baseURL: 'http://localhost:80',
     headers: {
-        'ngrok-skip-browser-warning': 'true'
+        'ngrok-skip-browser-warning': 'true',
+        'Content-Type': 'application/json'
     }
 });
 apiClient.defaults.headers.common['ngrok-skip-browser-warning'] = 'true';

@@ -4,12 +4,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/userStore';
-import type { Address } from '../../types';
+import type { Address } from '../../types/user';
 import { useForm } from 'react-hook-form';
-import type { Address as AddressType } from '@/types';
+import type { Address as AddressType } from '@/types/user';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AddAddressSchema } from '../../features/orders/schemas';
+import { AddAddressSchema } from '../../pages/customer/orders/schemas';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ChevronLeft } from 'lucide-react';

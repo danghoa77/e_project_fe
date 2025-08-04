@@ -6,7 +6,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/s
 import { Menu, Search, ShoppingBag, User, X, Plus, MapPin, MessageSquare } from "lucide-react";
 import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
-import { CartSheet } from "../../features/cart/CartSheet";
+import { CartSheet } from "../../pages/customer/cart/CartSheet";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
 
@@ -41,7 +41,7 @@ const BrandLogo = () => (
 export const Navbar = () => {
     const scrollDirection = useScroll();
     const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
-    const cartItemCount = useCartStore(state => state.cart.items.reduce((acc, item) => acc + item.quantity, 0));
+    const cartItemCount = useCartStore(state => state.cart.items.reduce((acc: number, item: any) => acc + item.quantity, 0));
     const { user } = useAuthStore(); // <-- 2. LẤY USER TỪ STORE
 
     return (

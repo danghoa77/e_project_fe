@@ -13,24 +13,26 @@ import './index.css';
 import { Navbar } from './components/shared/Navbar';
 import { Footer } from './components/shared/Footer';
 import { Toaster } from "@/components/ui/sonner";
-import { HomePage } from './features/products/HomePage';
-import { AuthPage } from './features/auth/AuthPage';
-import { ProductListPage } from './features/products/ProductListPage';
-import { ProductDetailPage } from './features/products/ProductDetailPage';
-import { OrderPage } from './features/orders/OrderPage';
-import { ProfilePage } from './features/profile/ProfilePage';
-import { AuthCallbackPage } from './features/auth/AuthCallbackPage';
-import { AuthLoader } from './features/auth/AuthLoader';
+import { HomePage } from './pages/customer/products/HomePage';
+import { AuthPage } from './pages/auth/AuthPage';
+import { ProductListPage } from './pages/customer/products/ProductListPage';
+import { ProductDetailPage } from './pages/customer/products/ProductDetailPage';
+import { OrderPage } from './pages/customer/orders/OrderPage';
+import { ProfilePage } from './pages/customer/profile/ProfilePage';
+import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
+import { AuthLoader } from './pages/auth/AuthLoader';
 import ProtectedRoute from './routes/ProtectedRoute';
-
-// Component placeholder cho trang Admin
-const AdminDashboardPage = () => <div>Trang Quản Trị (Admin Dashboard)</div>;
-
-// Layout chính của ứng dụng
-const AppLayout = () => {
+import { AdminHeader } from './pages/admin/dashboard/AdminHeader';
+import { AdminDashboardPage } from './pages/admin/dashboard/AdminDashboardPage';
+import { AdminProductsPage } from './pages/admin/products/AdminProductsPage';
+import NotFoundPage from './components/shared/NotFoundPage';
+import { AdminLayout } from './pages/admin/AdminLayout';
+import { AdminOrdersPage } from './pages/admin/orders/AdminOrdersPage';
+import { AdminUsersPage } from './pages/admin/users/AdminUsersPage';
+import { AdminPaymentsPage } from './pages/admin/payments/AdminPaymentsPage';
+import { AdminChattingPage } from './pages/admin/chatting/AdminChattingPage';
+export const AppLayout = () => {
   const { pathname } = useLocation();
-
-  // Tự động cuộn lên đầu trang khi chuyển route
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -39,7 +41,6 @@ const AppLayout = () => {
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
       <Navbar />
       <main>
-        {/* AuthLoader bọc Outlet để kiểm tra auth trước khi render trang */}
         <AuthLoader>
           <Outlet />
         </AuthLoader>
@@ -50,11 +51,12 @@ const AppLayout = () => {
   );
 };
 
-// Cấu hình router cho toàn bộ ứng dụng
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Outlet />, // Một component gốc chỉ để render các route con
+    errorElement: <NotFoundPage />, // Thêm errorElement ở route gốc
     children: [
       {
         path: '/', // Nhóm các route sử dụng AppLayout
@@ -76,7 +78,7 @@ const router = createBrowserRouter([
           {
             path: 'profile',
             element: (
-              <ProtectedRoute allowedRoles={['customer']}>
+              <ProtectedRoute allowedRoles={['customer', 'admin']}>
                 <ProfilePage />
               </ProtectedRoute>
             ),
@@ -88,13 +90,30 @@ const router = createBrowserRouter([
         path: 'admin',
         element: (
           <ProtectedRoute allowedRoles={['admin']}>
-            <AdminDashboardPage />
+            <AdminLayout />
           </ProtectedRoute>
         ),
+        children: [
+          { index: true, element: <AdminDashboardPage /> },
+          { path: 'orders', element: <AdminOrdersPage /> },
+          { path: 'products', element: <AdminProductsPage /> },
+          { path: 'users', element: <AdminUsersPage /> },
+          { path: 'payments', element: <AdminPaymentsPage /> },
+          { path: 'chatting', element: <AdminChattingPage /> },
+        ],
+      },
+      {
+        path: 'auth/callback',
+        element: <AuthCallbackPage />,
       },
       {
         path: 'auth/callback', // Route callback giờ đã nằm trong cây router
         element: <AuthCallbackPage />,
+      },
+      // Route bắt tất cả các đường dẫn không khớp (404)
+      {
+        path: '*',
+        element: <NotFoundPage />,
       },
     ],
   },

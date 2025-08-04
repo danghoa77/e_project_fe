@@ -5,14 +5,14 @@ import { useAuthStore } from '@/store/authStore';
 import { getUserProfile } from './api';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/spinner';
-
+import { useNavigate } from 'react-router-dom';
 type AuthLoaderProps = {
     children: React.ReactNode;
 };
 
 export const AuthLoader = ({ children }: AuthLoaderProps) => {
     const { token, user, setUser, setLoading, isLoading } = useAuthStore();
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchUser = async () => {
             if (!token || user) return;
@@ -20,8 +20,11 @@ export const AuthLoader = ({ children }: AuthLoaderProps) => {
             try {
                 const { data: user } = await getUserProfile();
                 setUser(user, token);
+                if (user.role === 'admin') {
+                    navigate('/admin');
+                }
             } catch (err) {
-                toast.error('Phiên đăng nhập đã hết hạn!');
+                toast.error('Session expired!');
                 setUser(null, null);
             } finally {
                 setLoading(false);

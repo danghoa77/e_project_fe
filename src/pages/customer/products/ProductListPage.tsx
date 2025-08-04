@@ -3,7 +3,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 import { useEffect, useState } from "react";
-import type { Product, FilterState, ProductApiResponse } from "@/types";
+import type { Product, FilterState, ProductApiResponse } from "@/types/user";
 import { MAX_PRICE, SORT_OPTIONS } from "./constants";
 import { ProductCard } from "./components/ProductCard";
 import { FilterSidebar } from "./components/FilterSidebar";
@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
 import { cs } from "zod/v4/locales";
-
+import { fetchProducts } from "../api";
 export const ProductListPage = () => {
     const { category: initialCategory } = useParams();
 
@@ -31,21 +31,20 @@ export const ProductListPage = () => {
     const [debouncedFilters] = useDebounce(filters, 500);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:80/products');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const responseData: ProductApiResponse = await res.json();
-                console.log(responseData);
-                setProducts(responseData.products);
+                const response = await fetchProducts(); // ← dùng hàm đã chuẩn hóa
+                setProducts(response.products);
+                setTotal(response.total); // nếu mày muốn dùng
             } catch (err) {
-                setError('Could not load products at this time.');
+                setError("Could not load products at this time.");
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProducts();
+
+        fetchData();
     }, []);
 
     // 3. EVENT HANDLERS

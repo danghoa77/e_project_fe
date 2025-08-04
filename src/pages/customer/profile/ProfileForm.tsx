@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import ProfileSchema from "./schemas";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../auth/api";
+import { logout } from "../../auth/api";
 
 export const ProfileForm = () => {
     const { user, logout } = useAuthStore();

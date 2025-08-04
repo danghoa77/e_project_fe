@@ -8,11 +8,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { LoginSchema } from "../schemas";
 import { login, getGoogleUrl } from "../api";
-import type { LoginResponse } from "@/types";
+import type { LoginResponse } from "@/types/user";
 import { AxiosError } from "axios";
 
 
@@ -26,7 +26,7 @@ const GoogleIcon = () => (
 );
 
 export const LoginForm = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const { setUser } = useAuthStore();
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema), defaultValues: { email: "", password: "" },
@@ -37,8 +37,15 @@ export const LoginForm = () => {
         onSuccess: (data: LoginResponse) => {
             toast.success("Logged in successfully!");
             setUser(data.user, data.access_token);
-            navigate('/');
+
+            // const role = data.user.role;
+            // if (role === 'admin') {
+            //     navigate('/admin');
+            // } else {
+            //     navigate('/');
+            // }
         },
+
         onError: (error: AxiosError) => {
             const errorMessage = (error.response?.data as { message?: string })?.message || "Email or password is incorrect.";
             toast.error(errorMessage);
