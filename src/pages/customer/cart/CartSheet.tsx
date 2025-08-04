@@ -11,14 +11,14 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
     const { cart, updateQuantity, removeItem, selectedItems, toggleItemSelection, toggleSelectAll } = useCartStore();
 
     const subtotal = cart.items
-        .filter(item => selectedItems.includes(item.variantId))
-        .reduce((acc, item) => acc + item.price * item.quantity, 0);
+        .filter((item: any) => selectedItems.includes(item.variantId))
+        .reduce((acc: number, item: any) => acc + item.price * item.quantity, 0);
 
     const isAllSelected = cart.items.length > 0 && selectedItems.length === cart.items.length;
     const isCheckoutDisabled = selectedItems.length === 0;
 
     const handleCheckout = () => {
-        const itemsToCheckout = cart.items.filter(item => selectedItems.includes(item.variantId));
+        const itemsToCheckout = cart.items.filter((item: any) => selectedItems.includes(item.variantId));
         console.log("Proceeding to checkout with:", itemsToCheckout);
         setIsOpen(false);
     };
@@ -39,7 +39,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
                         </Button>
                     </SheetClose>
                 </SheetHeader>
-                {/* --- KẾT THÚC PHẦN CẬP NHẬT --- */}
+
 
 
                 {cart.items.length > 0 ? (
@@ -50,7 +50,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
                                 <label htmlFor="select-all" className="text-sm font-medium">Select All ({selectedItems.length} items)</label>
                             </div>
 
-                            {cart.items.map(item => (
+                            {cart.items.map((item: any) => (
                                 <div key={item.variantId} className="flex gap-4 items-start">
                                     <Checkbox className="mt-1" checked={selectedItems.includes(item.variantId)} onCheckedChange={() => toggleItemSelection(item.variantId)} />
                                     <img src={item.image} alt={item.name} className="h-24 w-20 object-cover" />

@@ -22,7 +22,7 @@ import { ProfilePage } from './pages/customer/profile/ProfilePage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { AuthLoader } from './pages/auth/AuthLoader';
 import ProtectedRoute from './routes/ProtectedRoute';
-import { AdminHeader } from './pages/admin/dashboard/AdminHeader';
+// import { AdminHeader } from './pages/admin/dashboard/AdminHeader';
 import { AdminDashboardPage } from './pages/admin/dashboard/AdminDashboardPage';
 import { AdminProductsPage } from './pages/admin/products/AdminProductsPage';
 import NotFoundPage from './components/shared/NotFoundPage';
