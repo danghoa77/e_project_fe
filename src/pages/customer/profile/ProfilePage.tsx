@@ -3,12 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileForm } from "./ProfileForm";
 import OrderHistory from "./OrderHistory";
 
-// Component quản lý địa chỉ có thể được thêm vào sau
+
 const AddressManagement = () => (
     <div>
         <h3 className="font-serif text-2xl">My Addresses</h3>
         <p className="mt-4 text-muted-foreground">Manage your shipping addresses.</p>
-        {/* Nội dung quản lý địa chỉ sẽ ở đây */}
     </div>
 );
 

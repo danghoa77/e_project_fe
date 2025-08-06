@@ -14,15 +14,26 @@ const adminApi = {
     return response.data;
   },
 
-  updateProduct: async ({ id, formData }: { id: string, formData: FormData }) => {
-    const response = await apiClient.patch(`/products/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+  findOneProduct: async (id: string) => {
+    const response = await apiClient.get(`/products/${id}/`);
     return response.data;
   },
 
+  updateProduct: async (id: string, data: FormData) => {
+    const res = await apiClient.patch(`/products/${id}/`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  },
+
+
   deleteProduct: async (id: string) => {
     const response = await apiClient.delete(`/products/${id}/`);
+    return response.data;
+  },
+
+  fetchAllUser: async () => {
+    const response = await apiClient.get('/users/all/');
     return response.data;
   }
 };

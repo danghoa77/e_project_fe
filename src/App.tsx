@@ -31,6 +31,7 @@ import { AdminOrdersPage } from './pages/admin/orders/AdminOrdersPage';
 import { AdminUsersPage } from './pages/admin/users/AdminUsersPage';
 import { AdminPaymentsPage } from './pages/admin/payments/AdminPaymentsPage';
 import { AdminChattingPage } from './pages/admin/chatting/AdminChattingPage';
+import { AdminDetailPage } from './pages/admin/products/AdminDetailPage';
 export const AppLayout = () => {
   const { pathname } = useLocation();
   React.useEffect(() => {
@@ -85,7 +86,6 @@ const router = createBrowserRouter([
           },
         ],
       },
-      // Nhóm các route KHÔNG sử dụng AppLayout
       {
         path: 'admin',
         element: (
@@ -100,6 +100,7 @@ const router = createBrowserRouter([
           { path: 'users', element: <AdminUsersPage /> },
           { path: 'payments', element: <AdminPaymentsPage /> },
           { path: 'chatting', element: <AdminChattingPage /> },
+          { path: 'products/:id', element: <AdminDetailPage /> },
         ],
       },
       {
@@ -107,10 +108,9 @@ const router = createBrowserRouter([
         element: <AuthCallbackPage />,
       },
       {
-        path: 'auth/callback', // Route callback giờ đã nằm trong cây router
+        path: 'auth/callback',
         element: <AuthCallbackPage />,
       },
-      // Route bắt tất cả các đường dẫn không khớp (404)
       {
         path: '*',
         element: <NotFoundPage />,
