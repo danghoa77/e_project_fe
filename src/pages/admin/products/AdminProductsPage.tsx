@@ -1,256 +1,146 @@
+// src/pages/AdminProductsPage.tsx
+
 import * as React from 'react';
 import adminApi from '../api';
-import { CreateProductDto, Product, PreviewFile } from '@/types/product';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from "@/components/ui/table";
+import { Product } from '@/types/product';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Dialog, DialogTrigger, DialogContent, DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { ProductDialog } from '@/components/shared/ProductDialog';
 
 export const AdminProductsPage = () => {
-  const [products, setProducts] = React.useState<Product[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [deletingId, setDeletingId] = React.useState<string | null>(null);
-  const [images, setImages] = React.useState<PreviewFile[]>([]);
-  const dialogCloseRef = React.useRef<HTMLButtonElement>(null);
+    const [products, setProducts] = React.useState<Product[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [deletingId, setDeletingId] = React.useState<string | null>(null);
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [editingProduct, setEditingProduct] = React.useState<Product | undefined>();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+    const navigate = useNavigate();
 
-    const selectedFiles = Array.from(files).slice(0, 5 - images.length);
-    const newFiles: PreviewFile[] = selectedFiles.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    React.useEffect(() => {
+        (async () => {
+            try {
+                const res = await adminApi.fetchProducts();
+                setProducts(res.products);
+            } catch (err) {
+                console.error("Fetch failed", err);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
 
-    setImages((prev) => [...prev, ...newFiles]);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const variant = {
-      size: formData.get("size") as string,
-      color: formData.get("color") as string,
-      price: Number(formData.get("price")),
-      salePrice: formData.get("salePrice")
-        ? Number(formData.get("salePrice"))
-        : undefined,
-      stock: Number(formData.get("stock")),
+    const handleCreate = async (payload: FormData) => {
+        try {
+            const res = await adminApi.createProduct(payload);
+            setProducts(prev => [res, ...prev]);
+        } catch (err) {
+            console.error("Create failed", err);
+        }
     };
 
-    const dto: Omit<CreateProductDto, "images"> = {
-      name: formData.get("name") as string,
-      category: formData.get("category") as string,
-      variants: [variant],
+    const handleUpdate = async (formData: FormData) => {
+        if (!editingProduct) return;
+        try {
+            const res = await adminApi.updateProduct(editingProduct._id, formData);
+            setProducts(prev => prev.map(p => p._id === res._id ? res : p));
+        } catch (err) {
+            console.error("Update failed", err);
+        }
     };
 
-    const payload = new FormData();
-    payload.append("dto", JSON.stringify(dto));
-    images.forEach(({ file }) => payload.append("files", file));
-
-    try {
-      const res = await adminApi.createProduct(payload);
-      setProducts((prev) => [...prev, res]);
-      form.reset();
-      setImages([]);
-      dialogCloseRef.current?.click(); // close dialog
-    } catch (err) {
-      console.error("Create failed", err);
-    }
-  };
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await adminApi.fetchProducts();
-        setProducts(res.products);
-      } catch (err) {
-        console.error("Failed to fetch products", err);
-      } finally {
-        setLoading(false);
-      }
+    const handleDelete = async (id: string) => {
+        setDeletingId(id);
+        try {
+            await adminApi.deleteProduct(id);
+            setProducts(prev => prev.filter(p => p._id !== id));
+        } catch (err) {
+            console.error("Delete failed", err);
+        } finally {
+            setDeletingId(null);
+        }
     };
-    fetchData();
-  }, []);
 
-  const handleDelete = async (id: string) => {
-    setDeletingId(id);
-    try {
-      await adminApi.deleteProduct(id);
-      setProducts((prev) => prev.filter((p) => p._id !== id));
-    } catch (err) {
-      console.error("Failed to delete product", err);
-    } finally {
-      setDeletingId(null);
-    }
-  };
+    const handleView = (id: string) => navigate(`/admin/products/${id}`);
+    const handleEdit = (p: Product) => { setEditingProduct(p); setDialogOpen(true); };
 
-  return (
-    <div className="p-8 font-sans">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button ref={dialogCloseRef} className="bg-black text-white hover:bg-neutral-800 flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Add Product
-          </Button>
-        </DialogTrigger>
-
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto hide-scrollbar bg-white">
-          <DialogHeader>
-            <DialogTitle>Add New Product</DialogTitle>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block mb-1 text-sm font-medium">Product Name</label>
-              <input type="text" name="name" className="w-full px-3 py-2 border rounded-md" required />
+    return (
+        <div className="p-8 bg-stone-50 min-h-screen font-sans">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold text-stone-800">Products</h1>
+                <Button onClick={() => { setEditingProduct(undefined); setDialogOpen(true); }} className="bg-orange-600 text-white hover:bg-orange-700 flex items-center gap-2 shadow-sm">
+                    <Plus className="w-4 h-4" /> Add Product
+                </Button>
             </div>
 
-            <div>
-              <label className="block mb-1 text-sm font-medium">Category</label>
-              <input type="text" name="category" className="w-full px-3 py-2 border rounded-md" required />
+            <ProductDialog
+                open={dialogOpen}
+                onClose={() => { setDialogOpen(false); setEditingProduct(undefined); }}
+                onSubmit={editingProduct ? handleUpdate : handleCreate}
+                initialData={editingProduct}
+            />
+
+            <div className="rounded-lg border border-stone-200 bg-white shadow-sm overflow-hidden">
+                <Table>
+                    <TableHeader className="bg-stone-100">
+                        <TableRow>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Image</TableHead>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Name</TableHead>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Category</TableHead>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Variants</TableHead>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Price</TableHead>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Stock</TableHead>
+                            <TableHead className="text-stone-600 text-xs uppercase tracking-wider">Created</TableHead>
+                            <TableHead className="text-right text-stone-600 text-xs uppercase tracking-wider">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {loading ? (
+                            Array.from({ length: 5 }).map((_, i) => (
+                                <TableRow key={i}>{Array.from({ length: 8 }).map((__, j) => <TableCell key={j}><Skeleton className="h-5 w-full bg-stone-200" /></TableCell>)}</TableRow>
+                            ))
+                        ) : (
+                            products.map(p => {
+                                const imgUrl = p.images?.[0]?.url || 'https://via.placeholder.com/150';
+                                const firstVariant = p.variants?.[0];
+                                const totalStock = p.variants?.reduce((sum, v) => sum + v.stock, 0) || 0;
+
+                                return (
+                                    <TableRow key={p._id} className="hover:bg-orange-50/50 transition-colors">
+                                        <TableCell><img src={imgUrl} className="w-16 h-16 object-cover rounded-md border border-stone-200" alt={p.name} /></TableCell>
+                                        <TableCell className="font-medium text-stone-800">{p.name}</TableCell>
+                                        <TableCell className="text-stone-600">{p.category}</TableCell>
+                                        <TableCell className="text-stone-600 text-center">{p.variants?.length || 0}</TableCell>
+                                        <TableCell className="text-stone-800 font-semibold">
+                                            {firstVariant?.salePrice && firstVariant.salePrice < firstVariant.price ? (
+                                                <div className='flex flex-col'>
+                                                    <span className="text-red-600">${firstVariant.salePrice.toFixed(2)}</span>
+                                                    <span className="line-through text-sm text-stone-500 font-normal">${firstVariant.price.toFixed(2)}</span>
+                                                </div>
+                                            ) : (
+                                                <span>${firstVariant?.price.toFixed(2) || '0.00'}</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-stone-600">{totalStock}</TableCell>
+                                        <TableCell className="text-stone-600">{new Date(p.createdAt).toLocaleDateString()}</TableCell>
+                                        <TableCell className="text-right">
+                                             <div className="flex gap-2 justify-end">
+                                                <Button size="sm" variant="outline" className="border-stone-300" onClick={() => handleView(p._id)}>View</Button>
+                                                <Button size="sm" variant="outline" className="border-stone-300 text-green-600 hover:text-green-700" onClick={() => handleEdit(p)}>Edit</Button>
+                                                <Button size="sm" variant="outline" className="border-stone-300 text-red-600 hover:text-red-700 disabled:opacity-50" disabled={deletingId === p._id} onClick={() => handleDelete(p._id)}>
+                                                    {deletingId === p._id ? "Deleting..." : "Delete"}
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })
+                        )}
+                    </TableBody>
+                </Table>
             </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium">Images (max 5)</label>
-              <input
-                type="file"
-                name="images"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full px-3 py-2 border rounded-md"
-              />
-              {images.length > 0 && (
-                <div className="flex gap-2 mt-2 flex-wrap">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={img.preview}
-                        alt={`Preview ${index}`}
-                        className="w-20 h-20 object-cover rounded border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="border-t pt-4 mt-4">
-              <h3 className="text-lg font-semibold mb-2">Variant</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" name="size" placeholder="Size" required className="px-3 py-2 border rounded-md" />
-                <input type="text" name="color" placeholder="Color" required className="px-3 py-2 border rounded-md" />
-                <input type="number" name="price" placeholder="Price" required min={0} className="px-3 py-2 border rounded-md" />
-                <input type="number" name="salePrice" placeholder="Sale Price" min={0} className="px-3 py-2 border rounded-md" />
-                <input type="number" name="stock" placeholder="Stock" required min={0} className="px-3 py-2 border rounded-md" />
-              </div>
-            </div>
-
-            <Button type="submit" className=" text-white mt-4">
-              Add
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <div className="rounded-xl border bg-white shadow-sm overflow-hidden mt-6">
-        <Table>
-          <TableHeader className="bg-neutral-100">
-            <TableRow>
-              <TableHead>Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Variants</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="text-center">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  {Array.from({ length: 8 }).map((__, j) => (
-                    <TableCell key={j}><Skeleton className="h-4 w-full bg-neutral-200" /></TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              products.map((p) => {
-                const firstImage = p.images[0]?.url || '';
-                const firstVariant = p.variants[0];
-                const stock = p.variants.reduce((acc, v) => acc + v.stock, 0);
-
-                return (
-                  <TableRow key={p._id} className="hover:bg-neutral-50">
-                    <TableCell>
-                      <img
-                        src={firstImage}
-                        alt={p.name}
-                        className="w-16 h-16 object-cover rounded-md border"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{p.name}</TableCell>
-                    <TableCell>{p.category}</TableCell>
-                    <TableCell>{p.variants.length}</TableCell>
-                    <TableCell>
-                      {firstVariant?.salePrice ? (
-                        <div className="space-y-1">
-                          <p className="text-red-600 font-semibold">
-                            ${firstVariant.salePrice.toFixed(2)}
-                          </p>
-                          <p className="line-through text-sm text-neutral-500">
-                            ${firstVariant.price.toFixed(2)}
-                          </p>
-                        </div>
-                      ) : (
-                        <p>${firstVariant?.price.toFixed(2)}</p>
-                      )}
-                    </TableCell>
-                    <TableCell>{stock}</TableCell>
-                    <TableCell>{new Date(p.createdAt).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button size="sm" variant="outline">View</Button>
-                      <Button size="sm" className="bg-[#c85a2e] text-white hover:bg-[#b64f29]">Update</Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => handleDelete(p._id)}
-                        disabled={deletingId === p._id}
-                      >
-                        {deletingId === p._id ? "Deleting..." : "Delete"}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
