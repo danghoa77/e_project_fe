@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
-import { Star, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { findOneProduct } from "../api"; // Giả định bạn có hàm này
 import { CloudinaryImage, Product } from "@/types/product"; // Và các type này

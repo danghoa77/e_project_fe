@@ -2,7 +2,7 @@ import React from "react";
 import adminApi from "../api";
 
 export const AdminUsersPage = () => {
-    const [users, setUsers] = React.useState([]);
+    const [, setUsers] = React.useState([]);
     React.useEffect(() => {
         const fetchData = async () => {
             try {
