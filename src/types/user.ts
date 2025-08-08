@@ -1,12 +1,13 @@
 // src/types/index.ts
 export type UserRole = 'admin' | 'customer';
 
-export interface User {
-  id: string;
+export interface UserType {
+  _id: string;
   name: string;
   email: string;
   role: UserRole;
   addresses?: Address[];
+  phone?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +19,6 @@ export interface Address {
 }
 
 export interface LoginResponse {
-  user: User;
+  user: UserType;
   access_token: string;
 }

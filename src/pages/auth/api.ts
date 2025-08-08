@@ -3,7 +3,7 @@
 import * as z from 'zod';
 import { LoginSchema, RegisterSchema } from './schemas';
 import apiClient, { API_BASE_URL } from '../../lib/axios';
-import type { LoginResponse, User } from '@/types/user';
+import type { LoginResponse, UserType } from '@/types/user';
 
 export const login = async (data: z.infer<typeof LoginSchema>): Promise<LoginResponse> => {
     const response = await apiClient.post<LoginResponse>("/auth/login/", data);
@@ -22,7 +22,7 @@ export const logout = () => {
 };
 
 export const getUserProfile = () => {
-    return apiClient.get<User>('/users/me/');
+    return apiClient.get<UserType>('/users/me/');
 };
 
 

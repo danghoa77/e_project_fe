@@ -35,7 +35,23 @@ const adminApi = {
   fetchAllUser: async () => {
     const response = await apiClient.get('/users/all/');
     return response.data;
-  }
+  },
+
+  createUser: async (data: any) => {
+    const rq = await apiClient.post("/auth/register/", data);
+    return rq;
+  },
+
+  deleteUser: async (id: string) => {
+    const response = await apiClient.delete(`/users/${id}/`);
+    return response.data;
+  },
+
+  getCurrentAdmin: async () => {
+    const response = await apiClient.get('/users/me/');
+    return response.data;
+  },
+
 };
 
 export default adminApi;
