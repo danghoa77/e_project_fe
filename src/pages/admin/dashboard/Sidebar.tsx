@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { ShoppingBag, Package, Users, CreditCard, LayoutDashboard, MessageSquare } from 'lucide-react';
 
 const navItems = [
@@ -15,7 +15,7 @@ export const Sidebar = () => {
         <aside className="w-64 flex-shrink-0 bg-white border-r border-neutral-200/80">
             <div className="flex h-full flex-col">
                 <div className="flex h-20 items-center justify-center border-b border-neutral-200/80">
-                    <h1 className="text-xl font-serif tracking-widest text-neutral-800">HERMES</h1>
+                    <h1 className="text-xl font-serif tracking-widest text-neutral-800"><Link to="/">HERMES</Link></h1><span className="ml-2 text-xs font-sans tracking-widest text-neutral-500"></span><h1 className="text-xl font-serif tracking-widest text-neutral-800"></h1>
                     <span className="ml-2 text-xs font-sans tracking-widest text-neutral-500">ADMIN</span>
                 </div>
                 <nav className="flex-1 px-4 py-6">
