@@ -6,13 +6,14 @@ export interface UserType {
   name: string;
   email: string;
   role: UserRole;
-  addresses?: Address[];
+  addresses?: ShippingAddress[];
   phone?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Address {
+export interface ShippingAddress {
+  id?: string;
   street: string;
   city: string;
   isDefault?: boolean;

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
-import { getUserProfile } from './api';
+import { authApi } from './api';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/spinner';
 
@@ -27,7 +27,7 @@ export const AuthCallbackPage = () => {
                 setLoading(true);
                 useAuthStore.setState({ token });
 
-                const { data: user } = await getUserProfile();
+                const { data: user } = await authApi.getUserProfile();
                 setUser(user, token);
                 toast.success('Login successfully!');
                 navigate('/');

@@ -7,8 +7,9 @@ import { Menu, Search, ShoppingBag, User, X, Plus, MapPin, MessageSquare } from 
 import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
 import { CartSheet } from "../../pages/customer/cart/CartSheet";
-import { useCartStore } from "@/store/cartStore";
+// import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
+import { customerApi } from "@/pages/customer/api";
 
 const navLinks = [
     { href: "/products/women", label: "Women" },
@@ -41,8 +42,34 @@ const BrandLogo = () => (
 export const Navbar = () => {
     const scrollDirection = useScroll();
     const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
-    const cartItemCount = useCartStore(state => state.cart.items.reduce((acc: number, item: any) => acc + item.quantity, 0));
-    const { user } = useAuthStore(); // <-- 2. LẤY USER TỪ STORE
+    const [cartItemCount, setCartItemCount] = React.useState(0);
+    const { user } = useAuthStore();
+    React.useEffect(() => {
+        const fetchData = async () => {
+            if (!user) {
+                setCartItemCount(0);
+                return;
+            }
+
+            try {
+                const res = await customerApi.getCart();
+                const items = res?.data?.items || [];
+                const totalQuantity = items.reduce(
+                    (acc: number, item: any) => acc + (item.quantity || 0),
+                    0
+                );
+                setCartItemCount(totalQuantity);
+            } catch (err) {
+                console.error("Failed to fetch cart:", err);
+                setCartItemCount(0);
+            }
+        };
+
+        fetchData();
+    }, [user]);
+
+
+
 
     return (
         <header className="sticky top-0 z-50 w-full bg-[#fcf7f1] backdrop-blur-sm ">

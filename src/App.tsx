@@ -32,6 +32,7 @@ import { AdminUsersPage } from './pages/admin/users/AdminUsersPage';
 import { AdminPaymentsPage } from './pages/admin/payments/AdminPaymentsPage';
 import { AdminChattingPage } from './pages/admin/chatting/AdminChattingPage';
 import { AdminDetailPage } from './pages/admin/products/AdminDetailPage';
+import { CartPage } from './pages/customer/cart/CartPage';
 export const AppLayout = () => {
   const { pathname } = useLocation();
   React.useEffect(() => {
@@ -68,10 +69,11 @@ const router = createBrowserRouter([
           { path: 'products', element: <ProductListPage /> },
           { path: 'products/:category', element: <ProductListPage /> },
           { path: 'product/:id', element: <ProductDetailPage /> },
+          { path: 'cart', element: <CartPage /> },
           {
             path: 'checkout',
             element: (
-              <ProtectedRoute allowedRoles={['customer']}>
+              <ProtectedRoute allowedRoles={['customer', 'admin']}>
                 <OrderPage />
               </ProtectedRoute>
             ),

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import { getUserProfile } from './api';
+import { authApi } from './api';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/spinner';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ export const AuthLoader = ({ children }: AuthLoaderProps) => {
             if (!token || user) return;
             setLoading(true);
             try {
-                const { data: user } = await getUserProfile();
+                const { data: user } = await authApi.getUserProfile();
                 setUser(user, token);
                 if (user.role === 'admin') {
                     navigate('/admin');

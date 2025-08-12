@@ -52,6 +52,16 @@ const adminApi = {
     return response.data;
   },
 
+  fetchOrders: async () => {
+    const response = await apiClient.get('/orders/');
+    return response.data;
+  },
+
+  updateStatusOrder: async (id: string, status: any) => {
+    const response = await apiClient.put(`/orders/${id}/status/`, status);
+    return response.data;
+  },
+
 };
 
 export default adminApi;

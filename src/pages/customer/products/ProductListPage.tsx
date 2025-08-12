@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
-import { fetchProducts } from "../api";
+import { customerApi } from "../api";
 export const ProductListPage = () => {
     const { category: initialCategory } = useParams();
 
@@ -31,9 +31,9 @@ export const ProductListPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetchProducts(); // ← dùng hàm đã chuẩn hóa
+                const response = await customerApi.fetchProducts();
                 setProducts(response.products);
-                setTotal(response.total); // nếu mày muốn dùng
+                setTotal(response.total);
             } catch (err) {
                 setError("Could not load products at this time.");
                 console.error(err);
@@ -88,7 +88,7 @@ export const ProductListPage = () => {
                             </Sheet>
 
                             <div className="hidden lg:block">
-                                <h1 className="font-serif text-4xl capitalize">{categoryName}</h1>
+                                <h1 className="font-sans text-4xl capitalize">{categoryName}</h1>
                                 {!loading && <p className="text-neutral-600 mt-2 text-left">{total} products</p>}
                             </div>
 
