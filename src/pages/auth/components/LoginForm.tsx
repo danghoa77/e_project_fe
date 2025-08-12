@@ -11,7 +11,7 @@ import { toast } from "sonner";
 // import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { LoginSchema } from "../schemas";
-import { login, getGoogleUrl } from "../api";
+import { authApi } from "../api";
 import type { LoginResponse } from "@/types/user";
 import { AxiosError } from "axios";
 
@@ -33,7 +33,7 @@ export const LoginForm = () => {
     });
 
     const loginMutation = useMutation({
-        mutationFn: login,
+        mutationFn: authApi.login,
         onSuccess: (data: LoginResponse) => {
             toast.success("Logged in successfully!");
             setUser(data.user, data.access_token);
@@ -67,7 +67,7 @@ export const LoginForm = () => {
                 <div className="flex items-center gap-2 md:gap-4"><div className="flex-grow border-t border-neutral-300">
                 </div><span className="text-xs text-neutral-500 uppercase">Or continue with</span>
                     <div className="flex-grow border-t border-neutral-300"></div></div>
-                <a href={getGoogleUrl()}>
+                <a href={authApi.getGoogleUrl()}>
                     <Button variant="outline" type="button" className="w-full rounded-none"><GoogleIcon /> Continue with Google</Button>
                 </a>
             </form>

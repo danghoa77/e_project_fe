@@ -2,6 +2,17 @@ export interface CloudinaryImage {
   url: string;
   cloudinaryId: string;
 }
+export interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  images: CloudinaryImage[];
+  category: string;
+  variants: ProductVariant[];
+  // reviews: Review[];
+  createdAt: string;
+  updatedAt: string;
+}
 export type PreviewFile = {
   file: File;
   preview: string;
@@ -15,17 +26,7 @@ export interface ProductVariant {
   stock: number;
 }
 
-export interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  images: CloudinaryImage[];
-  category: string;
-  variants: ProductVariant[];
-  // reviews: Review[];
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 export interface ProductApiResponse {
   products: Product[];

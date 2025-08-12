@@ -16,7 +16,7 @@ import { useAuthStore } from "@/store/authStore";
 import ProfileSchema from "./schemas";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { getUserProfile } from "@/pages/auth/api";
+import { authApi } from "@/pages/auth/api";
 import React from "react";
 
 // --- Bảng màu Hermès ---
@@ -43,7 +43,7 @@ export const ProfileForm = () => {
 
     React.useEffect(() => {
         const fetchUserProfile = async () => {
-            const res = await getUserProfile();
+            const res = await authApi.getUserProfile();
             console.log(res.data.role);
             setRole(res.data.role);
         }

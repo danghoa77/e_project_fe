@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { RegisterSchema } from "../schemas";
-import { register } from "../api";
+import { authApi } from "../api";
 import type { LoginResponse } from "@/types/user";
 import { AxiosError } from "axios";
 
@@ -24,7 +24,7 @@ export const RegisterForm = () => {
     });
 
     const registerMutation = useMutation({
-        mutationFn: register,
+        mutationFn: authApi.register,
         onSuccess: (data: LoginResponse) => {
             toast.success("Account created successfully!");
             setUser(data.user, data.access_token);

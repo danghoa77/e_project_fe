@@ -1,47 +1,72 @@
+// src/store/userStore.ts
 import { create } from 'zustand';
-import type { Address as AddressType } from '@/types/user'; // Giả sử Address đã ở trong types/index.ts
-
-// Mở rộng Address để có id
-export interface Address extends AddressType {
-    id: string;
-}
+import type { ShippingAddress } from '@/types/user';
+import { authApi } from '@/pages/auth/api';
+import { customerApi } from '@/pages/customer/api';
+import { v4 as uuidv4 } from 'uuid';
 
 interface UserState {
-    addresses: Address[];
-    getDefaultAddress: () => Address | undefined;
-    addAddress: (newAddress: Omit<Address, 'id' | 'isDefault'>) => void;
-    setDefaultAddress: (addressId: string) => void;
+    addresses: ShippingAddress[];
+    getDefaultAddress: () => ShippingAddress | undefined;
+    fetchProfile: () => Promise<void>;
+    addAddress: (newAddress: Omit<ShippingAddress, 'id' | 'isDefault'>) => Promise<void>;
+    setDefaultAddress: (id: string) => Promise<void>;
 }
 
-const mockAddresses: Address[] = [
-    { id: 'addr1', street: "123 Le Loi", city: "Hoi An", isDefault: true },
-    { id: 'addr2', street: "456 Tran Hung Dao", city: "Da Nang" },
-];
-
 export const useUserStore = create<UserState>((set, get) => ({
-    addresses: mockAddresses,
+    addresses: [],
+
     getDefaultAddress: () => get().addresses.find(addr => addr.isDefault),
 
-    addAddress: (newAddress) => {
-        // TODO: Gọi API PATCH /users/me ở đây để thêm địa chỉ mới
-        set(state => {
-            const newAddressWithId: Address = {
-                ...newAddress,
-                id: `addr${state.addresses.length + 1}`, // Tạo id giả
-                isDefault: false, // Địa chỉ mới sẽ không tự động là mặc định
-            };
-            return { addresses: [...state.addresses, newAddressWithId] };
-        });
+    fetchProfile: async () => {
+        try {
+            const res = await authApi.getUserProfile();
+            const addressesFromApi: ShippingAddress[] = res.data?.addresses || [];
+            const addressesWithId = addressesFromApi.map(addr => ({
+                ...addr,
+                id: uuidv4(),
+            }));
+
+            set({ addresses: addressesWithId });
+        } catch (err) {
+            console.error('Failed to fetch user profile:', err);
+        }
     },
 
-    setDefaultAddress: (addressId: string) => {
-        // TODO: Gọi API PATCH /users/me ở đây để cập nhật địa chỉ mặc định
-        set(state => {
-            const updatedAddresses = state.addresses.map(addr => ({
+    addAddress: async (newAddress) => {
+        try {
+            const newAddressWithId: ShippingAddress = {
+                id: uuidv4(),
+                ...newAddress,
+                isDefault: false,
+            };
+
+            const updatedAddresses = [...get().addresses, newAddressWithId];
+
+            const payloadAddresses = updatedAddresses.map(({ id, ...rest }) => rest);
+
+            await customerApi.updateProfile({ addresses: payloadAddresses });
+            set({ addresses: updatedAddresses });
+        } catch (err) {
+            console.error('Failed to add address:', err);
+            throw err;
+        }
+    },
+
+    setDefaultAddress: async (id) => {
+        try {
+            const updatedAddresses = get().addresses.map(addr => ({
                 ...addr,
-                isDefault: addr.id === addressId
+                isDefault: addr.id === id,
             }));
-            return { addresses: updatedAddresses };
-        });
-    }
+
+            const payloadAddresses = updatedAddresses.map(({ id, ...rest }) => rest);
+
+            await customerApi.updateProfile({ addresses: payloadAddresses });
+            set({ addresses: updatedAddresses });
+        } catch (err) {
+            console.error('Failed to set default address:', err);
+            throw err;
+        }
+    },
 }));
