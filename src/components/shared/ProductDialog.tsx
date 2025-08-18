@@ -1,4 +1,4 @@
-// src/components/shared/ProductDialog.tsx
+
 
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { X, Plus } from "lucide-react";
 import { Product, ProductVariant, CloudinaryImage } from "@/types/product";
 
-// Kiểu dữ liệu VariantForm nên được định nghĩa ở đây hoặc import từ types
+
 type VariantForm = Omit<ProductVariant, '_id'>;
 
 interface ProductDialogProps {
@@ -45,7 +45,7 @@ export const ProductDialog: React.FC<ProductDialogProps> = ({ open, onClose, onS
             setDeletedImages([]);
             setNewImages([]);
         } else if (open) {
-            // Reset form for creating new
+            
             setName("");
             setDescription("");
             setCategory("");

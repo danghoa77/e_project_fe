@@ -70,7 +70,7 @@ function SheetContent({
         {...props}
       >
         {children}
-        {/* ĐÃ XÓA NÚT X MẶC ĐỊNH Ở ĐÂY */}
+        
       </SheetPrimitive.Content>
     </SheetPortal>
   )

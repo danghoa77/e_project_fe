@@ -19,7 +19,7 @@ import { ArrowRight, Pencil, Plus, Trash2 } from 'lucide-react';
 export const OrderPage = () => {
     const navigate = useNavigate();
 
-    // --- STATE ---
+    
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [allAddresses, setAllAddresses] = useState<ShippingAddress[]>([]);
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress | undefined>(undefined);
@@ -69,7 +69,7 @@ export const OrderPage = () => {
 
     const canAddAddress = allAddresses.length < 5;
 
-    // --- HANDLERS ---
+    
     const handleSelectAddress = async (address: ShippingAddress) => {
         if (isSubmitting) return;
         setIsSubmitting(true);
@@ -375,7 +375,7 @@ export const OrderPage = () => {
                             <div className="py-4">
                                 <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                                     {allAddresses.map((addr: ShippingAddress) => (
-                                        // FIX: Sử dụng _id cho key
+                                        
                                         <div key={addr._id} className="group p-3 border rounded-md flex justify-between items-center hover:border-orange-400">
                                             <div className="flex-grow cursor-pointer" onClick={() => handleSelectAddress(addr)}>
                                                 <p className="font-medium text-sm">{addr.street}, {addr.city}</p>

@@ -1,4 +1,4 @@
-// src/pages/AdminProductsPage.tsx
+
 
 import * as React from 'react';
 import adminApi from '../api';

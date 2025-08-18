@@ -6,11 +6,8 @@ import { authApi } from './api';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/spinner';
 import { useNavigate } from 'react-router-dom';
-type AuthLoaderProps = {
-    children: React.ReactNode;
-};
 
-export const AuthLoader = ({ children }: AuthLoaderProps) => {
+export const AuthLoader = ({ children }: React.PropsWithChildren) => {
     const { token, user, setUser, setLoading, isLoading } = useAuthStore();
     const navigate = useNavigate();
     useEffect(() => {

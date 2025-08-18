@@ -144,7 +144,7 @@ export const AdminUsersPage = () => {
 
             {!isLoading && (
                 <>
-                    {/* LIST ADMIN */}
+                    
                     <div className="space-y-4">
                         <h2 className="text-2xl font-semibold" style={{ color: HERMES_BROWN }}>
                             List Admin
@@ -204,7 +204,7 @@ export const AdminUsersPage = () => {
                         </div>
                     </div>
 
-                    {/* LIST CUSTOMER */}
+                    
                     <div className="space-y-4">
                         <h2 className="text-2xl font-semibold" style={{ color: HERMES_BROWN }}>
                             List Customer

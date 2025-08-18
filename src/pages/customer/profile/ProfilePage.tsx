@@ -1,4 +1,4 @@
-// src/features/profile/pages/ProfilePage.tsx
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileForm } from "./ProfileForm";
 import OrderHistory from "./OrderHistory";

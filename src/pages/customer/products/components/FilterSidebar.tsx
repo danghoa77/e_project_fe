@@ -1,4 +1,4 @@
-// src/features/products/components/FilterSidebar.tsx
+
 
 import * as React from "react";
 import type { FilterState } from "@/types/product";

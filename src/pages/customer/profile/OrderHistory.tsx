@@ -1,8 +1,8 @@
-// src/features/profile/components/OrderHistory.tsx
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-// Dữ liệu mẫu - Sau này sẽ thay bằng API
+
 const mockOrders = [
     { id: "ORDER-8463", date: "July 20, 2025", status: "Delivered", total: 114.00 },
     { id: "ORDER-7291", date: "June 15, 2025", status: "Delivered", total: 85.50 },
@@ -10,7 +10,7 @@ const mockOrders = [
 ];
 
 const OrderHistory = () => {
-    // TODO: Dùng React Query để fetch lịch sử đơn hàng
+    
     return (
         <div className="border rounded-md">
             <Table>

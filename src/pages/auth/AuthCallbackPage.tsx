@@ -23,7 +23,6 @@ export const AuthCallbackPage = () => {
             }
 
             try {
-                // Lưu token tạm vào store trước
                 setLoading(true);
                 useAuthStore.setState({ token });
 
