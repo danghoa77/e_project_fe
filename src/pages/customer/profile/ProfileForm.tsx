@@ -1,4 +1,4 @@
-// src/features/profile/components/ProfileForm.tsx
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -19,10 +19,12 @@ import { useNavigate } from "react-router-dom";
 import { authApi } from "@/pages/auth/api";
 import React from "react";
 
-// --- Bảng màu Hermès ---
+
 const HERMES_ORANGE = "#F37021";
-const HERMES_ORANGE_HOVER = "#E0651A"; // Màu cam đậm hơn khi hover
-const HERMES_BROWN = "#4A3730"; // Màu nâu sẫm cho văn bản và viền
+const HERMES_ORANGE_HOVER = "#E0651A";
+
+const HERMES_BROWN = "#4A3730";
+
 const HERMES_BROWN_HOVER = "#382A24";
 
 export const ProfileForm = () => {
@@ -37,7 +39,7 @@ export const ProfileForm = () => {
 
     function onSubmit(values: z.infer<typeof ProfileSchema>) {
         console.log("Updating profile with:", values);
-        // TODO: Gọi API PATCH /users/me với 'values'
+        
         toast.success("Profile updated successfully!");
     }
 
@@ -52,7 +54,7 @@ export const ProfileForm = () => {
 
     const handleLogout = async () => {
         try {
-            // NOTE: Giả sử logout() từ useAuthStore đã xử lý việc gọi API
+            
             await logout();
             toast.info("You have been logged out.");
             navigate('/');

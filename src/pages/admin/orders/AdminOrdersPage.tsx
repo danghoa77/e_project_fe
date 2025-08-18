@@ -1,6 +1,6 @@
-// src/features/admin/pages/AdminOrdersPage.tsx
 
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import adminApi from "../api";
 
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { Order } from "@/types/order";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// THÊM VÀO: Định nghĩa kiểu dữ liệu User để dễ quản lý
+
 interface User {
     _id: string;
     email: string;

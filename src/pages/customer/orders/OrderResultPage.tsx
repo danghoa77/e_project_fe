@@ -14,7 +14,7 @@ export const OrderResultPage = () => {
 
         const searchParams = new URLSearchParams(location.search);
 
-        // --- MOMO params ---
+        
         const momoQuery = {
             orderId: searchParams.get('orderId') || undefined,
             resultCode: searchParams.get('resultCode') || undefined,
@@ -23,19 +23,19 @@ export const OrderResultPage = () => {
             payType: searchParams.get('payType') || undefined,
         };
 
-        // --- VNPAY params ---
+        
         const vnp_TxnRef = searchParams.get('vnp_TxnRef');
         const vnp_ResponseCode = searchParams.get('vnp_TransactionStatus');
         const vnp_Amount = searchParams.get('vnp_Amount');
 
-        // format amount
+        
         const formattedAmount = (momoQuery.amount || vnp_Amount)
             ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
                 Number(momoQuery.amount || vnp_Amount) / (vnp_Amount ? 100 : 1)
             )
             : undefined;
 
-        // --- Handle Momo ---
+        
         if (momoQuery.orderId && momoQuery.resultCode) {
             customerApi.momoUrlReturn(momoQuery.orderId, momoQuery.resultCode)
                 .then(() => {
@@ -53,7 +53,7 @@ export const OrderResultPage = () => {
                 });
         }
 
-        // --- Handle VNPAY ---
+        
         else if (vnp_TxnRef && vnp_ResponseCode) {
             customerApi.vnpayReturn(vnp_TxnRef, vnp_ResponseCode)
                 .then(() => {

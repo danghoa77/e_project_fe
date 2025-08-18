@@ -18,11 +18,14 @@ import { RegisterSchema } from "@/pages/auth/schemas";
 
 type RegisterFormData = z.infer<typeof RegisterSchema>;
 
-// Màu cam đặc trưng của Hermes
+
 const HERMES_ORANGE = "#F37021";
-const HERMES_ORANGE_HOVER = "#E0651A"; // Màu cam đậm hơn khi hover
-const HERMES_BROWN = "#4A3730"; // Màu nâu sô cô la đậm
-const HERMES_CREAM = "#F5F0E9"; // Màu kem nền
+const HERMES_ORANGE_HOVER = "#E0651A";
+
+const HERMES_BROWN = "#4A3730";
+
+const HERMES_CREAM = "#F5F0E9";
+
 
 export function AddAdminDialog() {
     const [open, setOpen] = React.useState(false);
@@ -61,7 +64,7 @@ export function AddAdminDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                {/* --- Thay đổi 1: Nút kích hoạt dialog --- */}
+                
                 <Button style={{ backgroundColor: HERMES_ORANGE, color: 'white' }}
                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = HERMES_ORANGE_HOVER}
                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = HERMES_ORANGE}>
@@ -69,10 +72,10 @@ export function AddAdminDialog() {
                     Add Admin
                 </Button>
             </DialogTrigger>
-            {/* --- Thay đổi 2: Nội dung dialog --- */}
+            
             <DialogContent className="sm:max-w-md" style={{ backgroundColor: HERMES_CREAM, borderColor: HERMES_BROWN, borderWidth: '2px' }}>
                 <DialogHeader>
-                    {/* --- Thay đổi 3: Tiêu đề và mô tả --- */}
+                    
                     <DialogTitle style={{ color: HERMES_BROWN }}>Create new admin</DialogTitle>
                     <DialogDescription style={{ color: HERMES_BROWN }}>
                         Fill in the form below to create a new admin.
@@ -80,7 +83,7 @@ export function AddAdminDialog() {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* --- Thay đổi 4: Các ô Input --- */}
+                    
                     <div>
                         <Input placeholder="Full name" {...register("name")} className="border-gray-400 focus:border-orange-500 focus:ring-orange-500" />
                         {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
@@ -101,7 +104,7 @@ export function AddAdminDialog() {
                         <Input placeholder="Phone number" {...register("phone")} className="border-gray-400 focus:border-orange-500 focus:ring-orange-500" />
                         {errors.phone && <p className="text-sm text-red-600">{errors.phone.message}</p>}
                     </div>
-                    {/* --- Thay đổi 5: Nút submit --- */}
+                    
                     <Button type="submit" className="w-full text-white" disabled={isLoading}
                         style={{ backgroundColor: isLoading ? '#F9A87C' : HERMES_ORANGE }}
                         onMouseOver={(e) => !isLoading && (e.currentTarget.style.backgroundColor = HERMES_ORANGE_HOVER)}

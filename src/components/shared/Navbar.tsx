@@ -1,4 +1,4 @@
-// src/components/shared/Navbar.tsx
+
 import * as React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Menu, Search, ShoppingBag, User, X, Plus, MapPin, MessageSquare } from 
 import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
 import { CartSheet } from "../../pages/customer/cart/CartSheet";
-// import { useCartStore } from "@/store/cartStore";
+
 import { useAuthStore } from "@/store/authStore";
 import { customerApi } from "@/pages/customer/api";
 
