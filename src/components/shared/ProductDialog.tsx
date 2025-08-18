@@ -86,8 +86,8 @@ export const ProductDialog: React.FC<ProductDialogProps> = ({ open, onClose, onS
             variants: variants.map(v => ({
                 size: v.size,
                 color: v.color,
-                price: Number(v.price) || 0,
-                salePrice: Number(v.salePrice) || 0,
+                price: Number(v.price),
+                salePrice: Number(v.salePrice),
                 stock: Number(v.stock) || 0
             })),
             deletedImages: deletedImages.length > 0 ? deletedImages : undefined
