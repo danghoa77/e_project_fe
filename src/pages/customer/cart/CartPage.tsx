@@ -1,5 +1,5 @@
-// src/features/cart/CartPage.tsx
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -156,7 +156,7 @@ export const CartPage = () => {
                                 </Table>
                             </div>
 
-                            {/* Shipping Form */}
+                            
                             <div className="mt-6 grid grid-cols-2 gap-4">
                                 <Input
                                     placeholder="Street Address"

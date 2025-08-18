@@ -1,4 +1,4 @@
-// src/features/auth/AuthPage.tsx
+
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./components/LoginForm";

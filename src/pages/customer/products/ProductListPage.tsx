@@ -1,4 +1,4 @@
-// src/features/products/ProductListPage.tsx
+
 
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { customerApi } from "../api";
 export const ProductListPage = () => {
     const { category: initialCategory } = useParams();
 
-    // 1. STATE MANAGEMENT: Quay lại dùng nhiều useState
+    
     const [products, setProducts] = useState<Product[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ export const ProductListPage = () => {
         price: { min: 0, max: MAX_PRICE },
     });
 
-    // const [debouncedFilters] = useDebounce(filters, 500);
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,7 +45,7 @@ export const ProductListPage = () => {
         fetchData();
     }, []);
 
-    // 3. EVENT HANDLERS
+    
     const handleFilterChange = (newFilters: Partial<Omit<FilterState, 'page' | 'limit'>>) => {
         setFilters((prev) => ({ ...prev, ...newFilters }));
     };
@@ -107,7 +107,7 @@ export const ProductListPage = () => {
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
                                     {products.map(product => product && <ProductCard key={product._id} product={product} />)}
                                 </div>
-                                {/* Nút Load More đã bị xóa */}
+                                
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center h-96 text-center text-neutral-500">

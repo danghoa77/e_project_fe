@@ -1,4 +1,4 @@
-// src/components/shared/NotFoundPage.tsx
+
 import { Link } from 'react-router-dom';
 
 const NotFoundPage = () => {

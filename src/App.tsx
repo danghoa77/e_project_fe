@@ -1,4 +1,4 @@
-// src/App.tsx
+
 
 import {
   createBrowserRouter,
@@ -9,7 +9,7 @@ import {
 import * as React from 'react';
 import './index.css';
 
-// Component và Page imports
+
 import { Navbar } from './components/shared/Navbar';
 import { Footer } from './components/shared/Footer';
 import { Toaster } from "@/components/ui/sonner";
@@ -23,7 +23,7 @@ import { ProfilePage } from './pages/customer/profile/ProfilePage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { AuthLoader } from './pages/auth/AuthLoader';
 import ProtectedRoute from './routes/ProtectedRoute';
-// import { AdminHeader } from './pages/admin/dashboard/AdminHeader';
+
 import { AdminDashboardPage } from './pages/admin/dashboard/AdminDashboardPage';
 import { AdminProductsPage } from './pages/admin/products/AdminProductsPage';
 import NotFoundPage from './components/shared/NotFoundPage';
@@ -58,11 +58,11 @@ export const AppLayout = () => {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Outlet />, // Một component gốc chỉ để render các route con
-    errorElement: <NotFoundPage />, // Thêm errorElement ở route gốc
+    element: <Outlet />,
+    errorElement: <NotFoundPage />,
     children: [
       {
-        path: '/', // Nhóm các route sử dụng AppLayout
+        path: '/',
         element: <AppLayout />,
         children: [
           { index: true, element: <HomePage /> },
@@ -123,7 +123,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-// Component App chính
+
 function App() {
   return <RouterProvider router={router} />;
 }

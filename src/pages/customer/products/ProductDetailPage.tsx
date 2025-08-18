@@ -11,7 +11,7 @@ import { customerApi } from "../api";
 import { CloudinaryImage, Product } from "@/types/product";
 import { toast } from "sonner";
 
-// --- Skeleton Loader Component ---
+
 const ProductDetailSkeleton = () => (
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
         <div>
@@ -36,7 +36,7 @@ const ProductDetailSkeleton = () => (
     </div>
 );
 
-// --- Product Carousel ---
+
 const ProductCarousel = ({ images }: { images: CloudinaryImage[] }) => {
     const [api, setApi] = React.useState<CarouselApi>();
     const [current, setCurrent] = React.useState(0);
@@ -87,7 +87,7 @@ const ProductCarousel = ({ images }: { images: CloudinaryImage[] }) => {
     );
 };
 
-// --- Product Info ---
+
 const ProductInfo = ({ product, navigate }: { product: Product; navigate: NavigateFunction }) => {
     const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
     const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
@@ -155,7 +155,7 @@ const ProductInfo = ({ product, navigate }: { product: Product; navigate: Naviga
 
             <Separator className="my-8 bg-stone-200" />
 
-            {/* Color selection */}
+            
             <div>
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-800 mb-3">
                     Color: <span className="font-normal text-neutral-600 capitalize">{selectedColor || 'Select a color'}</span>
@@ -175,7 +175,7 @@ const ProductInfo = ({ product, navigate }: { product: Product; navigate: Naviga
                 </div>
             </div>
 
-            {/* Size selection */}
+            
             <div className="mt-8">
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-800 mb-3">
                     Size: <span className="font-normal text-neutral-600">{selectedSize || 'Select a size'}</span>
@@ -204,7 +204,7 @@ const ProductInfo = ({ product, navigate }: { product: Product; navigate: Naviga
                 </div>
             </div>
 
-            {/* Add to Cart */}
+            
             <div className="mt-10">
                 <Button
                     size="lg"
@@ -219,7 +219,7 @@ const ProductInfo = ({ product, navigate }: { product: Product; navigate: Naviga
                 </Button>
             </div>
 
-            {/* Accordion */}
+            
             <div className="mt-10">
                 <Accordion type="single" collapsible defaultValue="description" className="w-full">
                     <AccordionItem value="description">
@@ -240,7 +240,7 @@ const ProductInfo = ({ product, navigate }: { product: Product; navigate: Naviga
     );
 };
 
-// --- Main Page ---
+
 export const ProductDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const [product, setProduct] = React.useState<Product | null>(null);

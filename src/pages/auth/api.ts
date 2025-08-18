@@ -2,7 +2,7 @@
 import * as z from 'zod';
 import { LoginSchema, RegisterSchema } from './schemas';
 import apiClient, { API_BASE_URL } from '../../lib/axios';
-import type { LoginResponse, UserType } from '@/types/user';
+import type { LoginResponse } from '@/types/user';
 
 export const authApi = {
     // Đăng nhập

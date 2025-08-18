@@ -3,16 +3,16 @@ import type { Product } from "@/types/product";
 
 export const ProductCard = ({ product }: { product: Product }) => {
     const displayVariant = product.variants[0];
-    // Lấy ra ảnh đầu tiên trong mảng images
+    
     const firstImage = product.images[0];
 
-    // Trả về null nếu không có ảnh hoặc không có variant để tránh lỗi
+    
     if (!displayVariant || !firstImage) return null;
 
     return (
         <Link to={`/product/${product._id}`} className="group text-left">
             <div className="overflow-hidden bg-gray-100">
-                {/* SỬA LỖI Ở ĐÂY: Dùng firstImage.url thay vì chỉ firstImage */}
+                
                 <img
                     src={firstImage.url}
                     alt={product.name}

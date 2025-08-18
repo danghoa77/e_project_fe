@@ -36,14 +36,14 @@ export const useUserStore = create<UserState>((set, get) => ({
     addAddress: async (newAddress) => {
         try {
             const newAddressWithId: ShippingAddress = {
-                id: uuidv4(),
+                _id: uuidv4(),
                 ...newAddress,
                 isDefault: false,
             };
 
             const updatedAddresses = [...get().addresses, newAddressWithId];
 
-            const payloadAddresses = updatedAddresses.map(({ id, ...rest }) => rest);
+            const payloadAddresses = updatedAddresses.map(({ _id, ...rest }) => rest);
 
             await customerApi.updateProfile({ addresses: payloadAddresses });
             set({ addresses: updatedAddresses });
@@ -57,10 +57,10 @@ export const useUserStore = create<UserState>((set, get) => ({
         try {
             const updatedAddresses = get().addresses.map(addr => ({
                 ...addr,
-                isDefault: addr.id === id,
+                isDefault: addr._id === id,
             }));
 
-            const payloadAddresses = updatedAddresses.map(({ id, ...rest }) => rest);
+            const payloadAddresses = updatedAddresses.map(({ _id, ...rest }) => rest);
 
             await customerApi.updateProfile({ addresses: payloadAddresses });
             set({ addresses: updatedAddresses });
