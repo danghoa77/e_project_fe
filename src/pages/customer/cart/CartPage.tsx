@@ -20,7 +20,7 @@ export const CartPage = () => {
     const [cart, setCart] = useState<CartResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [shipping, setShipping] = useState<ShippingAddress>({
-        id: "",
+        _id: "",
         street: "",
         city: "",
     });

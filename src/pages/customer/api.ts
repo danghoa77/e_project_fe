@@ -7,6 +7,7 @@ export const customerApi = {
     fetchProducts: async (): Promise<ProductApiResponse> => {
         try {
             const res = await apiClient.get<ProductApiResponse>("/products/");
+            console.log(res.data);
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
@@ -85,6 +86,16 @@ export const customerApi = {
         }
     },
 
+    getOrderId: async (id: string) => {
+        try {
+            const res = await apiClient.get(`/orders/${id}`);
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
     getOrderbyRole: async () => {
         try {
             const res = await apiClient.get("/orders/");
@@ -119,7 +130,6 @@ export const customerApi = {
     getAddresses: async () => {
         try {
             const res = await apiClient.get("/users/me/");
-            console.log(res.data);
             return res.data.addresses = res.data.addresses || [];
 
         } catch (error: any) {
@@ -138,4 +148,69 @@ export const customerApi = {
             throw new Error(`Fetch failed: ${error.message}`);
         }
     },
+
+    deleteAddress: async (id: string) => {
+        try {
+            const res = await apiClient.delete(`/users/me/addresses/${id}/`);
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    createMomoUrl: async (orderId: string, amount: number) => {
+        try {
+            const res = await apiClient.post("/payments/momo/create/", { orderId, amount });
+            console.log(res.data);
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    momoUrlReturn: async (orderId: string, resultCode: string) => {
+        try {
+            const res = await apiClient.post("/payments/momo/return/", { orderId, resultCode });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    createVnpayUrl: async (orderId: string, amount: number) => {
+        try {
+            const res = await apiClient.post("/payments/vnpay/create/", { orderId, amount });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    vnpayReturn: async (orderId: string, responseCode: string) => {
+        try {
+            const res = await apiClient.post("/payments/vnpay/return/", { orderId, responseCode });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+
+    decreaseStock: async (items: { productId: string; variantId: string; quantity: number }[]) => {
+        try {
+            const res = await apiClient.patch("/products/stock/decrease/", {
+                items: items,
+            });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw error;
+        }
+    },
+
 };

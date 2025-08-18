@@ -1,3 +1,4 @@
+// src/features/cart/CartSheet.tsx
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from "@/components/ui/sheet";
@@ -13,12 +14,17 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
     const [cart, setCart] = useState<Cart>({ items: [] });
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const normalizeCart = (data: any): Cart => {
+        if (Array.isArray(data)) return { items: data };
+        if (data && Array.isArray(data.items)) return { items: data.items };
+        return { items: [] };
+    };
 
     const fetchCart = async () => {
         setLoading(true);
         try {
             const res: CartResponse = await customerApi.getCart();
-            setCart(res);
+            setCart(normalizeCart(res));
         } catch (err) {
             console.error("Error fetching cart:", err);
         } finally {
@@ -37,7 +43,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
 
         customerApi.updateQuantity(productId, variantId, quantity)
             .then((res) => {
-                setCart(res);
+                setCart(normalizeCart(res));
             })
             .catch((err) => {
                 console.error("Error updating quantity:", err);
@@ -48,20 +54,10 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
     const removeItem = async (productId: string, variantId: string) => {
         try {
             const res = await customerApi.removeItemFromCart(productId, variantId);
-            setCart(res);
+            setCart(normalizeCart(res));
             setSelectedItems(prev => prev.filter(id => id !== variantId));
         } catch (err) {
             console.error("Error removing item:", err);
-        }
-    };
-
-    const clearCart = async () => {
-        try {
-            const res = await customerApi.deleteCart();
-            setCart(res);
-            setSelectedItems([]);
-        } catch (err) {
-            console.error("Error clearing cart:", err);
         }
     };
 

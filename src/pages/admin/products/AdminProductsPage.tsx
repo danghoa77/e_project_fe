@@ -35,6 +35,7 @@ export const AdminProductsPage = () => {
     const handleCreate = async (payload: FormData) => {
         try {
             const res = await adminApi.createProduct(payload);
+            console.log(res);
             setProducts(prev => [res, ...prev]);
         } catch (err) {
             console.error("Create failed", err);
@@ -126,7 +127,7 @@ export const AdminProductsPage = () => {
                                         <TableCell className="text-stone-600">{totalStock}</TableCell>
                                         <TableCell className="text-stone-600">{new Date(p.createdAt).toLocaleDateString()}</TableCell>
                                         <TableCell className="text-right">
-                                             <div className="flex gap-2 justify-end">
+                                            <div className="flex gap-2 justify-end">
                                                 <Button size="sm" variant="outline" className="border-stone-300" onClick={() => handleView(p._id)}>View</Button>
                                                 <Button size="sm" variant="outline" className="border-stone-300 text-green-600 hover:text-green-700" onClick={() => handleEdit(p)}>Edit</Button>
                                                 <Button size="sm" variant="outline" className="border-stone-300 text-red-600 hover:text-red-700 disabled:opacity-50" disabled={deletingId === p._id} onClick={() => handleDelete(p._id)}>

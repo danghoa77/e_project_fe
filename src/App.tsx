@@ -18,6 +18,7 @@ import { AuthPage } from './pages/auth/AuthPage';
 import { ProductListPage } from './pages/customer/products/ProductListPage';
 import { ProductDetailPage } from './pages/customer/products/ProductDetailPage';
 import { OrderPage } from './pages/customer/orders/OrderPage';
+import { OrderResultPage } from './pages/customer/orders/OrderResultPage';
 import { ProfilePage } from './pages/customer/profile/ProfilePage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { AuthLoader } from './pages/auth/AuthLoader';
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
           { path: 'products/:category', element: <ProductListPage /> },
           { path: 'product/:id', element: <ProductDetailPage /> },
           { path: 'cart', element: <CartPage /> },
+          { path: 'order-result', element: <OrderResultPage /> },
           {
             path: 'checkout',
             element: (

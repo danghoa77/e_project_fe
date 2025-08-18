@@ -116,12 +116,7 @@ const ProductInfo = ({ product, navigate }: { product: Product; navigate: Naviga
         try {
             const payload = {
                 productId: product._id,
-                name: product.name,
                 variantId: selectedVariant._id,
-                imageUrl: product.images?.[0]?.url || "",
-                color: selectedVariant.color,
-                size: selectedVariant.size,
-                price: selectedVariant.price,
                 quantity: 1
             };
             await customerApi.addItemToCart(payload);
