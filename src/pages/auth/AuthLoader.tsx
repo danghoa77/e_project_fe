@@ -1,4 +1,4 @@
-// src/features/auth/AuthLoader.tsx
+
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
@@ -42,3 +42,4 @@ export const AuthLoader = ({ children }: React.PropsWithChildren) => {
 
     return <>{children}</>;
 };
+
