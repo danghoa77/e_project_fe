@@ -7,7 +7,6 @@ export const customerApi = {
     fetchProducts: async (): Promise<ProductApiResponse> => {
         try {
             const res = await apiClient.get<ProductApiResponse>("/products/");
-            console.log(res.data);
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
@@ -28,6 +27,7 @@ export const customerApi = {
     getCart: async () => {
         try {
             const res = await apiClient.get("/carts/");
+            console.log(res.data);
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);

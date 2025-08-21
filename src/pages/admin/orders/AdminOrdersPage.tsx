@@ -87,7 +87,7 @@ export const AdminOrdersPage = () => {
                     adminApi.fetchOrders(),
                     adminApi.fetchAllUser()
                 ]);
-
+                console.log(ordersResponse);
                 const users = usersResponse || [];
                 const newUsersMap = users.reduce((acc: Record<string, string>, user: User) => {
                     acc[user._id] = user.email;
