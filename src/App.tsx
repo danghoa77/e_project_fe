@@ -44,6 +44,10 @@ export const AppLayout = () => {
   }, [pathname]);
 
   React.useEffect(() => {
+    if (!user) {
+      setCartItemCount(0);
+      return;
+    }
     const fetchData = async () => {
       try {
         const res = await customerApi.getCart();

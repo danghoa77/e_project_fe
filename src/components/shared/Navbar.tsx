@@ -73,8 +73,6 @@ const BrandLogo = () => (
 export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
   const scrollDirection = useScroll();
   const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
-  console.log("Navbar received:", cartItemCount);
-
   const { user } = useAuthStore();
 
   return (
