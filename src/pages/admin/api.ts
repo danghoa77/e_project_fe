@@ -62,6 +62,11 @@ const adminApi = {
     return response.data;
   },
 
+  getAllPayments: async (orderId?: string) => {
+    const response = await apiClient.post('/payments/getPayment/', { orderId });
+    return response.data;
+  },
+
 };
 
 export default adminApi;

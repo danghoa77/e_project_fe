@@ -1,51 +1,73 @@
-
-
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
   useLocation,
-} from 'react-router-dom';
-import * as React from 'react';
-import './index.css';
+} from "react-router-dom";
+import * as React from "react";
+import "./index.css";
 
-
-import { Navbar } from './components/shared/Navbar';
-import { Footer } from './components/shared/Footer';
+import { Navbar } from "./components/shared/Navbar";
+import { Footer } from "./components/shared/Footer";
 import { Toaster } from "@/components/ui/sonner";
-import { HomePage } from './pages/customer/products/HomePage';
-import { AuthPage } from './pages/auth/AuthPage';
-import { ProductListPage } from './pages/customer/products/ProductListPage';
-import { ProductDetailPage } from './pages/customer/products/ProductDetailPage';
-import { OrderPage } from './pages/customer/orders/OrderPage';
-import { OrderResultPage } from './pages/customer/orders/OrderResultPage';
-import { ProfilePage } from './pages/customer/profile/ProfilePage';
-import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
-import { AuthLoader } from './pages/auth/AuthLoader';
-import ProtectedRoute from './routes/ProtectedRoute';
+import { HomePage } from "./pages/customer/products/HomePage";
+import { AuthPage } from "./pages/auth/AuthPage";
+import { ProductListPage } from "./pages/customer/products/ProductListPage";
+import { ProductDetailPage } from "./pages/customer/products/ProductDetailPage";
+import { OrderPage } from "./pages/customer/orders/OrderPage";
+import { OrderResultPage } from "./pages/customer/orders/OrderResultPage";
+import { ProfilePage } from "./pages/customer/profile/ProfilePage";
+import { AuthCallbackPage } from "./pages/auth/AuthCallbackPage";
+import { AuthLoader } from "./pages/auth/AuthLoader";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
-import { AdminDashboardPage } from './pages/admin/dashboard/AdminDashboardPage';
-import { AdminProductsPage } from './pages/admin/products/AdminProductsPage';
-import NotFoundPage from './components/shared/NotFoundPage';
-import { AdminLayout } from './pages/admin/AdminLayout';
-import { AdminOrdersPage } from './pages/admin/orders/AdminOrdersPage';
-import { AdminUsersPage } from './pages/admin/users/AdminUsersPage';
-import { AdminPaymentsPage } from './pages/admin/payments/AdminPaymentsPage';
-import { AdminChattingPage } from './pages/admin/chatting/AdminChattingPage';
-import { AdminDetailPage } from './pages/admin/products/AdminDetailPage';
-import { CartPage } from './pages/customer/cart/CartPage';
+import { AdminDashboardPage } from "./pages/admin/dashboard/AdminDashboardPage";
+import { AdminProductsPage } from "./pages/admin/products/AdminProductsPage";
+import NotFoundPage from "./components/shared/NotFoundPage";
+import { AdminLayout } from "./pages/admin/AdminLayout";
+import { AdminOrdersPage } from "./pages/admin/orders/AdminOrdersPage";
+import { AdminUsersPage } from "./pages/admin/users/AdminUsersPage";
+import { AdminPaymentsPage } from "./pages/admin/payments/AdminPaymentsPage";
+import { AdminChattingPage } from "./pages/admin/chatting/AdminChattingPage";
+import { AdminDetailPage } from "./pages/admin/products/AdminDetailPage";
+import { CartPage } from "./pages/customer/cart/CartPage";
+import { useAuthStore } from "./store/authStore";
+import { customerApi } from "./pages/customer/api";
+import { userStore } from "./store/userStore";
 export const AppLayout = () => {
   const { pathname } = useLocation();
+  const { cartItemCount, setCartItemCount } = userStore();
+  const { user } = useAuthStore();
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  React.useEffect(() => {
+    if (!user) {
+      setCartItemCount(0);
+      return;
+    }
+    const fetchData = async () => {
+      try {
+        const res = await customerApi.getCart();
+        setCartItemCount(res.length);
+      } catch (err) {
+        console.error("Failed to fetch cart:", err);
+        setCartItemCount(0);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+  console.log("Cart count state:", cartItemCount);
+
   return (
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
-      <Navbar />
+      <Navbar cartItemCount={cartItemCount} />
       <main>
         <AuthLoader>
-          <Outlet />
+          <Outlet context={{ setCartItemCount }} />
         </AuthLoader>
       </main>
       <Footer />
@@ -54,36 +76,35 @@ export const AppLayout = () => {
   );
 };
 
-
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Outlet />,
     errorElement: <NotFoundPage />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: <AppLayout />,
         children: [
           { index: true, element: <HomePage /> },
-          { path: 'login', element: <AuthPage /> },
-          { path: 'products', element: <ProductListPage /> },
-          { path: 'products/:category', element: <ProductListPage /> },
-          { path: 'product/:id', element: <ProductDetailPage /> },
-          { path: 'cart', element: <CartPage /> },
-          { path: 'order-result', element: <OrderResultPage /> },
+          { path: "login", element: <AuthPage /> },
+          { path: "products", element: <ProductListPage /> },
+          { path: "products/:category", element: <ProductListPage /> },
+          { path: "product/:id", element: <ProductDetailPage /> },
+          { path: "cart", element: <CartPage /> },
+          { path: "order-result", element: <OrderResultPage /> },
           {
-            path: 'checkout',
+            path: "checkout",
             element: (
-              <ProtectedRoute allowedRoles={['customer', 'admin']}>
+              <ProtectedRoute allowedRoles={["customer", "admin"]}>
                 <OrderPage />
               </ProtectedRoute>
             ),
           },
           {
-            path: 'profile',
+            path: "profile",
             element: (
-              <ProtectedRoute allowedRoles={['customer', 'admin']}>
+              <ProtectedRoute allowedRoles={["customer", "admin"]}>
                 <ProfilePage />
               </ProtectedRoute>
             ),
@@ -91,38 +112,37 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: 'admin',
+        path: "admin",
         element: (
-          <ProtectedRoute allowedRoles={['admin']}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <AdminLayout />
           </ProtectedRoute>
         ),
         children: [
           { index: true, element: <AdminDashboardPage /> },
-          { path: 'orders', element: <AdminOrdersPage /> },
-          { path: 'products', element: <AdminProductsPage /> },
-          { path: 'users', element: <AdminUsersPage /> },
-          { path: 'payments', element: <AdminPaymentsPage /> },
-          { path: 'chatting', element: <AdminChattingPage /> },
-          { path: 'products/:id', element: <AdminDetailPage /> },
+          { path: "orders", element: <AdminOrdersPage /> },
+          { path: "products", element: <AdminProductsPage /> },
+          { path: "users", element: <AdminUsersPage /> },
+          { path: "payments", element: <AdminPaymentsPage /> },
+          { path: "chatting", element: <AdminChattingPage /> },
+          { path: "products/:id", element: <AdminDetailPage /> },
         ],
       },
       {
-        path: 'auth/callback',
+        path: "auth/callback",
         element: <AuthCallbackPage />,
       },
       {
-        path: 'auth/callback',
+        path: "auth/callback",
         element: <AuthCallbackPage />,
       },
       {
-        path: '*',
+        path: "*",
         element: <NotFoundPage />,
       },
     ],
   },
 ]);
-
 
 function App() {
   return <RouterProvider router={router} />;

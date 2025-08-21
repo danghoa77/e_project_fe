@@ -13,7 +13,7 @@ export interface UserType {
 }
 
 export interface ShippingAddress {
-  _id?: string;
+  _id: string;
   street: string;
   city: string;
   isDefault?: boolean;

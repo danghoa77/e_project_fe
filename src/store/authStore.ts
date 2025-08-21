@@ -1,4 +1,9 @@
 // src/store/authStore.ts
+// 1. Component gọi useAuthStore(...) để subscribe vào store.
+// 2. Khi gọi setUser / setLoading / logout → hàm set() được chạy.
+// 3. set() cập nhật state trong store.
+// 4. Zustand notify tất cả component đã subscribe.
+// 5. React rerender component với state mới → UI cập nhật realtime.
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';

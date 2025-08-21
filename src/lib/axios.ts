@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
+import { toast } from 'sonner';
 
-export const API_BASE_URL = 'https://18a1a04c87f4.ngrok-free.app';
+export const API_BASE_URL = 'https://a4998d564296.ngrok-free.app';
 
 const apiClient = axios.create({
     baseURL: 'http://localhost:80',
@@ -25,14 +26,17 @@ apiClient.interceptors.request.use(
         return Promise.reject(error);
     }
 );
-// interceptor token in response
+// interceptor token in response    
 apiClient.interceptors.response.use(
     response => response,
     async (error) => {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401) { //no permission
             const authStore = useAuthStore.getState();
             authStore.logout();
-            window.location.href = '/login';
+            toast.error(' Please login again.');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
 
             return;
         }
