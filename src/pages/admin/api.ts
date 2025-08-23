@@ -67,6 +67,27 @@ const adminApi = {
     return response.data;
   },
 
+  getListConversations: async () => {
+    const response = await apiClient.get('/talkjs/conversations/me/');
+    console.log(response.data);
+    return response.data;
+  },
+
+  deleteConversation: async (id: string) => {
+    const response = await apiClient.delete(`/talkjs/conversations/${id}/`);
+    return response.data;
+  },
+
+  getConversation: async (targetCustomerId: string) => {
+    try {
+      const res = await apiClient.post("/talkjs/conversations/", { targetCustomerId });
+      return res.data;
+    } catch (error: any) {
+      console.error("API error:", error.response?.data || error.message);
+      throw new Error(`Fetch failed: ${error.message}`);
+    }
+  },
+  
 };
 
 export default adminApi;

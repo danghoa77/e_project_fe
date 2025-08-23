@@ -72,7 +72,7 @@ export const AdminPaymentsPage = () => {
   }, []);
 
   return (
-    <div className="bg-[#fcf7f1] min-h-screen p-4 sm:p-6 md:p-8 font-sans">
+    <div className="bg-stone-50 min-h-screen p-4 sm:p-6 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
         <h1 className="font-bold text-3xl md:text-4xl text-neutral-800 mb-8">
           Payments Management

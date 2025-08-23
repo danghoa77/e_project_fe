@@ -51,12 +51,6 @@ const OrderTableRowSkeleton = () => {
       <TableCell className="text-right font-medium">
         <Skeleton className="h-4 w-1/2 ml-auto" />
       </TableCell>
-      <TableCell className="text-center">
-        <Skeleton className="h-6 w-20 mx-auto" />
-      </TableCell>
-      <TableCell className="flex justify-center">
-        <Skeleton className="h-10 w-[150px]" />
-      </TableCell>
     </TableRow>
   );
 };
@@ -114,7 +108,7 @@ export const AdminOrdersPage = () => {
   }, []);
 
   return (
-    <div className="bg-[#fcf7f1] min-h-screen p-4 sm:p-6 md:p-8 font-sans">
+    <div className="bg-stone-50 min-h-screen p-4 sm:p-6 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
         <h1 className="font-bold  text-3xl md:text-4xl text-neutral-800 mb-8">
           Order Management
