@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { SendIcon, UserIcon } from "../icon";
 import HideScrollbarStyle from "@/components/shared/HideScrollbar";
 import adminApi from "../api";

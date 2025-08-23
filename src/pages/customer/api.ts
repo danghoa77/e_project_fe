@@ -1,7 +1,6 @@
 // customerApi.ts
 import type { ProductApiResponse } from "@/types/product";
 import apiClient from "@/lib/axios";
-import { Message } from './../admin/chatting/types';
 
 
 export const customerApi = {

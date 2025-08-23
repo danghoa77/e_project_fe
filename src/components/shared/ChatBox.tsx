@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { customerApi } from "@/pages/customer/api";
 import { Message } from "@/types/user";
 import { SendHorizontal } from "lucide-react";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 
 interface ChatBoxProps {
@@ -23,11 +23,7 @@ export const ChatBox = ({
   );
   const [newMessage, setNewMessage] = useState("");
   const { user } = useAuthStore();
-
-  // ref tới phần tử cuối của danh sách tin nhắn
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  // luôn scroll xuống cuối khi messages thay đổi
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -55,15 +51,12 @@ export const ChatBox = ({
 
   return (
     <div className="fixed bottom-8 right-8 z-50 w-80 h-[28rem] bg-white rounded-lg shadow-2xl flex flex-col transition-all duration-300">
-      {/* Header */}
       <div className="flex justify-between items-center p-4 bg-gray-800 text-white rounded-t-lg">
         <h3 className="font-bold text-lg">Chat Box</h3>
         <button onClick={onClose} className="hover:text-gray-300">
           &times;
         </button>
       </div>
-
-      {/* Messages */}
       <div className="flex-grow p-4 overflow-y-auto no-scrollbar">
         {messages.map((msg) => {
           const isCurrentUser = msg.senderId === user?._id;
@@ -85,11 +78,9 @@ export const ChatBox = ({
             </div>
           );
         })}
-        {/* div ẩn ở cuối để scroll tới */}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="p-4 border-t mb-0 flex gap-2">
         <Input
           type="text"

@@ -20,11 +20,10 @@ import {
 import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { customerApi } from "../api";
-import { CloudinaryImage, Product } from "@/types/product";
+import { Product } from "@/types/product";
 import { toast } from "sonner";
 import { userStore } from "@/store/userStore";
 
-// Skeleton khi loading
 const ProductDetailSkeleton = () => (
   <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
     <div>
@@ -84,14 +83,12 @@ export const ProductDetailPage = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  // cập nhật index carousel
   React.useEffect(() => {
     if (!api) return;
     setCurrent(api.selectedScrollSnap() + 1);
     api.on("select", () => setCurrent(api.selectedScrollSnap() + 1));
   }, [api]);
 
-  // lấy danh sách color, size
   const availableColors = React.useMemo(
     () => (product ? [...new Set(product.variants.map((v) => v.color))] : []),
     [product]
@@ -101,7 +98,6 @@ export const ProductDetailPage = () => {
     [product]
   );
 
-  // auto chọn nếu chỉ có 1 option
   React.useEffect(() => {
     if (availableColors.length === 1) setSelectedColor(availableColors[0]);
     if (availableSizes.length === 1) setSelectedSize(availableSizes[0]);
@@ -169,7 +165,6 @@ export const ProductDetailPage = () => {
         </div>
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
-          {/* Carousel */}
           <div className="md:sticky top-10 h-max">
             <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
               <CarouselContent>
@@ -211,7 +206,6 @@ export const ProductDetailPage = () => {
             </div>
           </div>
 
-          {/* Info */}
           <div className="flex flex-col h-full">
             <h1 className="font-sans text-3xl md:text-4xl text-stone-900">
               {product.name}
@@ -224,7 +218,6 @@ export const ProductDetailPage = () => {
               {product.category}
             </Button>
 
-            {/* Giá */}
             <div className="flex items-baseline gap-3 mt-4">
               {displaySalePrice ? (
                 <>
@@ -244,7 +237,6 @@ export const ProductDetailPage = () => {
 
             <Separator className="my-8 bg-stone-200" />
 
-            {/* Chọn color */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-800 mb-3">
                 Color:{" "}
@@ -269,7 +261,6 @@ export const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Chọn size */}
             <div className="mt-8">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-800 mb-3">
                 Size:{" "}
@@ -305,7 +296,6 @@ export const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Nút add to cart */}
             <div className="mt-10">
               <Button
                 size="lg"
@@ -323,8 +313,6 @@ export const ProductDetailPage = () => {
                   : "Add to Cart"}
               </Button>
             </div>
-
-            {/* Accordion */}
             <div className="mt-10">
               <Accordion
                 type="single"
