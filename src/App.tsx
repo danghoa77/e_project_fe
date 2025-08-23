@@ -20,7 +20,7 @@ import { ProfilePage } from "./pages/customer/profile/ProfilePage";
 import { AuthCallbackPage } from "./pages/auth/AuthCallbackPage";
 import { AuthLoader } from "./pages/auth/AuthLoader";
 import ProtectedRoute from "./routes/ProtectedRoute";
-
+import HideScrollbarStyle from "@/components/shared/HideScrollbar";
 import { AdminDashboardPage } from "./pages/admin/dashboard/AdminDashboardPage";
 import { AdminProductsPage } from "./pages/admin/products/AdminProductsPage";
 import NotFoundPage from "./components/shared/NotFoundPage";
@@ -34,6 +34,7 @@ import { CartPage } from "./pages/customer/cart/CartPage";
 import { useAuthStore } from "./store/authStore";
 import { customerApi } from "./pages/customer/api";
 import { userStore } from "./store/userStore";
+import { FloatingChatButton } from "./components/shared/FloatingChatButton";
 export const AppLayout = () => {
   const { pathname } = useLocation();
   const { cartItemCount, setCartItemCount } = userStore();
@@ -53,17 +54,16 @@ export const AppLayout = () => {
         const res = await customerApi.getCart();
         setCartItemCount(res.length);
       } catch (err) {
-        console.error("Failed to fetch cart:", err);
         setCartItemCount(0);
       }
     };
 
     fetchData();
-  }, [user]);
-  console.log("Cart count state:", cartItemCount);
+  }, []);
 
   return (
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
+      <HideScrollbarStyle />
       <Navbar cartItemCount={cartItemCount} />
       <main>
         <AuthLoader>
@@ -72,6 +72,7 @@ export const AppLayout = () => {
       </main>
       <Footer />
       <Toaster richColors />
+      {user?.role === "customer" && <FloatingChatButton />}
     </div>
   );
 };

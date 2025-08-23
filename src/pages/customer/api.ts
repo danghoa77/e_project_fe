@@ -27,7 +27,6 @@ export const customerApi = {
     getCart: async () => {
         try {
             const res = await apiClient.get("/carts/");
-            console.log(res.data);
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
@@ -210,6 +209,27 @@ export const customerApi = {
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
             throw error;
+        }
+    },
+
+    createConversation: async () => {
+        try {
+            const res = await apiClient.post("/talkjs/conversations/");
+            console.log(res.data);
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    sendMessage: async (conversationId: string, message: any,) => {
+        try {
+            const res = await apiClient.post("/talkjs/messages/", { conversationId, message });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
         }
     },
 
