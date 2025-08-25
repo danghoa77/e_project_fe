@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 
-export const API_BASE_URL = 'https://a4998d564296.ngrok-free.app';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const apiClient = axios.create({
     baseURL: 'http://localhost:80',

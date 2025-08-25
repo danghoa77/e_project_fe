@@ -19,6 +19,7 @@ import { LoginSchema } from "../schemas";
 import { authApi } from "../api";
 import type { LoginResponse } from "@/types/user";
 import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const GoogleIcon = () => (
   <svg
@@ -53,6 +54,7 @@ export const LoginForm = () => {
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", password: "" },
   });
+  const navigate = useNavigate();
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
@@ -60,12 +62,12 @@ export const LoginForm = () => {
       toast.success("Logged in successfully!");
       setUser(data.user, data.access_token);
 
-      // const role = data.user.role;
-      // if (role === 'admin') {
-      //     navigate('/admin');
-      // } else {
-      //     navigate('/');
-      // }
+      const role = data.user.role;
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     },
 
     onError: (error: AxiosError) => {

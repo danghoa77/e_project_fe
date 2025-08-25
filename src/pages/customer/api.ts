@@ -233,4 +233,13 @@ export const customerApi = {
         }
     },
 
+    getAdmin1st: async () => {
+        try {
+            const res = await apiClient.get("/users/admin1st/");
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
 };
