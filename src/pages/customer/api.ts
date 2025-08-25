@@ -242,4 +242,8 @@ export const customerApi = {
             throw new Error(`Fetch failed: ${error.message}`);
         }
     },
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 };
