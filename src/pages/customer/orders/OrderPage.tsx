@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { customerApi } from "../api";
 import { CartItem } from "@/types/cart";
@@ -41,7 +41,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronLeft, Pencil, Plus, Trash2 } from "lucide-react";
 
 export const OrderPage = () => {
   const navigate = useNavigate();
@@ -317,6 +317,16 @@ export const OrderPage = () => {
     <TooltipProvider>
       <div className="bg-zinc-50 min-h-screen font-sans">
         <div className="container mx-auto max-w-7xl px-4 py-8">
+          <div className="mb-8 max-w-6xl mx-auto">
+            <Button
+              onClick={() => navigate("/")}
+              variant="link"
+              className="p-0 text-neutral-600 hover:text-orange-900 transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Back to Home
+            </Button>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <Card className="shadow-sm border-zinc-200">

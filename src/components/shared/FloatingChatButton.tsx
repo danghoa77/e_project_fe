@@ -3,30 +3,40 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Talk from "talkjs";
 import { useAuthStore } from "@/store/authStore";
-
-const TALKJS_APPID = "tmEsNmUd";
+import { customerApi } from "@/pages/customer/api";
 
 export const FloatingChatButton = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const sessionRef = useRef<Talk.Session | null>(null);
+  const [admin, setAdmin] = useState<any>(null);
   const { user } = useAuthStore();
 
-  const toggleChat = () => setIsChatOpen(!isChatOpen);
+  const getAdmin1st = async () => {
+    const res = await customerApi.getAdmin1st();
+    setAdmin(res);
+  };
+  const toggleChat = async () => {
+    if (!isChatOpen && !admin) {
+      await getAdmin1st();
+    }
+    setIsChatOpen(!isChatOpen);
+  };
 
   useEffect(() => {
-    if (isChatOpen && user) {
+    if (isChatOpen && user && admin) {
       Talk.ready.then(() => {
         const me = new Talk.User({
           id: user._id,
           name: user.email,
           email: user.email,
           role: "customer",
+          locale: "en-US",
         });
 
         if (!sessionRef.current) {
           sessionRef.current = new Talk.Session({
-            appId: TALKJS_APPID as string,
+            appId: import.meta.env.VITE_TALKJS_APPID,
             me: me,
           });
         }
@@ -34,9 +44,9 @@ export const FloatingChatButton = () => {
         const session = sessionRef.current;
 
         const other = new Talk.User({
-          id: "68a986c7b2b29620c397b302",
-          name: "Admin",
-          email: "danghoabay7@gmail.com",
+          id: admin._id,
+          name: admin.email,
+          email: admin.email,
           role: "admin",
         });
 
