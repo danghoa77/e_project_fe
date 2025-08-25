@@ -36,11 +36,7 @@ export const FloatingChatButton = () => {
 
         if (!sessionRef.current) {
           sessionRef.current = new Talk.Session({
-<<<<<<< Updated upstream
-            appId: import.meta.env.VITE_TALKJS_APPID,
-=======
             appId: "tmEsNmUd",
->>>>>>> Stashed changes
             me: me,
           });
         }
