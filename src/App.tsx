@@ -30,7 +30,6 @@ import { AdminUsersPage } from "./pages/admin/users/AdminUsersPage";
 import { AdminPaymentsPage } from "./pages/admin/payments/AdminPaymentsPage";
 import { AdminChattingPage } from "./pages/admin/chatting/AdminChattingPage";
 import { AdminDetailPage } from "./pages/admin/products/AdminDetailPage";
-import { CartPage } from "./pages/customer/cart/CartPage";
 import { useAuthStore } from "./store/authStore";
 import { customerApi } from "./pages/customer/api";
 import { userStore } from "./store/userStore";
@@ -92,7 +91,6 @@ const router = createBrowserRouter([
           { path: "products", element: <ProductListPage /> },
           { path: "products/:category", element: <ProductListPage /> },
           { path: "product/:id", element: <ProductDetailPage /> },
-          { path: "cart", element: <CartPage /> },
           { path: "order-result", element: <OrderResultPage /> },
           {
             path: "checkout",
@@ -128,10 +126,6 @@ const router = createBrowserRouter([
           { path: "chatting", element: <AdminChattingPage /> },
           { path: "products/:id", element: <AdminDetailPage /> },
         ],
-      },
-      {
-        path: "auth/callback",
-        element: <AuthCallbackPage />,
       },
       {
         path: "auth/callback",

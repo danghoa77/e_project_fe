@@ -4,7 +4,7 @@ import { LoginSchema, RegisterSchema } from './schemas';
 import apiClient, { API_BASE_URL } from '../../lib/axios';
 import type { LoginResponse } from '@/types/user';
 
-export const authApi = {  
+export const authApi = {
     login: async (data: z.infer<typeof LoginSchema>): Promise<LoginResponse> => {
         const response = await apiClient.post<LoginResponse>("/auth/login/", data);
         return response.data;
@@ -22,7 +22,7 @@ export const authApi = {
     },
 
     getUserProfile: () => {
-        return apiClient.patch('/users/me');
+        return apiClient.get('/users/me');
     },
 
     getGoogleUrl: () => {

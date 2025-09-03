@@ -3,7 +3,7 @@ export type UserRole = 'admin' | 'customer';
 
 export interface UserType {
   _id: string;
-  name: string;
+  name?: string;
   email: string;
   role: UserRole;
   addresses?: ShippingAddress[];
