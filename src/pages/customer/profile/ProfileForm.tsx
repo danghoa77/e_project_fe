@@ -10,7 +10,7 @@ import { Pencil } from "lucide-react";
 import AddressModal from "@/components/shared/AddressModal";
 
 export const ProfileForm = () => {
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const navigate = useNavigate();
 
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);

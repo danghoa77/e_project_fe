@@ -1,7 +1,6 @@
 import { useAuthStore } from "@/store/authStore";
 import { customerApi } from "../api";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -38,7 +37,7 @@ const OrderHistory = () => {
 
   const handleCancel = async (orderId: string) => {
     try {
-      await customerApi.cancelOrder(orderId); // API cancelOrder ở backend
+      await customerApi.cancelOrder(orderId);
       toast.success("Order cancelled successfully!");
       setOrders((prev) =>
         prev.map((o) => (o._id === orderId ? { ...o, status: "cancelled" } : o))

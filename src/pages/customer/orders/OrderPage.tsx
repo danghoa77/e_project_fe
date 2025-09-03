@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { customerApi } from "../api";
 import { CartItem } from "@/types/cart";
@@ -222,7 +222,6 @@ export const OrderPage = () => {
             </Button>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
             <div className="lg:col-span-2">
               <Card className="shadow-sm border-zinc-200">
                 <CardContent className="p-6">
@@ -256,7 +255,6 @@ export const OrderPage = () => {
               </Card>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="space-y-6 sticky top-8">
                 <Card className="shadow-sm border-zinc-200">
@@ -349,7 +347,6 @@ export const OrderPage = () => {
           </div>
         </div>
 
-        {/* Address Modal */}
         <AddressModal
           isOpen={isAddressModalOpen}
           onClose={() => setIsAddressModalOpen(false)}

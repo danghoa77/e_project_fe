@@ -17,7 +17,6 @@ import { LoginSchema } from "../schemas";
 import { authApi } from "../api";
 import type { LoginResponse } from "@/types/user";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const GoogleIcon = () => (
@@ -47,8 +46,7 @@ const GoogleIcon = () => (
 );
 
 export const LoginForm = () => {
-  const { user, setUser } = useAuthStore();
-  const navigate = useNavigate();
+  const { setUser } = useAuthStore();
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", password: "" },
