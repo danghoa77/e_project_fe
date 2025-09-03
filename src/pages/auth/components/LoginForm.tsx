@@ -11,15 +11,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-
 import { useAuthStore } from "@/store/authStore";
 import { LoginSchema } from "../schemas";
 import { authApi } from "../api";
 import type { LoginResponse } from "@/types/user";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const GoogleIcon = () => (
   <svg
@@ -48,38 +47,32 @@ const GoogleIcon = () => (
 );
 
 export const LoginForm = () => {
-  // const navigate = useNavigate();
-  const { setUser } = useAuthStore();
+  const { user, setUser } = useAuthStore();
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", password: "" },
   });
-  const navigate = useNavigate();
 
-  const loginMutation = useMutation({
-    mutationFn: authApi.login,
-    onSuccess: (data: LoginResponse) => {
+  const [loading, setLoading] = useState(false);
+
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+    try {
+      setLoading(true);
+      const data: LoginResponse = await authApi.login(values);
+
       toast.success("Logged in successfully!");
       setUser(data.user, data.access_token);
-
-      const role = data.user.role;
-      if (role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
-    },
-
-    onError: (error: AxiosError) => {
+    } catch (error) {
+      const axiosError = error as AxiosError;
       const errorMessage =
-        (error.response?.data as { message?: string })?.message ||
+        (axiosError.response?.data as { message?: string })?.message ||
         "Email or password is incorrect.";
+      console.log(axiosError);
       toast.error(errorMessage);
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof LoginSchema>) {
-    loginMutation.mutate(values);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -126,10 +119,11 @@ export const LoginForm = () => {
         <Button
           type="submit"
           className="w-full rounded-none text-white bg-neutral-800 hover:bg-neutral-700"
-          disabled={loginMutation.isPending}
+          disabled={loading}
         >
-          {loginMutation.isPending ? "Logging in..." : "Login"}
+          {loading ? "Logging in..." : "Login"}
         </Button>
+
         <div className="flex items-center gap-2 md:gap-4">
           <div className="flex-grow border-t border-neutral-300"></div>
           <span className="text-xs text-neutral-500 uppercase">
@@ -137,6 +131,7 @@ export const LoginForm = () => {
           </span>
           <div className="flex-grow border-t border-neutral-300"></div>
         </div>
+
         <a href={authApi.getGoogleUrl()}>
           <Button
             variant="outline"

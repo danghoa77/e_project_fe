@@ -13,7 +13,7 @@ const AddressManagement = () => (
 
 export const ProfilePage = () => {
   return (
-    <div className="font-sans bg-[#fcf7f1] min-h-screen">
+    <div className="font-sans bg-gray-100 min-h-screen">
       <div className="container mx-auto max-w-6xl py-12 px-6">
         <h1 className="text-4xl mb-8">My Account</h1>
         <Tabs
@@ -33,12 +33,12 @@ export const ProfilePage = () => {
             >
               Order History
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="addresses"
               className="w-full justify-start data-[state=active]:font-bold data-[state=active]:shadow-none"
             >
               Addresses
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
 
           <div className="w-full md:w-4/5">

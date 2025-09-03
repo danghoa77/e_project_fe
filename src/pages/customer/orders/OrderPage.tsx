@@ -12,36 +12,11 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, ChevronLeft, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronLeft, Pencil, Plus } from "lucide-react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import AddressModal from "@/components/shared/AddressModal";
 
 export const OrderPage = () => {
   const navigate = useNavigate();
@@ -55,8 +30,6 @@ export const OrderPage = () => {
     "cash"
   );
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const [addressForm, setAddressForm] = useState({ street: "", city: "" });
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -103,83 +76,6 @@ export const OrderPage = () => {
     [cartItems]
   );
 
-  const canAddAddress = allAddresses.length < 5;
-
-  const handleSelectAddress = async (address: ShippingAddress) => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    const payload = { addresses: [{ ...address, isDefault: true }] };
-    try {
-      const res = await customerApi.updateProfile(payload);
-      setAllAddresses(res.addresses);
-      setShippingAddress(
-        res.addresses.find((a: ShippingAddress) => a.isDefault)
-      );
-      toast.success(`Address updated to: ${address.street}`);
-      setIsAddressModalOpen(false);
-    } catch {
-      toast.error("Could not switch address.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleFormSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!canAddAddress) {
-      toast.warning("You can only have a maximum of 5 addresses.");
-      return;
-    }
-    if (!addressForm.street || !addressForm.city) {
-      toast.warning("Please fill in all address fields.");
-      return;
-    }
-    setIsSubmitting(true);
-    const newAddressPayload = {
-      addresses: [{ ...addressForm, isDefault: true }],
-    };
-    try {
-      const res = await customerApi.updateProfile(newAddressPayload);
-      setAllAddresses(res.addresses);
-      setShippingAddress(
-        res.addresses.find((a: ShippingAddress) => a.isDefault)
-      );
-      toast.success("New address added successfully!");
-      setIsAddressModalOpen(false);
-      setIsAddingNew(false);
-      setAddressForm({ street: "", city: "" });
-    } catch {
-      toast.error("Could not add shipping address.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteAddress = async (addressIdToDelete: string) => {
-    setIsSubmitting(true);
-    try {
-      await customerApi.deleteAddress(addressIdToDelete);
-
-      const updatedList = allAddresses.filter(
-        (addr) => addr._id !== addressIdToDelete
-      );
-
-      if (shippingAddress?._id === addressIdToDelete) {
-        const newDefault =
-          updatedList.find((addr) => addr.isDefault) || updatedList[0];
-        setShippingAddress(newDefault);
-      }
-
-      setAllAddresses(updatedList);
-      toast.success("Address has been deleted.");
-    } catch (error) {
-      toast.error("Failed to delete address.");
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handlePlaceOrder = async () => {
     if (!shippingAddress) {
       toast.error("Please add a shipping address to proceed.");
@@ -203,6 +99,7 @@ export const OrderPage = () => {
       },
       totalPrice: subtotal,
     };
+
     if (paymentMethod === "cash") {
       try {
         await customerApi.createOrder(orderPayload);
@@ -238,7 +135,6 @@ export const OrderPage = () => {
         const order = await customerApi.createOrder(orderPayload);
         if (order && order._id && order.totalPrice != null) {
           await handelMomo(order._id, order.totalPrice);
-          console.log(order._id);
         } else {
           throw new Error("Order data is incomplete.");
         }
@@ -262,7 +158,6 @@ export const OrderPage = () => {
         const order = await customerApi.createOrder(orderPayload);
         if (order && order._id && order.totalPrice != null) {
           await handelVnpay(order._id, order.totalPrice);
-          console.log(order._id);
         } else {
           throw new Error("Order data is incomplete.");
         }
@@ -274,8 +169,6 @@ export const OrderPage = () => {
         setIsSubmitting(false);
       }
     }
-
-    console.log(orderPayload, paymentMethod, subtotal);
   };
 
   if (isLoading) {
@@ -292,13 +185,14 @@ export const OrderPage = () => {
       if (res) {
         window.location.href = res;
       } else {
-        toast.error("Could not get VNPay link.");
+        toast.error("Could not get MOMO link.");
       }
     } catch (err) {
-      toast.error("VNPay payment failed.");
+      toast.error("MOMO payment failed.");
       console.error(err);
     }
   };
+
   const handelVnpay = async (orderId: string, amount: number) => {
     try {
       const res = await customerApi.createVnpayUrl(orderId, amount);
@@ -328,6 +222,7 @@ export const OrderPage = () => {
             </Button>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
             <div className="lg:col-span-2">
               <Card className="shadow-sm border-zinc-200">
                 <CardContent className="p-6">
@@ -360,6 +255,8 @@ export const OrderPage = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="space-y-6 sticky top-8">
                 <Card className="shadow-sm border-zinc-200">
@@ -375,7 +272,7 @@ export const OrderPage = () => {
                     </div>
                     <Separator className="bg-zinc-200" />
                     <div className="space-y-2">
-                      <Label className="font-medium">Shipping Address</Label>
+                      <label className="font-medium">Shipping Address</label>
                       {shippingAddress ? (
                         <div className="border border-zinc-200 rounded-md p-3 flex justify-between items-center text-sm">
                           <div>
@@ -399,46 +296,39 @@ export const OrderPage = () => {
                         <Button
                           variant="outline"
                           className="w-full"
-                          onClick={() => {
-                            if (canAddAddress) {
-                              setIsAddingNew(true);
-                              setIsAddressModalOpen(true);
-                            } else {
-                              toast.warning(
-                                "You have reached the maximum of 5 addresses."
-                              );
-                            }
-                          }}
+                          onClick={() => setIsAddressModalOpen(true)}
                         >
                           <Plus className="h-4 w-4 mr-2" /> Add Address
                         </Button>
                       )}
                     </div>
+
+                    {/* Payment */}
                     <div className="space-y-2">
-                      <Label className="font-medium">Payment Method</Label>
+                      <label className="font-medium">Payment Method</label>
                       <RadioGroup
                         value={paymentMethod}
                         onValueChange={(value) =>
-                          setPaymentMethod(value as "cash" | "momo")
+                          setPaymentMethod(value as "cash" | "momo" | "vnpay")
                         }
                         className="space-y-2"
                       >
-                        <Label className="flex items-center p-3 border border-zinc-200 rounded-md has-[:checked]:border-orange-500 cursor-pointer">
+                        <label className="flex items-center p-3 border border-zinc-200 rounded-md has-[:checked]:border-orange-500 cursor-pointer">
                           <RadioGroupItem value="cash" id="cash" />
                           <span className="ml-3 font-medium text-sm">
                             Cash on Delivery
                           </span>
-                        </Label>
-                        <Label className="flex items-center p-3 border border-zinc-200 rounded-md has-[:checked]:border-orange-500 cursor-pointer">
+                        </label>
+                        <label className="flex items-center p-3 border border-zinc-200 rounded-md has-[:checked]:border-orange-500 cursor-pointer">
                           <RadioGroupItem value="momo" id="momo" />
                           <span className="ml-3 font-medium text-sm">MOMO</span>
-                        </Label>
-                        <Label className="flex items-center p-3 border border-zinc-200 rounded-md has-[:checked]:border-orange-500 cursor-pointer">
+                        </label>
+                        <label className="flex items-center p-3 border border-zinc-200 rounded-md has-[:checked]:border-orange-500 cursor-pointer">
                           <RadioGroupItem value="vnpay" id="vnpay" />
                           <span className="ml-3 font-medium text-sm">
                             VNPAY
                           </span>
-                        </Label>
+                        </label>
                       </RadioGroup>
                     </div>
                   </CardContent>
@@ -459,164 +349,15 @@ export const OrderPage = () => {
           </div>
         </div>
 
-        <Dialog open={isAddressModalOpen} onOpenChange={setIsAddressModalOpen}>
-          <DialogContent className="sm:max-w-[480px] bg-white">
-            <DialogHeader>
-              <DialogTitle className="text-xl tracking-wide">
-                {isAddingNew ? "Add New Address" : "Select Shipping Address"}
-              </DialogTitle>
-              <DialogDescription>
-                {isAddingNew
-                  ? "Please enter your new address details."
-                  : "Choose from your saved addresses or add a new one."}
-              </DialogDescription>
-            </DialogHeader>
-            {isAddingNew ? (
-              <form onSubmit={handleFormSubmit} className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="street" className="text-right">
-                    Street
-                  </Label>
-                  <Input
-                    id="street"
-                    value={addressForm.street}
-                    onChange={(e) =>
-                      setAddressForm({ ...addressForm, street: e.target.value })
-                    }
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="city" className="text-right">
-                    City
-                  </Label>
-                  <Input
-                    id="city"
-                    value={addressForm.city}
-                    onChange={(e) =>
-                      setAddressForm({ ...addressForm, city: e.target.value })
-                    }
-                    className="col-span-3"
-                  />
-                </div>
-                <DialogFooter className="pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsAddingNew(false)}
-                  >
-                    Back to list
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-[#F37321] hover:bg-[#E86A1A] text-white"
-                  >
-                    {isSubmitting ? "Saving..." : "Save Address"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            ) : (
-              <div className="py-4">
-                <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
-                  {allAddresses.map((addr: ShippingAddress) => (
-                    <div
-                      key={addr._id}
-                      className="group p-3 border rounded-md flex justify-between items-center hover:border-orange-400"
-                    >
-                      <div
-                        className="flex-grow cursor-pointer"
-                        onClick={() => handleSelectAddress(addr)}
-                      >
-                        <p className="font-medium text-sm">
-                          {addr.street}, {addr.city}
-                        </p>
-                        {addr.isDefault && (
-                          <span className="text-xs font-semibold text-green-600">
-                            Default
-                          </span>
-                        )}
-                      </div>
-                      {!addr.isDefault && (
-                        <AlertDialog>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 invisible group-hover:visible"
-                                  onClick={(e) => e.stopPropagation()}
-                                  disabled={isSubmitting}
-                                >
-                                  <Trash2 className="h-4 w-4 text-red-500" />
-                                </Button>
-                              </AlertDialogTrigger>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Delete Address</p>
-                            </TooltipContent>
-                          </Tooltip>
-                          <AlertDialogContent className="bg-white">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Are you absolutely sure?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently delete the address:{" "}
-                                <span className="font-semibold">
-                                  {addr.street}, {addr.city}
-                                </span>
-                                .
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-600 hover:bg-red-700"
-                                onClick={() => {
-                                  if (addr._id) {
-                                    handleDeleteAddress(addr._id);
-                                  } else {
-                                    toast.error(
-                                      "Cannot delete address: Missing ID."
-                                    );
-                                  }
-                                }}
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <DialogFooter className="pt-4">
-                  <Tooltip>
-                    <TooltipTrigger className="w-full">
-                      <Button
-                        onClick={() => setIsAddingNew(true)}
-                        className="w-full"
-                        variant="outline"
-                        disabled={!canAddAddress}
-                      >
-                        <Plus className="h-4 w-4 mr-2" /> Add New Address
-                      </Button>
-                    </TooltipTrigger>
-                    {!canAddAddress && (
-                      <TooltipContent>
-                        <p>You can only have a maximum of 5 addresses.</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </DialogFooter>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        {/* Address Modal */}
+        <AddressModal
+          isOpen={isAddressModalOpen}
+          onClose={() => setIsAddressModalOpen(false)}
+          addresses={allAddresses}
+          setAddresses={setAllAddresses}
+          shippingAddress={shippingAddress}
+          setShippingAddress={setShippingAddress}
+        />
       </div>
     </TooltipProvider>
   );

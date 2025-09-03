@@ -8,7 +8,6 @@ import {
   SheetFooter,
   SheetClose,
 } from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { Minus, Plus, X } from "lucide-react";
 import { customerApi } from "../api";
@@ -20,8 +19,8 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
   const { decreaseCartItemCount } = userStore();
   const [isOpen, setIsOpen] = useState(false);
   const [cart, setCart] = useState<Cart>({ items: [] });
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
   const normalizeCart = (data: any): Cart => {
     if (Array.isArray(data)) return { items: data };
     if (data && Array.isArray(data.items)) return { items: data.items };
@@ -82,13 +81,11 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
 
   const removeItem = async (productId: string, variantId: string) => {
     const prevCart = { ...cart, items: [...cart.items] };
-    const prevSelectedItems = [...selectedItems];
 
     setCart((prev) => ({
       ...prev,
       items: prev.items.filter((item) => item.variantId !== variantId),
     }));
-    setSelectedItems((prev) => prev.filter((id) => id !== variantId));
 
     try {
       const res = await customerApi.removeItemFromCart(productId, variantId);
@@ -108,39 +105,16 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
     } catch (err) {
       console.error("Error removing item:", err);
       setCart(prevCart);
-      setSelectedItems(prevSelectedItems);
     }
   };
 
-  const toggleItemSelection = (variantId: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(variantId)
-        ? prev.filter((id) => id !== variantId)
-        : [...prev, variantId]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedItems.length === cart.items.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(cart.items.map((item) => item.variantId));
-    }
-  };
-
-  const subtotal = cart.items
-    .filter((item) => selectedItems.includes(item.variantId))
-    .reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-  const isAllSelected =
-    cart.items.length > 0 && selectedItems.length === cart.items.length;
-  const isCheckoutDisabled = selectedItems.length === 0;
+  const subtotal = cart.items.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   const handleCheckout = () => {
-    const itemsToCheckout = cart.items.filter((item) =>
-      selectedItems.includes(item.variantId)
-    );
-    console.log("Proceeding to checkout with:", itemsToCheckout);
+    console.log("Proceeding to checkout with:", cart.items);
     setIsOpen(false);
   };
 
@@ -157,7 +131,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
         <DialogContent></DialogContent>
         <SheetHeader className="relative p-6 border-b border-neutral-200">
           <SheetTitle className="text-xl text-left font-normal tracking-wider uppercase">
-            <Link to="/cart">Your Cart</Link>
+            Your Cart
           </SheetTitle>
           <SheetClose asChild>
             <Button
@@ -177,24 +151,8 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
         ) : cart.items.length > 0 ? (
           <>
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="select-all"
-                  checked={isAllSelected}
-                  onCheckedChange={toggleSelectAll}
-                />
-                <label htmlFor="select-all" className="text-sm font-medium">
-                  Select All ({selectedItems.length} items)
-                </label>
-              </div>
-
               {cart.items.map((item) => (
                 <div key={item.variantId} className="flex gap-4 items-start">
-                  <Checkbox
-                    className="mt-1"
-                    checked={selectedItems.includes(item.variantId)}
-                    onCheckedChange={() => toggleItemSelection(item.variantId)}
-                  />
                   <img
                     src={item.imageUrl}
                     alt={item.name}
@@ -261,26 +219,17 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
             <SheetFooter className="p-6 border-t border-neutral-200 bg-[#fcf7f1]">
               <div className="w-full space-y-4">
                 <div className="flex justify-between font-semibold">
-                  <span>Subtotal ({selectedItems.length} items)</span>
+                  <span>Subtotal ({cart.items.length} items)</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
-                {isCheckoutDisabled ? (
-                  <Button
-                    className="w-full rounded-none bg-neutral-800 text-white uppercase opacity-50 cursor-not-allowed"
-                    disabled
-                  >
+                <Button
+                  asChild
+                  className="w-full rounded-none bg-neutral-800 hover:bg-neutral-700 text-white uppercase"
+                >
+                  <Link to="/checkout" onClick={handleCheckout}>
                     Proceed to Checkout
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    className="w-full rounded-none bg-neutral-800 hover:bg-neutral-700 text-white uppercase"
-                  >
-                    <Link to="/checkout" onClick={handleCheckout}>
-                      Proceed to Checkout
-                    </Link>
-                  </Button>
-                )}
+                  </Link>
+                </Button>
               </div>
             </SheetFooter>
           </>
