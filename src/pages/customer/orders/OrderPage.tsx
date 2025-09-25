@@ -87,6 +87,7 @@ export const OrderPage = () => {
       items: cartItems.map((item: CartItem) => ({
         productId: item.productId,
         variantId: item.variantId,
+        sizeId: item.sizeId,
         quantity: item.quantity,
         name: item.name,
         price: item.price,
@@ -107,6 +108,7 @@ export const OrderPage = () => {
           productId: item.productId,
           variantId: item.variantId,
           quantity: item.quantity,
+          sizeId: item.sizeId,
         }));
 
         await customerApi.decreaseStock(stockPayload);

@@ -5,10 +5,9 @@ export const AdminDashboardPage = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl  text-neutral-800">Welcome back, Admin</h1>
-        <p className="text-neutral-500 mt-1">
-          Here are today's stats from your online store!
-        </p>
+        <h1 className="font-bold  text-3xl md:text-4xl text-neutral-800 mt-8 mb-8">
+          Dashboard
+        </h1>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

@@ -91,11 +91,8 @@ export const AdminUsersPage = () => {
   return (
     <div className="p-4 md:p-8 space-y-8 bg-stone-50 min-h-screen font-sans">
       <div className="flex items-center justify-between">
-        <h1
-          className="text-3xl font-bold tracking-tight"
-          style={{ color: HERMES_BROWN }}
-        >
-          Manage User
+        <h1 className="font-bold  text-3xl md:text-4xl text-neutral-800 mb-8">
+          Users
         </h1>
         <AddAdminDialog />
       </div>

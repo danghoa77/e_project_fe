@@ -17,6 +17,8 @@ export const AuthLoader = ({ children }: React.PropsWithChildren) => {
         setUser(user, token);
         if (user.role === "admin") {
           navigate("/admin");
+        } else {
+          navigate("/");
         }
       } catch (err) {
         toast.error("Session expired!");

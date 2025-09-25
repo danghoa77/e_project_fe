@@ -3,7 +3,7 @@ import apiClient from "@/lib/axios";
 
 const adminApi = {
 
-  fetchProducts: async () => {
+  getProducts: async () => {
     const response = await apiClient.get('/products/');
     return response.data;
   },
@@ -87,7 +87,34 @@ const adminApi = {
       throw new Error(`Fetch failed: ${error.message}`);
     }
   },
-  
+
+  getAllCategory: async () => {
+    const response = await apiClient.get('/products/categories/all');
+    return response.data;
+  },
+
+  getCategory: async (id: string) => {
+    const response = await apiClient.get(`/products/category/${id}/`);
+    return response.data;
+  },
+
+  addCategory: async (name: string) => {
+    const response = await apiClient.post('/products/category/', { name });
+    return response.data;
+  },
+
+  deleteCategory: async (id: string) => {
+    const response = await apiClient.delete(`/products/category/${id}/`);
+    return response.data;
+  },
+
+  updateCateogory: async (id: string, name: string) => {
+    const response = await apiClient.patch(`/products/category/${id}/`, { name });
+    return response.data;
+  },
+
+
+
 };
 
 export default adminApi;

@@ -1,3 +1,4 @@
+// src/pages/customer/ProductDetailPage.tsx
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import {
 import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { customerApi } from "../api";
-import { Product } from "@/types/product";
+import type { ResProduct, ColorVariant, SizeOption } from "@/types/product";
 import { toast } from "sonner";
 import { userStore } from "@/store/userStore";
 
@@ -53,15 +54,13 @@ export const ProductDetailPage = () => {
   const navigate = useNavigate();
   const { increaseCartItemCount } = userStore();
 
-  const [product, setProduct] = React.useState<Product | null>(null);
+  const [product, setProduct] = React.useState<ResProduct | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // state chọn biến thể
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
 
-  // carousel state
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 
@@ -72,7 +71,6 @@ export const ProductDetailPage = () => {
       try {
         const res = await customerApi.findOneProduct(id);
         setProduct(res);
-        console.log(res);
       } catch (err) {
         console.error("Failed to fetch product", err);
       } finally {
@@ -90,43 +88,70 @@ export const ProductDetailPage = () => {
   }, [api]);
 
   const availableColors = React.useMemo(
-    () => (product ? [...new Set(product.variants.map((v) => v.color))] : []),
+    () => (product ? product.variants.map((v) => v.color) : []),
     [product]
   );
-  const availableSizes = React.useMemo(
-    () => (product ? [...new Set(product.variants.map((v) => v.size))] : []),
-    [product]
-  );
+
+  const availableSizes = React.useMemo(() => {
+    if (!product || !selectedColor) return [];
+    const variant = product.variants.find((v) => v.color === selectedColor);
+    return variant ? variant.sizes.map((s) => s.size) : [];
+  }, [product, selectedColor]);
 
   React.useEffect(() => {
     if (availableColors.length === 1) setSelectedColor(availableColors[0]);
-    if (availableSizes.length === 1) setSelectedSize(availableSizes[0]);
-  }, [availableColors, availableSizes]);
+  }, [availableColors]);
 
-  const selectedVariant = React.useMemo(() => {
-    if (!product || !selectedColor || !selectedSize) return null;
-    return (
-      product.variants.find(
-        (v) => v.color === selectedColor && v.size === selectedSize
-      ) || null
-    );
-  }, [product, selectedColor, selectedSize]);
+  React.useEffect(() => {
+    if (!product || !selectedColor) {
+      setSelectedSize(null);
+      return;
+    }
+    const variant = product.variants.find((v) => v.color === selectedColor);
+    if (!variant) {
+      setSelectedSize(null);
+      return;
+    }
+
+    if (variant.sizes.length === 1) {
+      setSelectedSize(variant.sizes[0].size);
+    } else {
+      if (!variant.sizes.some((s) => s.size === selectedSize)) {
+        setSelectedSize(null);
+      }
+    }
+  }, [product, selectedColor]);
+
+  const selectedColorVariant: ColorVariant | undefined = React.useMemo(() => {
+    if (!product || !selectedColor) return undefined;
+    return product.variants.find((v) => v.color === selectedColor);
+  }, [product, selectedColor]);
+
+  const selectedSizeOption: SizeOption | undefined = React.useMemo(() => {
+    if (!selectedColorVariant || !selectedSize) return undefined;
+    return selectedColorVariant.sizes.find((s) => s.size === selectedSize);
+  }, [selectedColorVariant, selectedSize]);
 
   const displayPrice =
-    selectedVariant?.price ?? product?.variants[0]?.price ?? 0;
-  const displaySalePrice = selectedVariant?.salePrice;
+    selectedSizeOption?.price ?? product?.variants[0]?.sizes[0]?.price ?? 0;
+  const displaySalePrice = selectedSizeOption?.salePrice;
 
-  const isAddToCartDisabled = !selectedVariant || selectedVariant.stock === 0;
+  const isAddToCartDisabled =
+    !selectedColorVariant ||
+    !selectedSizeOption ||
+    selectedSizeOption.stock === 0;
 
   const handleAddToCart = async () => {
-    if (!selectedVariant || !product) return;
+    if (!product || !selectedColorVariant || !selectedSizeOption) return;
     setIsAdding(true);
     try {
       const payload = {
         productId: product._id,
-        variantId: selectedVariant._id,
+        variantId: selectedColorVariant._id,
+        sizeId: selectedSizeOption._id,
         quantity: 1,
       };
+      console.log("Adding to cart with payload:", payload);
       await customerApi.addItemToCart(payload);
       increaseCartItemCount();
       toast.success("Added to cart!");
@@ -139,7 +164,6 @@ export const ProductDetailPage = () => {
   };
 
   if (isLoading) return <ProductDetailSkeleton />;
-
   if (!product)
     return (
       <div className="text-center py-20 max-w-6xl mx-auto">
@@ -212,10 +236,12 @@ export const ProductDetailPage = () => {
             </h1>
             <Button
               variant="link"
-              onClick={() => navigate(`/products?category=${product.category}`)}
+              onClick={() =>
+                navigate(`/products?category=${product.category._id}`)
+              }
               className="p-0 h-auto text-sm text-stone-500 hover:text-orange-700 uppercase tracking-widest mt-2 self-start"
             >
-              {product.category}
+              {product.category.name}
             </Button>
 
             <div className="flex items-baseline gap-3 mt-4">
@@ -245,19 +271,31 @@ export const ProductDetailPage = () => {
                 </span>
               </h3>
               <div className="flex gap-3 flex-wrap">
-                {availableColors.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={cn(
-                      "h-9 w-9 rounded-full border-2 transition-all duration-200 shadow-sm hover:ring-2 hover:ring-orange-400 hover:ring-offset-1",
-                      selectedColor === color
-                        ? "border-orange-600 scale-110"
-                        : "border-neutral-200"
-                    )}
-                    style={{ backgroundColor: color.toLowerCase() }}
-                  />
-                ))}
+                {availableColors.map((color) => {
+                  const variant = product.variants.find(
+                    (v) => v.color === color
+                  );
+                  return (
+                    <button
+                      key={color}
+                      onClick={() => {
+                        setSelectedColor(color);
+                        if (variant && variant.sizes.length === 1) {
+                          setSelectedSize(variant.sizes[0].size);
+                        } else {
+                          setSelectedSize(null);
+                        }
+                      }}
+                      className={cn(
+                        "h-9 w-9 rounded-full border-2 transition-all duration-200 shadow-sm hover:ring-2 hover:ring-orange-400 hover:ring-offset-1",
+                        selectedColor === color
+                          ? "border-orange-600 scale-110"
+                          : "border-neutral-200"
+                      )}
+                      style={{ backgroundColor: color.toLowerCase() }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -270,11 +308,12 @@ export const ProductDetailPage = () => {
               </h3>
               <div className="flex gap-2 flex-wrap">
                 {availableSizes.map((size) => {
-                  const isAvailable = product.variants.some(
-                    (v) =>
-                      v.size === size &&
-                      (selectedColor ? v.color === selectedColor : true)
+                  const variant = product.variants.find(
+                    (v) => v.color === selectedColor
                   );
+                  const sizeObj = variant?.sizes.find((s) => s.size === size);
+                  const isAvailable = sizeObj ? sizeObj.stock > 0 : false;
+
                   return (
                     <Button
                       key={size}
@@ -305,7 +344,7 @@ export const ProductDetailPage = () => {
               >
                 <ShoppingBag className="h-5 w-5 mr-3" />
                 {isAddToCartDisabled
-                  ? selectedVariant?.stock === 0
+                  ? selectedSizeOption?.stock === 0
                     ? "Out of Stock"
                     : "Select Options"
                   : isAdding
@@ -313,6 +352,7 @@ export const ProductDetailPage = () => {
                   : "Add to Cart"}
               </Button>
             </div>
+
             <div className="mt-10">
               <Accordion
                 type="single"
@@ -322,10 +362,11 @@ export const ProductDetailPage = () => {
               >
                 <AccordionItem value="description">
                   <AccordionTrigger>Description</AccordionTrigger>
-                  <AccordionContent className="text-base text-neutral-700 leading-relaxed">
+                  <AccordionContent className="text-base text-neutral-700 leading-relaxed whitespace-pre-line">
                     {product.description || "No description available."}
                   </AccordionContent>
                 </AccordionItem>
+
                 <AccordionItem value="shipping">
                   <AccordionTrigger>Shipping & Returns</AccordionTrigger>
                   <AccordionContent className="text-base text-neutral-700 leading-relaxed">

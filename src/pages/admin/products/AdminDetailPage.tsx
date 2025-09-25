@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import adminApi from "../api";
-import { Product } from "@/types/product";
+import type { ResProduct, ColorVariant, SizeOption } from "@/types/product";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/popover";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("en-US", {
@@ -54,13 +53,10 @@ const AdminDetailSkeleton = () => (
 );
 
 export const AdminDetailPage = () => {
-
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = React.useState<Product | null>(null);
+  const [product, setProduct] = React.useState<ResProduct | null>(null);
   const [loading, setLoading] = React.useState(true);
-  const [hoveredVariantId, setHoveredVariantId] = React.useState<string | null>(
-    null
-  );
+  const [hoveredSizeId, setHoveredSizeId] = React.useState<string | null>(null);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -68,7 +64,7 @@ export const AdminDetailPage = () => {
       setLoading(true);
       try {
         if (!id) return;
-        const res = await adminApi.findOneProduct(id);
+        const res: ResProduct = await adminApi.findOneProduct(id);
         setProduct(res);
       } catch (err) {
         console.error("Failed to fetch product detail", err);
@@ -105,7 +101,6 @@ export const AdminDetailPage = () => {
           Back to Products
         </Button>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-          {/* Cột trái (2/5): Carousel ảnh sản phẩm nhỏ gọn */}
           <div className="lg:col-span-2 lg:sticky top-8">
             <Carousel className="w-full" opts={{ loop: true }}>
               <CarouselContent>
@@ -129,7 +124,7 @@ export const AdminDetailPage = () => {
           <div className="lg:col-span-3 space-y-6">
             <div>
               <p className="text-sm font-bold uppercase tracking-wider text-orange-600">
-                {product.category}
+                {product.category?.name}
               </p>
               <h1 className="text-4xl font-bold text-stone-800 mt-1">
                 {product.name}
@@ -143,66 +138,68 @@ export const AdminDetailPage = () => {
             <div className="space-y-4 !mt-8">
               <h2 className="text-lg font-semibold text-stone-700">Variants</h2>
               <div className="flex flex-wrap gap-3">
-                {product.variants.map((v) => (
-                  <Popover open={hoveredVariantId === v._id} key={v._id}>
-                    <PopoverTrigger asChild>
-                      <div
-                        onMouseEnter={() => setHoveredVariantId(v._id)}
-                        onMouseLeave={() => setHoveredVariantId(null)}
+                {product.variants.map((variant: ColorVariant) =>
+                  variant.sizes.map((s: SizeOption) => (
+                    <Popover key={s._id} open={hoveredSizeId === s._id}>
+                      <PopoverTrigger asChild>
+                        <div
+                          onMouseEnter={() => setHoveredSizeId(s._id)}
+                          onMouseLeave={() => setHoveredSizeId(null)}
+                        >
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "rounded-full px-4 py-2 h-auto transition-colors duration-200",
+                              hoveredSizeId === s._id
+                                ? "bg-orange-600 text-white border-orange-600"
+                                : "bg-white"
+                            )}
+                          >
+                            {variant.color} / {s.size}
+                          </Button>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-4 space-y-2 bg-white border border-stone-200 rounded-lg shadow-lg z-10"
+                        side="top"
+                        align="start"
                       >
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "rounded-full px-4 py-2 h-auto transition-colors duration-200",
-                            hoveredVariantId === v._id
-                              ? "bg-orange-600 text-white border-orange-600"
-                              : "bg-white"
-                          )}
-                        >
-                          {v.color} / {v.size}
-                        </Button>
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-4 space-y-2 bg-white border border-stone-200 rounded-lg shadow-lg z-10"
-                      side="top"
-                      align="start"
-                    >
-                      <p className="font-semibold text-sm">Details</p>
-                      <div className="text-sm">
-                        <span className="font-medium text-neutral-600">
-                          Price:
-                        </span>
-                        <span className="ml-2">
-                          {v.salePrice && v.salePrice < v.price ? (
-                            <>
-                              <span className="text-orange-600 font-bold">
-                                {formatPrice(v.salePrice)}
-                              </span>
-                              <span className="ml-2 line-through text-xs text-neutral-500">
-                                {formatPrice(v.price)}
-                              </span>
-                            </>
-                          ) : (
-                            <span>{formatPrice(v.price)}</span>
-                          )}
-                        </span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium text-neutral-600">
-                          Stock:
-                        </span>
-                        <span
-                          className={`ml-2 font-bold ${
-                            v.stock > 0 ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {v.stock}
-                        </span>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                ))}
+                        <p className="font-semibold text-sm">Details</p>
+                        <div className="text-sm">
+                          <span className="font-medium text-neutral-600">
+                            Price:
+                          </span>
+                          <span className="ml-2">
+                            {s.salePrice && s.salePrice < s.price ? (
+                              <>
+                                <span className="text-orange-600 font-bold">
+                                  {formatPrice(s.salePrice)}
+                                </span>
+                                <span className="ml-2 line-through text-xs text-neutral-500">
+                                  {formatPrice(s.price)}
+                                </span>
+                              </>
+                            ) : (
+                              <span>{formatPrice(s.price)}</span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium text-neutral-600">
+                            Stock:
+                          </span>
+                          <span
+                            className={`ml-2 font-bold ${
+                              s.stock > 0 ? "text-green-600" : "text-red-600"
+                            }`}
+                          >
+                            {s.stock}
+                          </span>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  ))
+                )}
               </div>
             </div>
 

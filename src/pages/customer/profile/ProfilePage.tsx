@@ -33,12 +33,12 @@ export const ProfilePage = () => {
             >
               Order History
             </TabsTrigger>
-            {/* <TabsTrigger
-              value="addresses"
+            <TabsTrigger
+              value="loyalty"
               className="w-full justify-start data-[state=active]:font-bold data-[state=active]:shadow-none"
             >
-              Addresses
-            </TabsTrigger> */}
+              Hismes Loyalty
+            </TabsTrigger>
           </TabsList>
 
           <div className="w-full md:w-4/5">

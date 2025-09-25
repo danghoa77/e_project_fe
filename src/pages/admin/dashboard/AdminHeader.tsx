@@ -2,11 +2,13 @@ import { useAuthStore } from "@/store/authStore";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { authApi } from "@/pages/auth/api";
 export const AdminHeader = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const handleLogout = async () => {
     try {
+      await authApi.logout();
       await logout();
       toast.info("You have been logged out.");
       navigate("/");

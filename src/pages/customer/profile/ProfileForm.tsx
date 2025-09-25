@@ -50,6 +50,7 @@ export const ProfileForm = () => {
 
   const handleLogout = async () => {
     try {
+      await authApi.logout();
       await logout();
       toast.info("You have been logged out.");
       navigate("/");

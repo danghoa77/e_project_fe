@@ -1,5 +1,5 @@
 // src/components/shared/FloatingChatButton.tsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import Talk from "talkjs";
 import { useAuthStore } from "@/store/authStore";
@@ -11,17 +11,36 @@ export const FloatingChatButton = () => {
   const sessionRef = useRef<Talk.Session | null>(null);
   const [admin, setAdmin] = useState<any>(null);
   const { user } = useAuthStore();
+  const [mode, setMode] = useState<string>("");
 
   const getAdmin1st = async () => {
     const res = await customerApi.getAdmin1st();
     setAdmin(res);
   };
+
   const toggleChat = async () => {
     if (!isChatOpen && !admin) {
       await getAdmin1st();
     }
-    setIsChatOpen(!isChatOpen);
+    setIsChatOpen((prev) => !prev);
   };
+
+  // gọi API khi có tin nhắn (chỉ khi bot mode)
+  const handelAskofUser = useCallback(
+    async (conversationId: string, message: string) => {
+      try {
+        if (mode === "bot") {
+          await customerApi.handleMessage(conversationId, message);
+        }
+      } catch (error) {
+        console.error("Error fetching mode:", error);
+      }
+    },
+    [mode]
+  );
+
+  // handler giữ tham chiếu ổn định
+  const messageHandlerRef = useRef<any>(null);
 
   useEffect(() => {
     if (isChatOpen && user && admin) {
@@ -37,7 +56,7 @@ export const FloatingChatButton = () => {
         if (!sessionRef.current) {
           sessionRef.current = new Talk.Session({
             appId: "tmEsNmUd",
-            me: me,
+            me,
           });
         }
 
@@ -52,8 +71,19 @@ export const FloatingChatButton = () => {
 
         const conversationId = Talk.oneOnOneId(me, other);
         const conversation = session.getOrCreateConversation(conversationId);
+
         conversation.setParticipant(me);
         conversation.setParticipant(other);
+
+        if (!messageHandlerRef.current) {
+          messageHandlerRef.current = (event: any) => {
+            if (event.sender?.id === user._id && mode === "bot") {
+              handelAskofUser(conversationId, event.body);
+            }
+          };
+          session.on("message", messageHandlerRef.current);
+        }
+
         const chatbox = session.createChatbox(conversation, {
           showChatHeader: true,
         });
@@ -62,19 +92,58 @@ export const FloatingChatButton = () => {
     }
 
     return () => {
-      if (sessionRef.current) {
+      if (sessionRef.current && messageHandlerRef.current) {
+        sessionRef.current.off("message", messageHandlerRef.current);
+        messageHandlerRef.current = null;
         sessionRef.current.destroy();
         sessionRef.current = null;
       }
     };
+  }, [isChatOpen, user, admin, handelAskofUser]);
+
+  const handleModeChat = async (mode: string) => {
+    try {
+      await customerApi.setMode(mode);
+      console.log("Mode updated:", mode);
+    } catch (err) {
+      console.error("Error updating mode:", err);
+    }
+  };
+
+  const toggleMode = () => {
+    const newMode = mode === "bot" ? "admin" : "bot";
+    setMode(newMode);
+    handleModeChat(newMode);
+  };
+
+  const checkModeCurrent = async () => {
+    try {
+      const res = await customerApi.getMode();
+      setMode(res.mode);
+    } catch (error) {
+      console.error("Error fetching mode:", error);
+    }
+  };
+
+  useEffect(() => {
+    checkModeCurrent();
   }, [isChatOpen, user]);
 
   return isChatOpen ? (
     <div className="fixed bottom-8 right-8 z-50 w-80 h-[28rem] bg-white rounded-lg shadow-2xl flex flex-col">
-      <div className="flex justify-between items-center p-4 bg-gray-800 text-white rounded-t-lg">
+      <div className="flex items-center justify-between p-3 bg-gray-800 text-white rounded-t-lg">
         <h3 className="font-bold text-lg">Chat Box</h3>
-        <button onClick={toggleChat} className="hover:text-gray-300">
-          &times;
+        <button
+          onClick={toggleMode}
+          className="px-2 py-1 text-xs font-medium bg-gray-700 rounded hover:bg-gray-600 transition"
+        >
+          {mode === "bot" ? "Try chat with Admin" : "Chat with Bot"}
+        </button>
+        <button
+          onClick={toggleChat}
+          className="ml-2 text-gray-300 hover:text-white transition"
+        >
+          ✕
         </button>
       </div>
       <div ref={chatContainerRef} className="flex-1 overflow-hidden" />
