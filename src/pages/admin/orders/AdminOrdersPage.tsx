@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PackageSearch } from "lucide-react";
 import { toast } from "sonner";
 import { Order } from "@/types/order";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -111,7 +110,7 @@ export const AdminOrdersPage = () => {
     <div className="bg-stone-50 min-h-screen p-4 sm:p-6 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
         <h1 className="font-bold  text-3xl md:text-4xl text-neutral-800 mb-8">
-          Order Management
+          Order
         </h1>
 
         <div className="bg-white rounded-lg shadow-sm border border-neutral-200/80 overflow-x-auto">
@@ -196,9 +195,11 @@ export const AdminOrdersPage = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-48 text-center">
-                    <PackageSearch className="h-12 w-12 mx-auto text-neutral-400 mb-4" />
-                    <p className="text-lg">No Orders Found</p>
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-30 text-gray-500"
+                  >
+                    No orders found
                   </TableCell>
                 </TableRow>
               )}

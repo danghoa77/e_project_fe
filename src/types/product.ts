@@ -1,36 +1,56 @@
-export interface CloudinaryImage {
-  url: string;
-  cloudinaryId: string;
-}
-export interface Product {
+// src/types/product.ts
+export interface Rating {
   _id: string;
-  name: string;
-  description: string;
-  images: CloudinaryImage[];
-  category: string;
-  variants: ProductVariant[];
-  // reviews: Review[];
+  userId: string;
+  rating: number;
+  comment?: string;
   createdAt: string;
   updatedAt: string;
 }
-export type PreviewFile = {
-  file: File;
-  preview: string;
-};
-export interface ProductVariant {
+
+export interface Image {
+  url: string;
+  cloudinaryId: string;
+}
+
+export interface ReqImage {
+  file: File[];
+}
+
+export interface SizeOption {
   _id: string;
   size: string;
-  color: string;
   price: number;
-  salePrice?: number;
+  salePrice: number;
   stock: number;
 }
 
+export interface ColorVariant {
+  _id: string;
+  color: string;
+  sizes: SizeOption[];
+}
 
+export interface ResProduct {
+  _id: string;
+  name: string;
+  description: string;
+  category: Category;
+  images: Image[];
+  variants: ColorVariant[];
+  ratings: Rating[];
+  averageRating: number;
+  numReviews: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
-export interface ProductApiResponse {
-  products: Product[];
-  total: number;
+export interface ReqProduct {
+  name: string;
+  description: string;
+  category: string;
+  variants: ColorVariant[];
+  images: ReqImage[];
 }
 
 export interface FilterState {
@@ -44,25 +64,43 @@ export interface FilterState {
     max: number;
   };
 }
-export interface Review {
+
+export interface Category {
   _id: string;
-  author: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
-export interface CreateVariantDto extends Omit<ProductVariant, '_id'> { }
-
-export interface CreateProductDto extends Omit<Product, '_id' | 'createdAt' | 'updatedAt' | 'variants'> {
-  variants: CreateVariantDto[];
+  name: string;
 }
 
-export type VariantForm = {
+export interface GetProductsResponse {
+  products: ResProduct[];
+  total: number;
+}
+
+
+export interface UpdateSizeDto {
+  _id?: string;
   size: string;
-  color: string;
-  price?: number;
-  salePrice?: number;
-  stock?: number;
-};
+  price: number;
+  salePrice: number;
+  stock: number;
+}
 
-export type UpdateProductDto = Partial<CreateProductDto>;
+export interface UpdateVariantDto {
+  _id?: string;
+  color: string;
+  sizes: UpdateSizeDto[];
+}
+export interface UpdateImageDto {
+  url?: string;
+  cloudinaryId?: string;
+}
+
+export interface UpdateProductDto {
+  name?: string;
+  images?: UpdateImageDto[];
+  description?: string;
+  category?: string;
+  variants?: UpdateVariantDto[];
+  deletedImages?: string[];
+  deletedVariants?: string[];
+  deletedSizes?: string[];
+}

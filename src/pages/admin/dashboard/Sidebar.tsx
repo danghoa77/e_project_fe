@@ -6,12 +6,14 @@ import {
   CreditCard,
   LayoutDashboard,
   MessageSquare,
+  List,
 } from "lucide-react";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { name: "Products", href: "/admin/products", icon: Package },
+  { name: "Categories", href: "/admin/categories", icon: List },
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Payments", href: "/admin/payments", icon: CreditCard },
   { name: "Chatting", href: "/admin/chatting", icon: MessageSquare },

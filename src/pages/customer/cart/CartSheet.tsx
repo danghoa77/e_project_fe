@@ -42,6 +42,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
   const updateQuantity = async (
     productId: string,
     variantId: string,
+    sizeId: string,
     quantity: number
   ) => {
     if (quantity < 1) return;
@@ -58,8 +59,10 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
       const res = await customerApi.updateQuantity(
         productId,
         variantId,
+        sizeId,
         quantity
       );
+      console.log(productId, variantId, sizeId, quantity);
       const normalized = normalizeCart(res);
 
       const mergedItems = normalized.items.map((newItem) => {
@@ -79,7 +82,11 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const removeItem = async (productId: string, variantId: string) => {
+  const removeItem = async (
+    productId: string,
+    variantId: string,
+    sizeId: string
+  ) => {
     const prevCart = { ...cart, items: [...cart.items] };
 
     setCart((prev) => ({
@@ -88,7 +95,11 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
     }));
 
     try {
-      const res = await customerApi.removeItemFromCart(productId, variantId);
+      const res = await customerApi.removeItemFromCart(
+        productId,
+        variantId,
+        sizeId
+      );
       decreaseCartItemCount();
       const normalized = normalizeCart(res);
       const mergedItems = normalized.items.map((newItem) => {
@@ -177,6 +188,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
                             updateQuantity(
                               item.productId,
                               item.variantId,
+                              item.sizeId,
                               item.quantity - 1
                             )
                           }
@@ -192,6 +204,7 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
                             updateQuantity(
                               item.productId,
                               item.variantId,
+                              item.sizeId,
                               item.quantity + 1
                             )
                           }
@@ -208,7 +221,9 @@ export const CartSheet = ({ children }: { children: React.ReactNode }) => {
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 self-start"
-                    onClick={() => removeItem(item.productId, item.variantId)}
+                    onClick={() =>
+                      removeItem(item.productId, item.variantId, item.sizeId)
+                    }
                   >
                     <X className="h-4 w-4" />
                   </Button>

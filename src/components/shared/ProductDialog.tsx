@@ -1,170 +1,480 @@
-
-
-import * as React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { X, Plus } from "lucide-react";
-import { Product, ProductVariant, CloudinaryImage } from "@/types/product";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-
-type VariantForm = Omit<ProductVariant, '_id'>;
+import type {
+  Category,
+  ResProduct,
+  UpdateProductDto,
+  UpdateImageDto,
+  UpdateSizeDto,
+  UpdateVariantDto,
+} from "@/types/product";
+import adminApi from "@/pages/admin/api";
 
 interface ProductDialogProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (formData: FormData) => Promise<void>;
-    initialData?: Product;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  state: "add" | "edit";
+  product?: ResProduct;
 }
 
-export const ProductDialog: React.FC<ProductDialogProps> = ({ open, onClose, onSubmit, initialData }) => {
-    const [name, setName] = React.useState("");
-    const [description, setDescription] = React.useState("");
-    const [category, setCategory] = React.useState("");
-    const [variants, setVariants] = React.useState<Partial<VariantForm>[]>([]);
-    const [existingImages, setExistingImages] = React.useState<CloudinaryImage[]>([]);
-    const [deletedImages, setDeletedImages] = React.useState<string[]>([]);
-    const [newImages, setNewImages] = React.useState<File[]>([]);
-    const [loading, setLoading] = React.useState(false);
+const ProductDialog: React.FC<ProductDialogProps> = ({
+  open,
+  onOpenChange,
+  product,
+  state,
+}) => {
+  const [name, setName] = useState(product?.name || "");
+  const [description, setDescription] = useState(product?.description || "");
+  const [category, setCategory] = useState(
+    typeof product?.category === "string"
+      ? product.category
+      : product?.category?._id || ""
+  );
 
-    React.useEffect(() => {
-        if (open && initialData) {
-            setName(initialData.name);
-            setDescription(initialData.description || "");
-            setCategory(initialData.category);
-            setVariants(initialData.variants.map(v => ({
-                size: v.size,
-                color: v.color,
-                price: v.price,
-                salePrice: v.salePrice,
-                stock: v.stock
-            })));
-            setExistingImages(initialData.images || []);
-            setDeletedImages([]);
-            setNewImages([]);
-        } else if (open) {
-            
-            setName("");
-            setDescription("");
-            setCategory("");
-            setVariants([{ size: "", color: "", price: 0, salePrice: 0, stock: 0 }]);
-            setExistingImages([]);
-            setDeletedImages([]);
-            setNewImages([]);
-        }
-    }, [open, initialData]);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    product?.images?.map((img) => img.url) || []
+  );
+  const [images, setImages] = useState<File[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [deletedVariants, setDeletedVariants] = useState<string[]>([]);
+  const [deletedSizes, setDeletedSizes] = useState<string[]>([]);
 
-    const handleVariantChange = (i: number, field: keyof VariantForm, value: string | number) => {
-        setVariants(prev => {
-            const updated = [...prev];
-            updated[i] = { ...updated[i], [field]: value };
-            return updated;
-        });
+  const [variants, setVariants] = useState<UpdateVariantDto[]>(
+    product?.variants?.length
+      ? product.variants.map((v) => ({
+          _id: v._id,
+          color: v.color,
+          sizes: v.sizes.map((s) => ({
+            _id: s._id,
+            size: s.size,
+            price: s.price,
+            salePrice: s.salePrice,
+            stock: s.stock,
+          })),
+        }))
+      : [{ color: "", sizes: [{ size: "", price: 0, salePrice: 0, stock: 0 }] }]
+  );
+
+  useEffect(() => {
+    if (state === "edit" && product) {
+      setName(product.name || "");
+      setDescription(product.description || "");
+      setCategory(
+        typeof product.category === "string"
+          ? product.category
+          : product.category?._id || ""
+      );
+      setExistingImages(product.images?.map((img) => img.url) || []);
+      setImages([]);
+
+      setVariants(
+        product.variants?.length
+          ? product.variants.map((v) => ({
+              _id: v._id,
+              color: v.color,
+              sizes: v.sizes.map((s) => ({
+                _id: s._id,
+                size: s.size,
+                price: s.price,
+                salePrice: s.salePrice,
+                stock: s.stock,
+              })),
+            }))
+          : [
+              {
+                color: "",
+                sizes: [{ size: "", price: 0, salePrice: 0, stock: 0 }],
+              },
+            ]
+      );
+    } else if (state === "add") {
+      resetForm();
+    }
+  }, [product, state, open]);
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const categoryList = await adminApi.getAllCategory();
+        setCategories(categoryList);
+      } catch (err) {
+        console.error("Fetch category failed", err);
+      }
     };
-    const addVariant = () => setVariants(prev => [...prev, { size: "", color: "", price: 0, salePrice: 0, stock: 0 }]);
-    const removeVariant = (i: number) => setVariants(prev => prev.filter((_, idx) => idx !== i));
+    fetchCategory();
+  }, []);
 
-    const handleRemoveExistingImage = (cloudinaryId: string) => {
-        setDeletedImages(prev => [...prev, cloudinaryId]);
-        setExistingImages(prev => prev.filter(img => img.cloudinaryId !== cloudinaryId));
-    };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      if (existingImages.length + images.length + newFiles.length <= 5) {
+        setImages([...images, ...newFiles]);
+      } else {
+        alert("You can upload up to 5 images");
+      }
+    }
+  };
 
-    const handleNewImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) setNewImages(Array.from(e.target.files));
-    };
+  const handleRemoveExistingImage = (url: string) => {
+    setExistingImages(existingImages.filter((img) => img !== url));
+  };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setLoading(true);
-        const formData = new FormData();
-        const dto = {
-            name: name || undefined,
-            description: description || undefined,
-            category: category || undefined,
-            variants: variants.map(v => ({
-                size: v.size,
-                color: v.color,
-                price: Number(v.price),
-                salePrice: Number(v.salePrice),
-                stock: Number(v.stock) || 0
-            })),
-            deletedImages: deletedImages.length > 0 ? deletedImages : undefined
-        };
-        const dtoKey = initialData ? 'updateProductDto' : 'dto';
-        formData.append(dtoKey, JSON.stringify(dto));
-        newImages.forEach(file => formData.append("images", file));
+  const handleRemoveNewImage = (index: number) => {
+    const updated = [...images];
+    updated.splice(index, 1);
+    setImages(updated);
+  };
 
-        await onSubmit(formData);
-        setLoading(false);
-        onClose();
-    };
+  const handleVariantsChange = (newVariants: UpdateVariantDto[]) => {
+    setVariants(newVariants);
+  };
 
-    return (
-        <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto hide-scrollbar bg-white rounded-lg font-sans">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-stone-800">{initialData ? "Edit Product" : "Create New Product"}</DialogTitle>
-                    <DialogDescription>{initialData ? "Update the product's information, images, and variants." : "Fill in the details below to add a new product."}</DialogDescription>
-                </DialogHeader>
+  const addVariant = () => {
+    handleVariantsChange([
+      ...variants,
+      { color: "", sizes: [{ size: "", price: 0, salePrice: 0, stock: 0 }] },
+    ]);
+  };
 
-                <form onSubmit={handleSubmit} className="space-y-6 pt-4">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Product Name</Label>
-                            <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Classic Silk Carré" required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="category">Category</Label>
-                            <Input id="category" value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. Scarves" required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the product..." />
-                        </div>
-                    </div>
+  const removeVariant = (index: number) => {
+    const variant = variants[index];
+    if (variant._id) {
+      setDeletedVariants((prev) => [...prev, variant._id!]);
+    }
+    const newVariants = [...variants];
+    newVariants.splice(index, 1);
+    handleVariantsChange(newVariants);
+    console.log("Deleting variant:", variant._id);
+  };
 
-                    <div className="space-y-2">
-                        <Label>Images</Label>
-                        <div className="flex gap-3 flex-wrap p-3 border border-dashed rounded-md min-h-[110px]">
-                            {existingImages.map(img => (
-                                <div key={img.cloudinaryId} className="relative group">
-                                    <img src={img.url} alt="product" className="w-24 h-24 object-cover rounded-md border" />
-                                    <button type="button" onClick={() => handleRemoveExistingImage(img.cloudinaryId)} className="absolute -top-2 -right-2 bg-stone-700 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity"><X size={14} /></button>
-                                </div>
-                            ))}
-                        </div>
-                        <Input type="file" multiple onChange={handleNewImagesChange} className="mt-2" />
-                    </div>
+  const updateVariant = (
+    index: number,
+    field: keyof UpdateVariantDto,
+    value: any
+  ) => {
+    const newVariants = [...variants];
+    newVariants[index][field] = value;
+    handleVariantsChange(newVariants);
+  };
 
-                    <div className="space-y-4 border-t border-stone-200 pt-6">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold text-stone-800">Variants</h3>
-                            <Button type="button" size="sm" variant="outline" onClick={addVariant}><Plus className="w-4 h-4 mr-2" />Add Variant</Button>
-                        </div>
-                        {variants.map((v, i) => (
-                            <div key={i} className="grid grid-cols-2 lg:grid-cols-5 gap-3 p-4 border rounded-lg relative">
-                                <Input value={v.size} onChange={e => handleVariantChange(i, "size", e.target.value)} placeholder="Size" required />
-                                <Input value={v.color} onChange={e => handleVariantChange(i, "color", e.target.value)} placeholder="Color" required />
-                                <Input type="number" value={v.price ?? ""} onChange={e => handleVariantChange(i, "price", Number(e.target.value))} placeholder="Price" required />
-                                <Input type="number" value={v.salePrice ?? ""} onChange={e => handleVariantChange(i, "salePrice", Number(e.target.value))} placeholder="Sale Price" />
-                                <Input type="number" value={v.stock ?? ""} onChange={e => handleVariantChange(i, "stock", Number(e.target.value))} placeholder="Stock" required />
-                                {variants.length > 1 && (
-                                    <button type="button" onClick={() => removeVariant(i)} className="absolute top-1.5 right-1.5 text-stone-400 hover:text-red-500 transition-colors"><X size={18} /></button>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+  const addSizeToVariant = (variantIndex: number) => {
+    const newVariants = [...variants];
+    newVariants[variantIndex].sizes.push({
+      size: "",
+      price: 0,
+      salePrice: 0,
+      stock: 0,
+    });
+    handleVariantsChange(newVariants);
+  };
 
-                    <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
-                        <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white" disabled={loading}>
-                            {loading ? "Saving..." : "Save Changes"}
+  const removeSizeFromVariant = (variantIndex: number, sizeIndex: number) => {
+    const size = variants[variantIndex].sizes[sizeIndex];
+    if (size._id) {
+      setDeletedSizes((prev) => [...prev, size._id!]);
+    }
+    const newVariants = [...variants];
+    newVariants[variantIndex].sizes.splice(sizeIndex, 1);
+    handleVariantsChange(newVariants);
+    console.log("Deleting size:", size._id);
+  };
+
+  const updateSize = (
+    variantIndex: number,
+    sizeIndex: number,
+    field: keyof UpdateSizeDto,
+    value: any
+  ) => {
+    const newVariants = [...variants];
+    (newVariants[variantIndex].sizes[sizeIndex] as any)[field] = value;
+    handleVariantsChange(newVariants);
+  };
+
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setCategory("");
+    setExistingImages([]);
+    setImages([]);
+    setVariants([
+      { color: "", sizes: [{ size: "", price: 0, salePrice: 0, stock: 0 }] },
+    ]);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+
+      const remainingImages: UpdateImageDto[] =
+        product?.images
+          ?.filter((img) => existingImages.includes(img.url))
+          .map((img) => ({
+            url: img.url,
+            cloudinaryId: img.cloudinaryId,
+          })) || [];
+
+      const deletedImages: string[] =
+        product?.images
+          ?.filter((img) => !existingImages.includes(img.url))
+          .map((img) => img.cloudinaryId) || [];
+
+      const dto: UpdateProductDto = {
+        name,
+        description,
+        category,
+        variants: variants.map((v) => ({
+          _id: v._id,
+          color: v.color,
+          sizes: v.sizes.map((s) => ({
+            _id: s._id,
+            size: s.size,
+            price: s.price,
+            salePrice: s.salePrice,
+            stock: s.stock,
+          })),
+        })),
+        images: remainingImages,
+        deletedImages,
+        deletedVariants,
+        deletedSizes,
+      };
+
+      const formData = new FormData();
+      formData.append("dto", JSON.stringify(dto));
+      images.forEach((file) => formData.append("images", file));
+
+      if (state === "add") {
+        await adminApi.createProduct(formData);
+      } else if (state === "edit" && product?._id) {
+        await adminApi.updateProduct(product._id, formData);
+      }
+
+      resetForm();
+      onOpenChange(false);
+    } catch (err) {
+      console.error("Submit failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto hide-scrollbar bg-white rounded-lg font-sans">
+        <DialogHeader>
+          <DialogTitle>
+            {state === "add" ? "Add Product" : "Edit Product"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-3">
+          <Input
+            placeholder="Product Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={loading}
+          />
+          <Textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            disabled={loading}
+          />
+
+          <Select
+            value={category}
+            onValueChange={setCategory}
+            disabled={loading}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              {categories.map((c) => (
+                <SelectItem key={c._id} value={c._id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Images</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {existingImages.map((url, i) => (
+                <div key={i} className="relative w-24 h-24">
+                  <img
+                    src={url}
+                    className="w-full h-full object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
+                    onClick={() => handleRemoveExistingImage(url)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              {images.map((file, i) => (
+                <div key={i} className="relative w-24 h-24">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    className="w-full h-full object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
+                    onClick={() => handleRemoveNewImage(i)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+            {existingImages.length + images.length < 5 && (
+              <Input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                disabled={loading}
+              />
+            )}
+          </div>
+
+          <div className="mt-4">
+            <h3 className="font-semibold mb-2">Variants</h3>
+            {variants.map((variant, vIdx) => (
+              <div
+                key={vIdx}
+                className="border p-3 rounded-md mb-3 space-y-2 bg-gray-50"
+              >
+                <div className="flex items-center justify-between">
+                  <Input
+                    placeholder="Color"
+                    value={variant.color}
+                    onChange={(e) =>
+                      updateVariant(vIdx, "color", e.target.value)
+                    }
+                    disabled={loading}
+                  />
+                  {variants.length > 1 && (
+                    <Button
+                      size={"sm"}
+                      className="shadow-none"
+                      onClick={() => removeVariant(vIdx)}
+                      disabled={loading}
+                    >
+                      ✕
+                    </Button>
+                  )}
+                </div>
+
+                {variant.sizes.map((size, sIdx) => (
+                  <div
+                    key={sIdx}
+                    className="grid grid-cols-4 gap-2 items-center"
+                  >
+                    <Input
+                      placeholder="Size"
+                      value={size.size}
+                      onChange={(e) =>
+                        updateSize(vIdx, sIdx, "size", e.target.value)
+                      }
+                      disabled={loading}
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Price"
+                      value={size.price}
+                      onChange={(e) =>
+                        updateSize(vIdx, sIdx, "price", +e.target.value)
+                      }
+                      disabled={loading}
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Sale Price"
+                      value={size.salePrice}
+                      onChange={(e) =>
+                        updateSize(vIdx, sIdx, "salePrice", +e.target.value)
+                      }
+                      disabled={loading}
+                    />
+                    <div className="flex items-center">
+                      <Input
+                        type="number"
+                        placeholder="Stock"
+                        value={size.stock}
+                        onChange={(e) =>
+                          updateSize(vIdx, sIdx, "stock", +e.target.value)
+                        }
+                        disabled={loading}
+                      />
+                      {variant.sizes.length > 1 && (
+                        <Button
+                          size={"sm"}
+                          className="shadow-none"
+                          onClick={() => removeSizeFromVariant(vIdx, sIdx)}
+                          disabled={loading}
+                        >
+                          ✕
                         </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <Button
+                  size="sm"
+                  className="bg-neutral-800 text-white hover:bg-neutral-700"
+                  onClick={() => addSizeToVariant(vIdx)}
+                  disabled={loading}
+                >
+                  + Add size
+                </Button>
+              </div>
+            ))}
+
+            <Button
+              className="bg-neutral-800 text-white hover:bg-neutral-700"
+              onClick={addVariant}
+              disabled={loading}
+            >
+              + Add variant
+            </Button>
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <Button
+              onClick={handleSubmit}
+              className="bg-neutral-800 text-white hover:bg-neutral-700"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : state === "add" ? "Add" : "Update"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 };
+
+export default ProductDialog;

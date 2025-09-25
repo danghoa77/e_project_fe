@@ -34,6 +34,9 @@ import { useAuthStore } from "./store/authStore";
 import { customerApi } from "./pages/customer/api";
 import { userStore } from "./store/userStore";
 import { FloatingChatButton } from "./components/shared/FloatingChatButton";
+import AdminCategories from "./pages/admin/products/AdminCategories";
+import PublicRoute from "./pages/auth/PublicRoute";
+
 export const AppLayout = () => {
   const { pathname } = useLocation();
   const { cartItemCount, setCartItemCount } = userStore();
@@ -87,7 +90,14 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { index: true, element: <HomePage /> },
-          { path: "login", element: <AuthPage /> },
+          {
+            path: "login",
+            element: (
+              <PublicRoute>
+                <AuthPage />
+              </PublicRoute>
+            ),
+          },
           { path: "products", element: <ProductListPage /> },
           { path: "products/:category", element: <ProductListPage /> },
           { path: "product/:id", element: <ProductDetailPage /> },
@@ -100,6 +110,7 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+
           {
             path: "profile",
             element: (
@@ -125,6 +136,7 @@ const router = createBrowserRouter([
           { path: "payments", element: <AdminPaymentsPage /> },
           { path: "chatting", element: <AdminChattingPage /> },
           { path: "products/:id", element: <AdminDetailPage /> },
+          { path: "categories", element: <AdminCategories /> },
         ],
       },
       {

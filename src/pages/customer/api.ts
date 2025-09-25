@@ -1,12 +1,13 @@
 // customerApi.ts
-import type { ProductApiResponse } from "@/types/product";
+import type { GetProductsResponse } from "@/types/product";
 import apiClient from "@/lib/axios";
 
 
+
 export const customerApi = {
-    fetchProducts: async (): Promise<ProductApiResponse> => {
+    fetchProducts: async (): Promise<GetProductsResponse> => {
         try {
-            const res = await apiClient.get<ProductApiResponse>("/products/");
+            const res = await apiClient.get<GetProductsResponse>("/products/");
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
@@ -45,9 +46,9 @@ export const customerApi = {
     },
 
 
-    removeItemFromCart: async (pid: string, vid: string) => {
+    removeItemFromCart: async (pid: string, vid: string, sid: string) => {
         try {
-            const res = await apiClient.delete(`/carts/${pid}/${vid}`);
+            const res = await apiClient.delete(`/carts/${pid}/${vid}/${sid}/`);
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
@@ -55,9 +56,9 @@ export const customerApi = {
         }
     },
 
-    updateQuantity: async (pid: string, vid: string, quantity: number) => {
+    updateQuantity: async (pid: string, vid: string, sid: string, quantity: number) => {
         try {
-            const res = await apiClient.put(`/carts/${pid}/${vid}/`, { quantity });
+            const res = await apiClient.put(`/carts/${pid}/${vid}/${sid}/`, { quantity });
             return res.data;
         } catch (error: any) {
             console.error("API error:", error.response?.data || error.message);
@@ -242,4 +243,49 @@ export const customerApi = {
             throw new Error(`Fetch failed: ${error.message}`);
         }
     },
-};
+
+    createOrGetConversation: async () => {
+        try {
+            const adminId = await customerApi.getAdmin1st();
+            const res = await apiClient.post("/talkjs/conversations/", { adminId });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+
+    setMode: async (mode: string) => {
+        try {
+            const res = await apiClient.post("/talkjs/mode/set/", { mode });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    getMode: async () => {
+        try {
+            const res = await apiClient.get("/talkjs/mode/get/");
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+
+    handleMessage: async (conversationId: string, message: string) => {
+        try {
+            const res = await apiClient.post("/talkjs/messages/handle/", {
+                conversationId,
+                message,
+            });
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
+}
