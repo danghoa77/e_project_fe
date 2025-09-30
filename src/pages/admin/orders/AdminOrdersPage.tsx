@@ -164,10 +164,41 @@ export const AdminOrdersPage = () => {
                     </TableCell>
 
                     <TableCell className="text-center">
-                      <Badge variant="outline" className="capitalize text-sm">
+                      <Badge
+                        variant="outline"
+                        className={`
+      capitalize text-sm
+      ${
+        order.status === "confirmed"
+          ? "bg-green-100 text-green-700 border-green-700"
+          : ""
+      }
+      ${
+        order.status === "pending"
+          ? "bg-yellow-100 text-yellow-700 border-yellow-700"
+          : ""
+      }
+      ${
+        order.status === "shipped"
+          ? "bg-blue-100 text-blue-700 border-blue-700"
+          : ""
+      }
+      ${
+        order.status === "delivered"
+          ? "bg-gray-100 text-gray-700 border-gray-700"
+          : ""
+      }
+      ${
+        order.status === "cancelled"
+          ? "bg-red-100 text-red-700 border-red-700"
+          : ""
+      }
+    `}
+                      >
                         {order.status}
                       </Badge>
                     </TableCell>
+
                     <TableCell className="flex justify-center">
                       <Select
                         value={order.status}

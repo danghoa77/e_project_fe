@@ -32,10 +32,11 @@ import { AdminChattingPage } from "./pages/admin/chatting/AdminChattingPage";
 import { AdminDetailPage } from "./pages/admin/products/AdminDetailPage";
 import { useAuthStore } from "./store/authStore";
 import { customerApi } from "./pages/customer/api";
-import { userStore } from "./store/userStore";
+import userStore from "./store/userStore";
 import { FloatingChatButton } from "./components/shared/FloatingChatButton";
 import AdminCategories from "./pages/admin/products/AdminCategories";
 import PublicRoute from "./pages/auth/PublicRoute";
+import { LoyaltyPage } from "./pages/customer/profile/LoyaltyPage";
 
 export const AppLayout = () => {
   const { pathname } = useLocation();
@@ -102,6 +103,8 @@ const router = createBrowserRouter([
           { path: "products/:category", element: <ProductListPage /> },
           { path: "product/:id", element: <ProductDetailPage /> },
           { path: "order-result", element: <OrderResultPage /> },
+          { path: "loyalty", element: <LoyaltyPage /> },
+
           {
             path: "checkout",
             element: (

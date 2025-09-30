@@ -85,7 +85,6 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
           )}
         >
           <div className="relative h-24">
-            {/* Mobile Search */}
             <div
               className={cn(
                 "absolute inset-0 md:hidden px-4",
@@ -110,16 +109,13 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
               </div>
             </div>
 
-            {/* Main Navbar */}
             <div
               className={cn(
                 "relative flex items-center justify-between h-full px-6",
                 isMobileSearchOpen ? "hidden" : "flex"
               )}
             >
-              {/* Left side */}
               <div className="flex items-center">
-                {/* Mobile Menu */}
                 <div className="flex items-center gap-1 md:hidden">
                   <Sheet>
                     <SheetTrigger asChild>
@@ -186,7 +182,6 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                   </Button>
                 </div>
 
-                {/* Desktop Search */}
                 <div className="hidden md:flex relative items-center">
                   <Search className="absolute left-0 h-5 w-5 text-muted-foreground" />
                   <input
@@ -197,14 +192,12 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                 </div>
               </div>
 
-              {/* Logo */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <Link to="/" aria-label="Back to homepage">
                   <BrandLogo />
                 </Link>
               </div>
 
-              {/* Right side */}
               <div className="flex items-center gap-x-3">
                 <Button
                   asChild
@@ -237,8 +230,6 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
             </div>
           </div>
         </div>
-
-        {/* Bottom Nav */}
         <div>
           <div className="w-1/3 border-t border-neutral-900 mx-auto" />
           <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5 ">
