@@ -13,7 +13,7 @@ import { Minus, Plus, X } from "lucide-react";
 import { customerApi } from "../api";
 import type { Cart, CartResponse } from "@/types/cart";
 import { DialogContent } from "@radix-ui/react-dialog";
-import { userStore } from "@/store/userStore";
+import  userStore  from "@/store/userStore";
 
 export const CartSheet = ({ children }: { children: React.ReactNode }) => {
   const { decreaseCartItemCount } = userStore();

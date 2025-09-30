@@ -29,7 +29,6 @@ export const HomePage = () => {
 
   return (
     <div className="bg-[#F7F2EC] text-neutral-800">
-      {/* Hero Video */}
       <section className="w-full">
         <div className="grid grid-cols-1 md:grid-cols-3">
           <div className="md:col-span-2">

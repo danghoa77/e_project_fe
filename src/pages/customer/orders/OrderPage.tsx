@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowRight, ChevronLeft, Pencil, Plus } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AddressModal from "@/components/shared/AddressModal";
+import userStore from "@/store/userStore";
 
 export const OrderPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export const OrderPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "momo" | "vnpay">(
     "cash"
   );
+  const { resetCartItemCount } = userStore();
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,23 +105,31 @@ export const OrderPage = () => {
 
     if (paymentMethod === "cash") {
       try {
+        console.log("Creating order with payload:", orderPayload);
         await customerApi.createOrder(orderPayload);
+        console.log("✅ Order created");
+
         const stockPayload = orderPayload.items.map((item) => ({
           productId: item.productId,
           variantId: item.variantId,
           quantity: item.quantity,
           sizeId: item.sizeId,
         }));
-
+        console.log("Decreasing stock with payload:", stockPayload);
         await customerApi.decreaseStock(stockPayload);
-
         await customerApi.deleteCart();
-        window.location.href = "/";
+        resetCartItemCount();
         toast.success("Order placed successfully!");
+        navigate("/");
       } catch (err: any) {
         const message = err?.response?.data?.message || "Failed to order.";
         toast.error(message);
-        console.error("API Error:", err?.response?.data);
+
+        console.error("❌ API Error caught:", {
+          message: err?.message,
+          response: err?.response?.data,
+          stack: err?.stack,
+        });
       } finally {
         setIsSubmitting(false);
       }
@@ -130,10 +140,10 @@ export const OrderPage = () => {
         const stockPayload = orderPayload.items.map((item) => ({
           productId: item.productId,
           variantId: item.variantId,
+          sizeId: item.sizeId,
           quantity: item.quantity,
         }));
         await customerApi.decreaseStock(stockPayload);
-
         const order = await customerApi.createOrder(orderPayload);
         if (order && order._id && order.totalPrice != null) {
           await handelMomo(order._id, order.totalPrice);
@@ -153,6 +163,7 @@ export const OrderPage = () => {
         const stockPayload = orderPayload.items.map((item) => ({
           productId: item.productId,
           variantId: item.variantId,
+          sizeId: item.sizeId,
           quantity: item.quantity,
         }));
         await customerApi.decreaseStock(stockPayload);

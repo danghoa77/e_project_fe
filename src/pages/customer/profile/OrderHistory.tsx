@@ -68,7 +68,7 @@ const OrderHistory = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {[...orders].reverse().map((order) => (
               <tr key={order._id} className="border-b">
                 <td className="p-3">
                   {new Date(order.createdAt).toLocaleDateString()}

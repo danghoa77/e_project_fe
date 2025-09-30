@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 import { customerApi } from "../api";
 import type { ResProduct, ColorVariant, SizeOption } from "@/types/product";
 import { toast } from "sonner";
-import { userStore } from "@/store/userStore";
+import userStore from "@/store/userStore";
 
 const ProductDetailSkeleton = () => (
   <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">

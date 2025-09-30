@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileForm } from "./ProfileForm";
 import OrderHistory from "./OrderHistory";
+import { LoyaltyPage } from "./LoyaltyPage";
 
 const AddressManagement = () => (
   <div>
@@ -50,6 +51,9 @@ export const ProfilePage = () => {
             </TabsContent>
             <TabsContent value="addresses">
               <AddressManagement />
+            </TabsContent>
+            <TabsContent value="loyalty">
+              <LoyaltyPage />
             </TabsContent>
           </div>
         </Tabs>
