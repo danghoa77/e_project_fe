@@ -44,6 +44,7 @@ export const OrderPage = () => {
           customerApi.getAddresses(),
         ]);
 
+        console.log("cartRes", cartRes);
         if (Array.isArray(cartRes) && cartRes.length > 0) {
           setCartItems(cartRes);
         } else {
@@ -90,6 +91,7 @@ export const OrderPage = () => {
         productId: item.productId,
         variantId: item.variantId,
         sizeId: item.sizeId,
+        categoryId: item.categoryId,
         quantity: item.quantity,
         name: item.name,
         price: item.price,
@@ -102,13 +104,10 @@ export const OrderPage = () => {
       },
       totalPrice: subtotal,
     };
-
+    console.log(orderPayload);
     if (paymentMethod === "cash") {
       try {
-        console.log("Creating order with payload:", orderPayload);
         await customerApi.createOrder(orderPayload);
-        console.log("✅ Order created");
-
         const stockPayload = orderPayload.items.map((item) => ({
           productId: item.productId,
           variantId: item.variantId,
@@ -125,7 +124,7 @@ export const OrderPage = () => {
         const message = err?.response?.data?.message || "Failed to order.";
         toast.error(message);
 
-        console.error("❌ API Error caught:", {
+        console.error(" API Error caught:", {
           message: err?.message,
           response: err?.response?.data,
           stack: err?.stack,
@@ -141,6 +140,7 @@ export const OrderPage = () => {
           productId: item.productId,
           variantId: item.variantId,
           sizeId: item.sizeId,
+          categoryId: item.categoryId,
           quantity: item.quantity,
         }));
         await customerApi.decreaseStock(stockPayload);
@@ -164,6 +164,7 @@ export const OrderPage = () => {
           productId: item.productId,
           variantId: item.variantId,
           sizeId: item.sizeId,
+          categoryId: item.categoryId,
           quantity: item.quantity,
         }));
         await customerApi.decreaseStock(stockPayload);

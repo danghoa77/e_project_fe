@@ -16,6 +16,8 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
 import { customerApi } from "../api";
+import adminApi from "@/pages/admin/api";
+
 export const ProductListPage = () => {
   const { category: initialCategory } = useParams();
 
@@ -23,16 +25,40 @@ export const ProductListPage = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
+    []
+  );
+  const [page, setPage] = useState(1);
+  const limit = 9;
 
   const [filters, setFilters] = useState<Omit<FilterState, "page" | "limit">>({
-    category: initialCategory,
+    category: initialCategory || "",
     price: { min: 0, max: MAX_PRICE },
+    size: [],
+    sortBy: "",
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCate = async () => {
       try {
-        const response = await customerApi.fetchProducts();
+        const res = await adminApi.getAllCategory();
+        setCategories(res);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCate();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await customerApi.fetchProducts({
+          page,
+          limit,
+          ...filters,
+        });
         setProducts(response.products);
         setTotal(response.total);
       } catch (err) {
@@ -42,18 +68,18 @@ export const ProductListPage = () => {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [filters, page]);
 
   const handleFilterChange = (
     newFilters: Partial<Omit<FilterState, "page" | "limit">>
   ) => {
+    setPage(1);
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
   const categoryName = filters.category
-    ? filters.category.replace(/-/g, " ")
+    ? categories.find((c) => c._id === filters.category)?.name || "Products"
     : "All Products";
 
   if (error) {
@@ -90,6 +116,7 @@ export const ProductListPage = () => {
             <FilterSidebar
               onFilterChange={handleFilterChange}
               currentFilters={filters}
+              categories={categories}
             />
           </aside>
 
@@ -108,6 +135,7 @@ export const ProductListPage = () => {
                   <FilterSidebar
                     onFilterChange={handleFilterChange}
                     currentFilters={filters}
+                    categories={categories}
                   />
                 </SheetContent>
               </Sheet>
@@ -123,17 +151,17 @@ export const ProductListPage = () => {
                 )}
               </div>
 
-              <div className="w-[180px]">
+              <div className="w-[180px] ">
                 <Select
                   value={filters.sortBy}
                   onValueChange={(value) =>
                     handleFilterChange({ sortBy: value })
                   }
                 >
-                  <SelectTrigger className="rounded-full">
+                  <SelectTrigger className="rounded-full bg-white">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {SORT_OPTIONS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}
@@ -156,6 +184,20 @@ export const ProductListPage = () => {
                       product && (
                         <ProductCard key={product._id} product={product} />
                       )
+                  )}
+                </div>
+                <div className="flex justify-center mt-10 gap-2">
+                  {Array.from({ length: Math.ceil(total / limit) }).map(
+                    (_, i) => (
+                      <Button
+                        key={i}
+                        onClick={() => setPage(i + 1)}
+                        variant={page === i + 1 ? "default" : "outline"}
+                        className="rounded-full bg-orange-300"
+                      >
+                        {i + 1}
+                      </Button>
+                    )
                   )}
                 </div>
               </div>

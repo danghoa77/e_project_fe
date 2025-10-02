@@ -58,7 +58,7 @@ export interface FilterState {
   limit: number;
   category?: string;
   sortBy?: string;
-  size?: string;
+  size?: string[];
   price?: {
     min: number;
     max: number;

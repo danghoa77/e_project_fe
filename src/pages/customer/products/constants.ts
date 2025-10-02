@@ -10,6 +10,7 @@ export const SIZES = ["XS", "S", "M", "L", "XL"];
 
 export const SORT_OPTIONS = [
     { value: "-createdAt", label: "Newest" },
+    { value: "createdAt", label: "Oldest" },
     { value: "price", label: "Price: Low to High" },
     { value: "-price", label: "Price: High to Low" },
 ];
