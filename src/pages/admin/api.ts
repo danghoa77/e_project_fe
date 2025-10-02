@@ -113,6 +113,20 @@ const adminApi = {
     return response.data;
   },
 
+  orderDashboard: async () => {
+    const response = await apiClient.get('/orders/dashboard/');
+    return response.data;
+  },
+
+  topCategory: async () => {
+    const response = await apiClient.get('/orders/top-categories/');
+    return response.data;
+  },
+
+  userDashboard: async () => {
+    const response = await apiClient.get('/users/dashboard/');
+    return response.data;
+  },
 
 
 };

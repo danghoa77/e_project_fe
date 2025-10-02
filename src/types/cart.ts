@@ -10,6 +10,7 @@ export type CartItem = {
     imageUrl: string;
     variantId: string;
     sizeId: string;
+    categoryId: string;
     quantity: number;
     price: number;
     size: string;

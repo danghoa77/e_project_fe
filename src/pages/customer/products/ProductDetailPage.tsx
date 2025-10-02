@@ -149,6 +149,7 @@ export const ProductDetailPage = () => {
         productId: product._id,
         variantId: selectedColorVariant._id,
         sizeId: selectedSizeOption._id,
+        categoryId: product.category._id,
         quantity: 1,
       };
       console.log("Adding to cart with payload:", payload);
