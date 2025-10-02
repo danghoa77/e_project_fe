@@ -1,12 +1,6 @@
 import * as React from "react";
 import type { FilterState } from "@/types/product";
 import { MAX_PRICE, SIZES } from "../constants";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 
