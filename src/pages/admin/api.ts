@@ -128,7 +128,6 @@ const adminApi = {
     return response.data;
   },
 
-
 };
 
 export default adminApi;

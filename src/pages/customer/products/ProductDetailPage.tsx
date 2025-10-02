@@ -24,6 +24,8 @@ import { customerApi } from "../api";
 import type { ResProduct, ColorVariant, SizeOption } from "@/types/product";
 import { toast } from "sonner";
 import userStore from "@/store/userStore";
+import { useAuthStore } from "@/store/authStore";
+import { RecommendCard } from "./components/Recommend";
 
 const ProductDetailSkeleton = () => (
   <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
@@ -57,13 +59,26 @@ export const ProductDetailPage = () => {
   const [product, setProduct] = React.useState<ResProduct | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
 
+  const { user } = useAuthStore();
+
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
+  const [showCount, setShowCount] = React.useState(3);
+  const [newRating, setNewRating] = React.useState(0);
+  const [newComment, setNewComment] = React.useState("");
 
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
+  React.useEffect(() => {
+    if (!api) return;
 
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [api]);
   React.useEffect(() => {
     if (!id) return;
     const fetchData = async () => {
@@ -163,6 +178,57 @@ export const ProductDetailPage = () => {
       setIsAdding(false);
     }
   };
+  const handleDeleteRating = async (productId: string, ratingId: string) => {
+    try {
+      await customerApi.deleteRating(productId);
+      toast.success("Deleted rating!");
+
+      setProduct((prev) =>
+        prev
+          ? {
+              ...prev,
+              ratings: prev.ratings.filter((r) => r._id !== ratingId),
+            }
+          : prev
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete rating");
+    }
+  };
+
+  const handleAddRating = async (
+    productId: string,
+    rating: number,
+    comment: string
+  ) => {
+    try {
+      const payload = {
+        userId: user?._id,
+        productId,
+        rating,
+        comment,
+      };
+
+      const res = await customerApi.createRating(payload);
+
+      const newRating = {
+        ...res,
+        rating,
+        comment,
+        userId: user?._id,
+        userName: user?.name || "User",
+      };
+
+      toast.success("Added rating!");
+      setProduct((prev) =>
+        prev ? { ...prev, ratings: [newRating, ...prev.ratings] } : prev
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add rating");
+    }
+  };
 
   if (isLoading) return <ProductDetailSkeleton />;
   if (!product)
@@ -188,9 +254,8 @@ export const ProductDetailPage = () => {
             Back to products
           </Button>
         </div>
-
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
-          <div className="md:sticky top-10 h-max">
+          <div className=" top-10 h-max">
             <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
               <CarouselContent>
                 {product.images.map((image, index) => (
@@ -205,6 +270,7 @@ export const ProductDetailPage = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
+
               <CarouselPrevious className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/60 hover:bg-white/90 backdrop-blur-sm" />
               <CarouselNext className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/60 hover:bg-white/90 backdrop-blur-sm" />
             </Carousel>
@@ -231,7 +297,7 @@ export const ProductDetailPage = () => {
             </div>
           </div>
 
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-max">
             <h1 className="font-sans text-3xl md:text-4xl text-stone-900">
               {product.name}
             </h1>
@@ -244,7 +310,6 @@ export const ProductDetailPage = () => {
             >
               {product.category.name}
             </Button>
-
             <div className="flex items-baseline gap-3 mt-4">
               {displaySalePrice ? (
                 <>
@@ -261,9 +326,7 @@ export const ProductDetailPage = () => {
                 </p>
               )}
             </div>
-
             <Separator className="my-8 bg-stone-200" />
-
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-800 mb-3">
                 Color:{" "}
@@ -299,7 +362,6 @@ export const ProductDetailPage = () => {
                 })}
               </div>
             </div>
-
             <div className="mt-8">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-800 mb-3">
                 Size:{" "}
@@ -335,7 +397,6 @@ export const ProductDetailPage = () => {
                 })}
               </div>
             </div>
-
             <div className="mt-10">
               <Button
                 size="lg"
@@ -353,7 +414,6 @@ export const ProductDetailPage = () => {
                   : "Add to Cart"}
               </Button>
             </div>
-
             <div className="mt-10">
               <Accordion
                 type="single"
@@ -363,7 +423,7 @@ export const ProductDetailPage = () => {
               >
                 <AccordionItem value="description">
                   <AccordionTrigger>Description</AccordionTrigger>
-                  <AccordionContent className="text-base text-neutral-700 leading-relaxed whitespace-pre-line">
+                  <AccordionContent className="text-base text-neutral-700 leading-relaxed whitespace-pre-line max-h-60 overflow-y-auto hide-scrollbar">
                     {product.description || "No description available."}
                   </AccordionContent>
                 </AccordionItem>
@@ -377,8 +437,127 @@ export const ProductDetailPage = () => {
                 </AccordionItem>
               </Accordion>
             </div>
+
+            <div className="bg-[#F7F2EC] py-4 mt-6 border-t border-stone-200">
+              <h3 className="font-semibold text-stone-800 mb-2">
+                Add a Review
+              </h3>
+              <div className="flex items-center gap-2 mb-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setNewRating(i + 1)}
+                    className={cn(
+                      "text-2xl",
+                      newRating && newRating >= i + 1
+                        ? "text-orange-500"
+                        : "text-stone-300"
+                    )}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="w-full border rounded-md p-2 mb-2 resize-none"
+                rows={3}
+                placeholder="Write your review..."
+              />
+              <Button
+                size="sm"
+                disabled={!newRating}
+                onClick={() => {
+                  if (!newRating || !newComment.trim()) {
+                    toast.error("Please select rating and enter comment");
+                    return;
+                  }
+                  handleAddRating(product._id, newRating, newComment);
+                  setNewRating(0);
+                  setNewComment("");
+                  setShowCount((prev) => prev + 1);
+                }}
+                className={cn(
+                  "bg-neutral-500",
+                  !newRating
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-neutral-600"
+                )}
+              >
+                Submit
+              </Button>
+            </div>
           </div>
         </div>
+
+        <div className="mt-8 flex justify-center">
+          <div className="w-1/2">
+            <h2 className="text-2xl font-semibold text-stone-800 mb-1">
+              Reviews
+            </h2>
+            <div className="w-full h-px bg-gray-800 mb-4" />
+            {product.ratings.length === 0 && (
+              <p className="text-stone-500">No reviews yet.</p>
+            )}
+
+            <div className="space-y-4">
+              {product.ratings.slice(0, showCount).map((r) =>
+                r ? (
+                  <div
+                    key={r._id || Math.random()}
+                    className="rounded-md p-4 bg-white shadow-md relative"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-stone-700">
+                          {r.userName || "User"}
+                        </span>
+                        <span className="text-orange-500">
+                          {"★".repeat(r.rating) + "☆".repeat(5 - r.rating)}
+                        </span>
+                      </div>
+
+                      {r.userId === user?._id && (
+                        <button
+                          className="text-red-500 text-sm hover:underline"
+                          onClick={() => handleDeleteRating(product._id, r._id)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-stone-600 whitespace-pre-line">
+                      {r.comment}
+                    </p>
+                  </div>
+                ) : null
+              )}
+            </div>
+
+            {product.ratings.length > 3 && (
+              <div className="flex justify-center mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-stone-600 bg-white hover:bg-stone-300"
+                  onClick={() =>
+                    setShowCount(
+                      showCount >= product.ratings.length
+                        ? 3
+                        : product.ratings.length
+                    )
+                  }
+                >
+                  {showCount >= product.ratings.length
+                    ? "Show less"
+                    : "Load more"}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        <RecommendCard />
       </div>
     </main>
   );

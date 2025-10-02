@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { customerApi } from "../api";
 import { ProductCard } from "./components/ProductCard";
+import { RecommendCard } from "./components/Recommend";
 
 export const HomePage = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -69,7 +70,6 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* Slogan */}
       <section className="container mx-auto px-4 py-16 md:py-20 text-center">
         <h2 className="text-2xl md:text-3xl uppercase tracking-[0.2em] text-neutral-800">
           FLYING STEED
@@ -80,7 +80,6 @@ export const HomePage = () => {
         </p>
       </section>
 
-      {/* Product Grid (first 4) */}
       <section className="container mx-auto px-4 py-12 md:py-16">
         {loading ? (
           <div className="flex justify-center items-center h-40">
@@ -95,7 +94,6 @@ export const HomePage = () => {
         )}
       </section>
 
-      {/* Headline */}
       <section className="container mx-auto px-4 py-12 md:py-16 text-center">
         <h2 className=" text-3xl md:text-4xl uppercase tracking-wider">
           Where there's silk, there's sunshine
@@ -123,7 +121,6 @@ export const HomePage = () => {
         />
       </section>
 
-      {/* Headline */}
       <section className="container mx-auto px-4 py-12 md:py-16 text-center">
         <h2 className=" text-3xl md:text-4xl uppercase tracking-wider">
           Gallop in style
@@ -141,7 +138,6 @@ export const HomePage = () => {
         </Button>
       </section>
 
-      {/* Editorial Product Grid (next 4) */}
       <section className="container mx-auto px-4 pt-12 pb-16 md:pb-24">
         {loading ? (
           <div className="flex justify-center items-center h-40">
@@ -153,6 +149,16 @@ export const HomePage = () => {
               <ProductCard key={p._id} product={p} />
             ))}
           </div>
+        )}
+      </section>
+
+      <section className="container mx-auto px-4  pb-16 md:pb-24">
+        {loading ? (
+          <div className="flex justify-center items-center h-40">
+            Loading...
+          </div>
+        ) : (
+          <RecommendCard />
         )}
       </section>
     </div>
