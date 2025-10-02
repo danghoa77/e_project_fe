@@ -317,4 +317,24 @@ export const customerApi = {
             throw new Error(`Fetch failed: ${error.message}`);
         }
     },
+
+    createRating: async (payload: any) => {
+        const response = await apiClient.post('/products/rating/', payload);
+        return response.data;
+    },
+
+    deleteRating: async (pId: string) => {
+        const response = await apiClient.delete(`/products/${pId}/rating/`);
+        return response.data;
+    },
+
+    topProducts: async () => {
+        try {
+            const res = await apiClient.get("/orders/top-products/");
+            return res.data;
+        } catch (error: any) {
+            console.error("API error:", error.response?.data || error.message);
+            throw new Error(`Fetch failed: ${error.message}`);
+        }
+    },
 }

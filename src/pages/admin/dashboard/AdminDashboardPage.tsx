@@ -15,7 +15,14 @@ import {
 export const AdminDashboardPage = () => {
   const [userDashboard, setUserDashboard] = useState<any>({});
   const [orderDashboard, setOrderDashboard] = useState<any>({});
-  const [topCategory, setTopCategory] = useState<any[]>([]);
+  const [topCategory, setTopCategory] = useState<{
+    labels: string[];
+    data: number[];
+  }>({
+    labels: [],
+    data: [],
+  });
+
   const [allCategory, setAllCategory] = useState<any[]>([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -61,17 +68,12 @@ export const AdminDashboardPage = () => {
     },
   ];
 
-  const topCateChartData = topCategory
-    .filter((tc) => tc.totalQuantity > 0)
-    .sort((a, b) => b.totalQuantity - a.totalQuantity)
-    .slice(0, 5)
-    .map((tc) => {
-      const category = allCategory.find((c) => c._id === tc._id);
-      return {
-        name: category ? category.name : "Unknown",
-        Quantity: Math.round(tc.totalQuantity),
-      };
-    });
+  const topCateChartData = (topCategory.labels || []).map(
+    (label: string, idx: number) => ({
+      name: label,
+      Quantity: Math.round(topCategory.data?.[idx] || 0),
+    })
+  );
 
   return (
     <div className="p-8 bg-[#F8F5F0] min-h-screen space-y-8">
@@ -79,7 +81,6 @@ export const AdminDashboardPage = () => {
         Admin Dashboard
       </h1>
 
-      {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-white rounded-lg shadow-sm border-neutral-200/8">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -6,7 +6,7 @@ export const CATEGORIES = [
     { name: "Home, Outdoor and Equestrian", subcategories: ["Furniture", "Outdoor", "Equestrian"] }
 ];
 
-export const SIZES = ["XS", "S", "M", "L", "XL"];
+export const SIZES = ["S", "M", "L", "XL"];
 
 export const SORT_OPTIONS = [
     { value: "-createdAt", label: "Newest" },
