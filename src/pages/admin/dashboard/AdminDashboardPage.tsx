@@ -23,21 +23,19 @@ export const AdminDashboardPage = () => {
     data: [],
   });
 
-  const [allCategory, setAllCategory] = useState<any[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       const resUser = await adminApi.userDashboard();
-      const allCate = await adminApi.getAllCategory();
       const resCate = await adminApi.topCategory();
       const resOrder = await adminApi.orderDashboard();
 
-      setAllCategory(allCate);
       setUserDashboard(resUser);
       setTopCategory(resCate);
       setOrderDashboard(resOrder);
     };
     fetchData();
   }, []);
+
   const orderChartData = [
     {
       name: "Weekly",
@@ -76,19 +74,22 @@ export const AdminDashboardPage = () => {
   );
 
   return (
-    <div className="p-8 bg-[#F8F5F0] min-h-screen space-y-8">
-      <h1 className="font-bold text-4xl text-[#5A463C] mb-8">
+    <div className="p-4 md:p-8 bg-[#F8F5F0] min-h-screen space-y-6">
+      <h1 className="font-bold text-2xl md:text-4xl text-[#5A463C] mb-6 md:mb-8">
         Admin Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Tổng quan */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <Card className="bg-white rounded-lg shadow-sm border-neutral-200/8">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-md font-medium ">Total Orders</CardTitle>
+            <CardTitle className="text-sm md:text-md font-medium">
+              Total Orders
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <ShoppingCart className="h-8 w-8 " />
-            <span className="text-2xl font-bold text-neutral-700">
+            <ShoppingCart className="h-6 w-6 md:h-8 md:w-8" />
+            <span className="text-xl md:text-2xl font-bold text-neutral-700">
               {orderDashboard.overview?.totalOrders || 0}
             </span>
           </CardContent>
@@ -96,11 +97,13 @@ export const AdminDashboardPage = () => {
 
         <Card className="bg-white rounded-lg shadow-sm border-neutral-200/8">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-md font-medium ">Total Users</CardTitle>
+            <CardTitle className="text-sm md:text-md font-medium">
+              Total Users
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <Users className="h-8 w-8 " />
-            <span className="text-2xl font-bold text-neutral-700">
+            <Users className="h-6 w-6 md:h-8 md:w-8" />
+            <span className="text-xl md:text-2xl font-bold text-neutral-700">
               {userDashboard.overview?.totalUsers || 0}
             </span>
           </CardContent>
@@ -108,23 +111,26 @@ export const AdminDashboardPage = () => {
 
         <Card className="bg-white rounded-lg shadow-sm border-neutral-200/8">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-md font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm md:text-md font-medium">
+              Total Revenue
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <DollarSign className="h-8 w-8 " />
-            <span className="text-2xl font-bold text-neutral-700">
+            <DollarSign className="h-6 w-6 md:h-8 md:w-8" />
+            <span className="text-xl md:text-2xl font-bold text-neutral-700">
               ${orderDashboard.overview?.totalRevenue || 0}
             </span>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-white shadow-md h-[300px]">
+      {/* Charts */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <Card className="bg-white shadow-md h-[260px] md:h-[300px]">
           <CardHeader>
-            <CardTitle>Orders</CardTitle>
+            <CardTitle className="text-sm md:text-md">Orders</CardTitle>
           </CardHeader>
-          <CardContent className="h-[220px]">
+          <CardContent className="h-[180px] md:h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={orderChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -137,11 +143,11 @@ export const AdminDashboardPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md h-[300px]">
+        <Card className="bg-white shadow-md h-[260px] md:h-[300px]">
           <CardHeader>
-            <CardTitle>Top Categories</CardTitle>
+            <CardTitle className="text-sm md:text-md">Top Categories</CardTitle>
           </CardHeader>
-          <CardContent className="h-[220px]">
+          <CardContent className="h-[180px] md:h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={topCateChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -154,11 +160,11 @@ export const AdminDashboardPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md h-[300px]">
+        <Card className="bg-white shadow-md h-[260px] md:h-[300px]">
           <CardHeader>
-            <CardTitle>Users</CardTitle>
+            <CardTitle className="text-sm md:text-md">Users</CardTitle>
           </CardHeader>
-          <CardContent className="h-[220px]">
+          <CardContent className="h-[180px] md:h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={userChartData}>
                 <CartesianGrid strokeDasharray="3 3" />

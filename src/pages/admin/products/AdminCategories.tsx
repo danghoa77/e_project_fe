@@ -124,18 +124,20 @@ const AdminCategories = () => {
                   key={cat._id}
                   className="border-b border-neutral-200/50"
                 >
-                  <TableCell className="font-medium">{cat.name}</TableCell>
-                  <TableCell className="flex gap-2">
+                  <TableCell className="font-medium max-w-[150px] truncate text-sm sm:text-base">
+                    {cat.name}
+                  </TableCell>
+                  <TableCell className="flex flex-col sm:flex-row gap-2">
                     <Button
                       size="sm"
-                      className="bg-neutral-800 text-white hover:bg-neutral-600"
+                      className="bg-neutral-800 text-white hover:bg-neutral-600 w-full sm:w-auto"
                       onClick={() => openEditModal(cat._id, cat.name)}
                     >
                       Edit
                     </Button>
                     <Button
                       size="sm"
-                      className="bg-red-500 text-white hover:bg-red-600"
+                      className="bg-red-500 text-white hover:bg-red-600 w-full sm:w-auto"
                       onClick={() => handleDeleteCategory(cat._id)}
                       disabled={loadingDelete === cat._id}
                     >
@@ -148,7 +150,7 @@ const AdminCategories = () => {
               <TableRow>
                 <TableCell
                   colSpan={2}
-                  className="text-center py-30 text-gray-500"
+                  className="text-center py-10 text-gray-500 text-sm"
                 >
                   No categories found
                 </TableCell>

@@ -31,7 +31,7 @@ const serviceLinks = [
     icon: <MapPin className="h-5 w-5 text-neutral-600" strokeWidth={1.5} />,
   },
   {
-    href: "/account",
+    href: "/profile",
     label: "Account",
     icon: <User className="h-5 w-5 text-neutral-600" strokeWidth={1.5} />,
   },
@@ -138,20 +138,21 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                         </SheetClose>
                       </div>
                       <div className="p-4 overflow-y-auto h-[calc(100vh-65px)]">
-                        {/* Categories mobile */}
-                        {/* Categories mobile */}
                         <nav className="flex flex-col">
                           {(category ?? []).map((cat) => (
                             <div
                               key={cat._id}
                               className="flex justify-between items-center py-3 border-b border-neutral-200"
                             >
-                              <button
-                                onClick={() => handleClickCategory(cat._id)}
-                                className="text-sm uppercase tracking-wider text-neutral-800 text-left"
-                              >
-                                {cat.name}
-                              </button>
+                              <SheetClose asChild>
+                                <button
+                                  onClick={() => handleClickCategory(cat._id)}
+                                  className="text-sm uppercase tracking-wider text-neutral-800 text-left w-full"
+                                >
+                                  {cat.name}
+                                </button>
+                              </SheetClose>
+
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -166,14 +167,15 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                         {/* Service links */}
                         <nav className="flex flex-col space-y-5 mt-10">
                           {serviceLinks.map((link) => (
-                            <Link
-                              key={link.href}
-                              to={link.href}
-                              className="flex items-center gap-4 text-sm text-neutral-700 hover:text-neutral-900 transition-colors"
-                            >
-                              {link.icon}
-                              <span>{link.label}</span>
-                            </Link>
+                            <SheetClose asChild key={link.href}>
+                              <Link
+                                to={link.href}
+                                className="flex items-center gap-4 text-sm text-neutral-700 hover:text-neutral-900 transition-colors"
+                              >
+                                {link.icon}
+                                <span>{link.label}</span>
+                              </Link>
+                            </SheetClose>
                           ))}
                         </nav>
                       </div>

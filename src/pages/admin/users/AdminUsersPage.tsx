@@ -90,14 +90,16 @@ export const AdminUsersPage = () => {
 
   return (
     <div className="p-4 md:p-8 space-y-8 bg-stone-50 min-h-screen font-sans">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="font-bold  text-3xl md:text-4xl text-neutral-800 mb-8">
+        <h1 className="font-bold text-3xl md:text-4xl text-neutral-800 mb-8">
           Users
         </h1>
         <AddAdminDialog />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Stats cards */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
         <Card style={{ borderColor: HERMES_BROWN, backgroundColor: "white" }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle
@@ -153,6 +155,7 @@ export const AdminUsersPage = () => {
         </Card>
       </div>
 
+      {/* Admin list */}
       {!isLoading && (
         <>
           <div className="space-y-4">
@@ -162,32 +165,19 @@ export const AdminUsersPage = () => {
             >
               List Admin
             </h2>
+
+            {/* Table for desktop */}
             <div
-              className="overflow-x-auto rounded-md border bg-white"
+              className="overflow-x-auto rounded-md border bg-white hidden sm:block"
               style={{ borderColor: HERMES_BROWN }}
             >
               {admins.length > 0 ? (
                 <table className="w-full border-collapse">
                   <thead style={{ backgroundColor: "#F5F0E9" }}>
                     <tr>
-                      <th
-                        className="px-4 py-2 text-left"
-                        style={{ color: HERMES_BROWN }}
-                      >
-                        Name
-                      </th>
-                      <th
-                        className="px-4 py-2 text-left"
-                        style={{ color: HERMES_BROWN }}
-                      >
-                        Email
-                      </th>
-                      <th
-                        className="px-4 py-2 text-left"
-                        style={{ color: HERMES_BROWN }}
-                      >
-                        Actions
-                      </th>
+                      <th className="px-4 py-2 text-left">Name</th>
+                      <th className="px-4 py-2 text-left">Email</th>
+                      <th className="px-4 py-2 text-left">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -197,19 +187,9 @@ export const AdminUsersPage = () => {
                         className="border-t"
                         style={{ borderColor: "#F5F0E9" }}
                       >
-                        <td
-                          className="px-4 py-2"
-                          style={{ color: HERMES_BROWN }}
-                        >
-                          {admin.name}
-                        </td>
-                        <td
-                          className="px-4 py-2"
-                          style={{ color: HERMES_TEXT_MUTED }}
-                        >
-                          {admin.email}
-                        </td>
-                        <td className="px-4 py-2 flex gap-2">
+                        <td className="px-4 py-2">{admin.name}</td>
+                        <td className="px-4 py-2">{admin.email}</td>
+                        <td className="px-4 py-2">
                           {admin._id !== currentAdminId && adminCount > 1 && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -256,8 +236,38 @@ export const AdminUsersPage = () => {
                 </p>
               )}
             </div>
+
+            {/* Card view for mobile */}
+            <div className="space-y-3 sm:hidden">
+              {admins.map((admin) => (
+                <div
+                  key={admin._id}
+                  className="p-4 rounded-md border bg-white shadow-sm flex flex-col gap-2"
+                  style={{ borderColor: HERMES_BROWN }}
+                >
+                  <p className="font-semibold" style={{ color: HERMES_BROWN }}>
+                    {admin.name}
+                  </p>
+                  <p className="text-sm" style={{ color: HERMES_TEXT_MUTED }}>
+                    {admin.email}
+                  </p>
+                  {admin._id !== currentAdminId && adminCount > 1 && (
+                    <Button
+                      size="sm"
+                      className="w-full text-white hover:bg-red-800/90"
+                      style={{ backgroundColor: "#B9473B" }}
+                      disabled={deletingUserId === admin._id}
+                      onClick={() => handleDeleteAdmin(admin._id)}
+                    >
+                      {deletingUserId === admin._id ? "Deleting..." : "Delete"}
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Customer list */}
           <div className="space-y-4">
             <h2
               className="text-2xl font-semibold"
@@ -265,26 +275,18 @@ export const AdminUsersPage = () => {
             >
               List Customer
             </h2>
+
+            {/* Table for desktop */}
             <div
-              className="overflow-x-auto rounded-md border bg-white"
+              className="overflow-x-auto rounded-md border bg-white hidden sm:block"
               style={{ borderColor: HERMES_BROWN }}
             >
               {customers.length > 0 ? (
                 <table className="w-full border-collapse">
                   <thead style={{ backgroundColor: "#F5F0E9" }}>
                     <tr>
-                      <th
-                        className="px-4 py-2 text-left"
-                        style={{ color: HERMES_BROWN }}
-                      >
-                        Name
-                      </th>
-                      <th
-                        className="px-4 py-2 text-left"
-                        style={{ color: HERMES_BROWN }}
-                      >
-                        Email
-                      </th>
+                      <th className="px-4 py-2 text-left">Name</th>
+                      <th className="px-4 py-2 text-left">Email</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -294,18 +296,8 @@ export const AdminUsersPage = () => {
                         className="border-t"
                         style={{ borderColor: "#F5F0E9" }}
                       >
-                        <td
-                          className="px-4 py-2"
-                          style={{ color: HERMES_BROWN }}
-                        >
-                          {customer.name}
-                        </td>
-                        <td
-                          className="px-4 py-2"
-                          style={{ color: HERMES_TEXT_MUTED }}
-                        >
-                          {customer.email}
-                        </td>
+                        <td className="px-4 py-2">{customer.name}</td>
+                        <td className="px-4 py-2">{customer.email}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -315,6 +307,24 @@ export const AdminUsersPage = () => {
                   No Customer found.
                 </p>
               )}
+            </div>
+
+            {/* Card view for mobile */}
+            <div className="space-y-3 sm:hidden">
+              {customers.map((customer) => (
+                <div
+                  key={customer._id}
+                  className="p-4 rounded-md border bg-white shadow-sm flex flex-col gap-2"
+                  style={{ borderColor: HERMES_BROWN }}
+                >
+                  <p className="font-semibold" style={{ color: HERMES_BROWN }}>
+                    {customer.name}
+                  </p>
+                  <p className="text-sm" style={{ color: HERMES_TEXT_MUTED }}>
+                    {customer.email}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </>

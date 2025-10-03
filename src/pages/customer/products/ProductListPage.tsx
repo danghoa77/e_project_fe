@@ -102,7 +102,10 @@ export const ProductListPage = () => {
             <div className="flex justify-between items-center mb-8">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="lg:hidden rounded-full">
+                  <Button
+                    variant="outline"
+                    className="lg:hidden rounded-full bg-white"
+                  >
                     <Filter className="mr-2 h-4 w-4" /> Filters
                   </Button>
                 </SheetTrigger>
