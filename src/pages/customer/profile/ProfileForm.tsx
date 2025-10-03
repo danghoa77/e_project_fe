@@ -8,11 +8,12 @@ import { customerApi } from "../api";
 import { ShippingAddress } from "@/types/user";
 import { Pencil } from "lucide-react";
 import AddressModal from "@/components/shared/AddressModal";
+import userStore from "@/store/userStore";
 
 export const ProfileForm = () => {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
-
+  const { resetCartItemCount } = userStore();
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<
     ShippingAddress | undefined
@@ -51,6 +52,7 @@ export const ProfileForm = () => {
   const handleLogout = async () => {
     try {
       await authApi.logout();
+      resetCartItemCount();
       await logout();
       toast.info("You have been logged out.");
       navigate("/");

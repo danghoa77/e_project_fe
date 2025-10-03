@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
             const authStore = useAuthStore.getState();
             authStore.logout();
             if (window.location.pathname !== '/login') {
-                toast.error('Please login again.');
+                toast.error('Please login.');
             }
             setTimeout(() => {
                 window.location.href = '/login';
