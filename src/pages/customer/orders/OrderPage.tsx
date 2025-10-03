@@ -140,7 +140,6 @@ export const OrderPage = () => {
           productId: item.productId,
           variantId: item.variantId,
           sizeId: item.sizeId,
-          categoryId: item.categoryId,
           quantity: item.quantity,
         }));
         await customerApi.decreaseStock(stockPayload);
@@ -164,7 +163,6 @@ export const OrderPage = () => {
           productId: item.productId,
           variantId: item.variantId,
           sizeId: item.sizeId,
-          categoryId: item.categoryId,
           quantity: item.quantity,
         }));
         await customerApi.decreaseStock(stockPayload);

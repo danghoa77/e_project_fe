@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PackageSearch } from "lucide-react";
 import { Payment } from "@/types/payment";
+import { Card } from "@/components/ui/card";
 
 const PaymentRowSkeleton = () => (
   <TableRow className="border-b border-neutral-200/50">
@@ -78,7 +79,8 @@ export const AdminPaymentsPage = () => {
           Payments Management
         </h1>
 
-        <div className="bg-white rounded-lg shadow-sm border border-neutral-200/80 overflow-x-auto">
+        {/* Desktop table */}
+        <div className="bg-white rounded-lg shadow-sm border border-neutral-200/80 overflow-x-auto hidden sm:block">
           <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow className="border-b border-neutral-200/80">
@@ -131,6 +133,46 @@ export const AdminPaymentsPage = () => {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile card view */}
+        <div className="space-y-4 sm:hidden">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="p-4 space-y-2 shadow-sm border">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
+              </Card>
+            ))
+          ) : payments.length > 0 ? (
+            payments.map((p) => (
+              <Card
+                key={p._id}
+                className="p-4 rounded-md border bg-white shadow-sm"
+              >
+                <p className="text-sm font-mono text-neutral-600">
+                  <span className="font-semibold">Order:</span> {p.orderId}
+                </p>
+                <p className="text-sm text-neutral-700">
+                  <span className="font-semibold">User:</span> {p.userId}
+                </p>
+                <p className="text-sm text-neutral-700">
+                  <span className="font-semibold">Provider:</span> {p.provider}
+                </p>
+                <p className="text-sm font-medium text-neutral-800">
+                  <span className="font-semibold">Amount:</span>{" "}
+                  {formatUSD(p.amount / 25000)}
+                </p>
+                <div className="mt-2">{getStatusBadge(p.status)}</div>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <PackageSearch className="h-12 w-12 mx-auto text-neutral-400 mb-4" />
+              <p className="text-lg">No Payments Found</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -35,13 +35,17 @@ import { customerApi } from "./pages/customer/api";
 import userStore from "./store/userStore";
 import { FloatingChatButton } from "./components/shared/FloatingChatButton";
 import AdminCategories from "./pages/admin/products/AdminCategories";
-import PublicRoute from "./pages/auth/PublicRoute";
+import PublicRoute from "./routes/PublicRoute";
 import { LoyaltyPage } from "./pages/customer/profile/LoyaltyPage";
+import adminApi from "./pages/admin/api";
+import { useProductStore } from "./store/productStore";
 
 export const AppLayout = () => {
   const { pathname } = useLocation();
-  const { cartItemCount, setCartItemCount } = userStore();
+  const { setCartItemCount } = userStore();
   const { user } = useAuthStore();
+
+  const { setCategory } = useProductStore();
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -55,19 +59,21 @@ export const AppLayout = () => {
     const fetchData = async () => {
       try {
         const res = await customerApi.getCart();
+        const resCate = await adminApi.getAllCategory();
+        console.log(resCate);
+        setCategory(resCate);
         setCartItemCount(res.length);
       } catch (err) {
         setCartItemCount(0);
       }
     };
-
     fetchData();
   }, []);
 
   return (
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
       <HideScrollbarStyle />
-      <Navbar cartItemCount={cartItemCount} />
+      <Navbar cartItemCount={3} />
       <main>
         <AuthLoader>
           <Outlet context={{ setCartItemCount }} />

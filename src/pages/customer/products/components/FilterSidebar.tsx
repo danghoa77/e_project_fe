@@ -9,7 +9,7 @@ interface FilterSidebarProps {
   currentFilters: Omit<FilterState, "page" | "limit">;
   categories: {
     _id: string;
-    name: string;
+    name?: string;
     subcategories?: { _id: string; name: string }[];
   }[];
 }
@@ -24,7 +24,7 @@ export const FilterSidebar = ({
       ? [currentFilters.price.min, currentFilters.price.max]
       : [0, MAX_PRICE]
   );
-
+  console.log(categories);
   return (
     <div className="space-y-8">
       <div>
@@ -45,7 +45,6 @@ export const FilterSidebar = ({
             </button>
           </li>
 
-          {/* Category list */}
           {categories.map((cat) => (
             <li key={cat._id}>
               <button

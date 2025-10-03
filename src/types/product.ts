@@ -54,7 +54,9 @@ export interface ReqProduct {
   images: ReqImage[];
 }
 
+
 export interface FilterState {
+  search?: string;
   page: number;
   limit: number;
   category?: string;

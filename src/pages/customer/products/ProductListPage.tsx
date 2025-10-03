@@ -1,7 +1,7 @@
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { ResProduct, FilterState } from "@/types/product";
-import { MAX_PRICE, SORT_OPTIONS } from "./constants";
+import type { ResProduct } from "@/types/product";
+import { SORT_OPTIONS } from "./constants";
 import { ProductCard } from "./components/ProductCard";
 import { FilterSidebar } from "./components/FilterSidebar";
 
@@ -16,39 +16,17 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Filter, XCircle, ChevronLeft } from "lucide-react";
 import { customerApi } from "../api";
-import adminApi from "@/pages/admin/api";
+import { useProductStore } from "@/store/productStore";
 
 export const ProductListPage = () => {
-  const { category: initialCategory } = useParams();
-
   const [products, setProducts] = useState<ResProduct[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
-    []
-  );
   const [page, setPage] = useState(1);
   const limit = 9;
 
-  const [filters, setFilters] = useState<Omit<FilterState, "page" | "limit">>({
-    category: initialCategory || "",
-    price: { min: 0, max: MAX_PRICE },
-    size: [],
-    sortBy: "",
-  });
-
-  useEffect(() => {
-    const fetchCate = async () => {
-      try {
-        const res = await adminApi.getAllCategory();
-        setCategories(res);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchCate();
-  }, []);
+  const { filters, setFilters, category: categories } = useProductStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,10 +50,10 @@ export const ProductListPage = () => {
   }, [filters, page]);
 
   const handleFilterChange = (
-    newFilters: Partial<Omit<FilterState, "page" | "limit">>
+    newFilters: Partial<Omit<typeof filters, "page" | "limit">>
   ) => {
     setPage(1);
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setFilters(newFilters);
   };
 
   const categoryName = filters.category
@@ -95,6 +73,9 @@ export const ProductListPage = () => {
       </div>
     );
   }
+  useEffect(() => {
+    console.log("Categories in ProductListPage:", categories);
+  }, [categories]);
 
   return (
     <div className="bg-[#F7F2EC] font-sans">
@@ -124,7 +105,10 @@ export const ProductListPage = () => {
             <div className="flex justify-between items-center mb-8">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="lg:hidden rounded-full">
+                  <Button
+                    variant="outline"
+                    className="lg:hidden rounded-full bg-white"
+                  >
                     <Filter className="mr-2 h-4 w-4" /> Filters
                   </Button>
                 </SheetTrigger>
@@ -150,7 +134,6 @@ export const ProductListPage = () => {
                   </p>
                 )}
               </div>
-
               <div className="w-[180px] ">
                 <Select
                   value={filters.sortBy}
@@ -179,12 +162,9 @@ export const ProductListPage = () => {
             ) : products.length > 0 ? (
               <div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
-                  {products.map(
-                    (product) =>
-                      product && (
-                        <ProductCard key={product._id} product={product} />
-                      )
-                  )}
+                  {products.map((product) => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
                 </div>
                 <div className="flex justify-center mt-10 gap-2">
                   {Array.from({ length: Math.ceil(total / limit) }).map(

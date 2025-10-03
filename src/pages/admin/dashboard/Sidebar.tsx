@@ -19,26 +19,32 @@ const navItems = [
   { name: "Chatting", href: "/admin/chatting", icon: MessageSquare },
 ];
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ onClose }: SidebarProps) => {
   return (
-    <aside className="w-64 flex-shrink-0 bg-white border-r border-neutral-200/80">
-      <div className="flex h-full flex-col">
+    <aside className="w-64 h-screen flex-shrink-0 bg-white border-r border-neutral-200/80">
+      <div className="flex flex-col h-full">
+        {/* Logo */}
         <div className="flex h-20 items-center justify-center border-b border-neutral-200/80">
           <h1 className="text-xl font-serif tracking-widest text-neutral-800">
             <Link to="/">HISMES</Link>
           </h1>
-          <span className="ml-2 text-xs font-sans tracking-widest text-neutral-500"></span>
-          <h1 className="text-xl font-serif tracking-widest text-neutral-800"></h1>
         </div>
-        <nav className="flex-1 px-4 py-6">
+
+        {/* Nav items */}
+        <nav className="flex-1 px-4 py-6 overflow-y-auto">
           <ul>
             {navItems.map((item) => (
               <li key={item.name}>
                 <NavLink
                   to={item.href}
                   end={item.href === "/admin"}
+                  onClick={onClose}
                   className={({ isActive }) =>
-                    `flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors 
+                    `flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors
                     ${
                       isActive
                         ? "bg-neutral-100 text-neutral-900"

@@ -491,8 +491,8 @@ export const ProductDetailPage = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <div className="w-1/2">
+        <div className="mt-8 flex justify-center px-4">
+          <div className="w-full md:w-1/2">
             <h2 className="text-2xl font-semibold text-stone-800 mb-1">
               Reviews
             </h2>
@@ -508,12 +508,12 @@ export const ProductDetailPage = () => {
                     key={r._id || Math.random()}
                     className="rounded-md p-4 bg-white shadow-md relative"
                   >
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-2 flex-wrap">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-stone-700">
                           {r.userName || "User"}
                         </span>
-                        <span className="text-orange-500">
+                        <span className="text-orange-500 text-sm md:text-base">
                           {"★".repeat(r.rating) + "☆".repeat(5 - r.rating)}
                         </span>
                       </div>
@@ -527,7 +527,7 @@ export const ProductDetailPage = () => {
                         </button>
                       )}
                     </div>
-                    <p className="text-stone-600 whitespace-pre-line">
+                    <p className="text-stone-600 whitespace-pre-line text-sm md:text-base">
                       {r.comment}
                     </p>
                   </div>
@@ -557,6 +557,7 @@ export const ProductDetailPage = () => {
             )}
           </div>
         </div>
+
         <RecommendCard />
       </div>
     </main>

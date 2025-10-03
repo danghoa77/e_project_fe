@@ -44,10 +44,10 @@ export const HomePage = () => {
             />
           </div>
           <div
-            className="flex flex-col justify-items-end items-start 
-             bg-gradient-to-br 
-             from-[#e07b39] via-[#e0bd93] to-[#e8dfd3] 
-             p-10 ml-5 mt-0"
+            className="flex flex-col justify-center items-start 
+   bg-gradient-to-br 
+   from-[#e07b39] via-[#e0bd93] to-[#e8dfd3] 
+   p-6 md:p-10 w-full md:ml-5"
           >
             <h2 className="text-2xl md:text-5xl font-semibold uppercase tracking-[0.2em] text-stone-800">
               THE ART OF MOTION
@@ -60,9 +60,9 @@ export const HomePage = () => {
             <Button
               asChild
               className="mt-6 uppercase tracking-widest 
-             text-white bg-neutral-800 
-             transition-colors duration-700 ease-in-out hover:shadow-black hover:shadow-sm
-             hover:text-black hover:bg-gradient-to-br hover:from-[#F7F2EC] hover:to-[#e0bd93]"
+     text-white bg-neutral-800 
+     transition-colors duration-700 ease-in-out hover:shadow-black hover:shadow-sm
+     hover:text-black hover:bg-gradient-to-br hover:from-[#F7F2EC] hover:to-[#e0bd93]"
             >
               <Link to="/products">Shop Now</Link>
             </Button>
