@@ -45,7 +45,6 @@ export const FilterSidebar = ({
             </button>
           </li>
 
-          {/* Category list */}
           {categories.map((cat) => (
             <li key={cat._id}>
               <button

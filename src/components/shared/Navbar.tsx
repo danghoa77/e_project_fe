@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -21,23 +21,8 @@ import { useScroll } from "@/hooks/useScroll";
 import { cn } from "@/lib/utils";
 import { CartSheet } from "../../pages/customer/cart/CartSheet";
 import { useAuthStore } from "@/store/authStore";
-
-const navLinks = [
-  { href: "/products/women", label: "Women" },
-  { href: "/products/men", label: "Men" },
-  {
-    href: "/products/home-outdoor-and-equestrian",
-    label: "Home, Outdoor and Equestrian",
-  },
-  { href: "/products/jewelry-watches", label: "Jewelry and Watches" },
-  { href: "/products/fragrances-makeup", label: "Fragrances and Make-up" },
-  { href: "/products/gifts-and-petit-h", label: "Gifts and Petit H" },
-  {
-    href: "/products/special-editions-and-services",
-    label: "Special Editions and Services",
-  },
-  { href: "/about", label: "About BRAND" },
-];
+import { useProductStore } from "@/store/productStore";
+import { MAX_PRICE } from "@/pages/customer/products/constants";
 
 const serviceLinks = [
   {
@@ -75,9 +60,23 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
   const { user } = useAuthStore();
 
+  const { category, setFilters } = useProductStore();
+  const navigate = useNavigate();
+
+  const handleClickCategory = (id: string) => {
+    setFilters({
+      category: id,
+      price: { min: 0, max: MAX_PRICE },
+      size: [],
+      sortBy: "",
+    });
+    navigate("/products");
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#fcf7f1] backdrop-blur-sm ">
+    <header className="sticky top-0 z-50 w-full bg-[#fcf7f1] backdrop-blur-sm">
       <div className="container mx-auto px-4">
+        {/* Top section */}
         <div
           className={cn(
             "overflow-hidden transition-[height] duration-300",
@@ -85,6 +84,7 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
           )}
         >
           <div className="relative h-24">
+            {/* Mobile search */}
             <div
               className={cn(
                 "absolute inset-0 md:hidden px-4",
@@ -109,6 +109,7 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
               </div>
             </div>
 
+            {/* Main nav */}
             <div
               className={cn(
                 "relative flex items-center justify-between h-full px-6",
@@ -116,6 +117,7 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
               )}
             >
               <div className="flex items-center">
+                {/* Mobile menu */}
                 <div className="flex items-center gap-1 md:hidden">
                   <Sheet>
                     <SheetTrigger asChild>
@@ -136,18 +138,20 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                         </SheetClose>
                       </div>
                       <div className="p-4 overflow-y-auto h-[calc(100vh-65px)]">
+                        {/* Categories mobile */}
+                        {/* Categories mobile */}
                         <nav className="flex flex-col">
-                          {navLinks.map((link) => (
+                          {(category ?? []).map((cat) => (
                             <div
-                              key={link.href}
+                              key={cat._id}
                               className="flex justify-between items-center py-3 border-b border-neutral-200"
                             >
-                              <NavLink
-                                to={link.href}
-                                className="text-sm uppercase tracking-wider text-neutral-800"
+                              <button
+                                onClick={() => handleClickCategory(cat._id)}
+                                className="text-sm uppercase tracking-wider text-neutral-800 text-left"
                               >
-                                {link.label}
-                              </NavLink>
+                                {cat.name}
+                              </button>
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -158,6 +162,8 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                             </div>
                           ))}
                         </nav>
+
+                        {/* Service links */}
                         <nav className="flex flex-col space-y-5 mt-10">
                           {serviceLinks.map((link) => (
                             <Link
@@ -173,6 +179,7 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                       </div>
                     </SheetContent>
                   </Sheet>
+
                   <Button
                     variant="ghost"
                     size="icon"
@@ -182,6 +189,7 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                   </Button>
                 </div>
 
+                {/* Desktop search */}
                 <div className="hidden md:flex relative items-center">
                   <Search className="absolute left-0 h-5 w-5 text-muted-foreground" />
                   <input
@@ -192,12 +200,14 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                 </div>
               </div>
 
+              {/* Logo */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <Link to="/" aria-label="Back to homepage">
                   <BrandLogo />
                 </Link>
               </div>
 
+              {/* Account & Cart */}
               <div className="flex items-center gap-x-3">
                 <Button
                   asChild
@@ -230,21 +240,20 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
             </div>
           </div>
         </div>
+
+        {/* Desktop category nav */}
+        {/* Desktop category nav */}
         <div>
           <div className="w-1/3 border-t border-neutral-900 mx-auto" />
-          <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5 ">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.href}
-                to={link.href}
-                className={({ isActive }) =>
-                  `transition-colors font-sans font-medium text-[14px] leading-[16px] tracking-[1px] hover:text-neutral-900 pb-1 ${
-                    isActive ? "text-neutral-900" : "text-neutral-600"
-                  }`
-                }
+          <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5">
+            {(category ?? []).map((cat) => (
+              <button
+                key={cat._id}
+                onClick={() => handleClickCategory(cat._id)}
+                className="transition-colors font-sans font-medium text-[14px] leading-[16px] tracking-[1px] hover:text-neutral-900 pb-1 text-neutral-600"
               >
-                {link.label}
-              </NavLink>
+                {cat.name}
+              </button>
             ))}
           </nav>
         </div>
