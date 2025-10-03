@@ -42,10 +42,10 @@ import { useProductStore } from "./store/productStore";
 
 export const AppLayout = () => {
   const { pathname } = useLocation();
-  const { cartItemCount, setCartItemCount } = userStore();
+  const { setCartItemCount } = userStore();
   const { user } = useAuthStore();
 
-  const { category, setCategory } = useProductStore();
+  const { setCategory } = useProductStore();
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
