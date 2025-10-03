@@ -42,7 +42,7 @@ import { useProductStore } from "./store/productStore";
 
 export const AppLayout = () => {
   const { pathname } = useLocation();
-  const { setCartItemCount } = userStore();
+  const { cartItemCount, setCartItemCount } = userStore();
   const { user } = useAuthStore();
 
   const { setCategory } = useProductStore();
@@ -60,7 +60,6 @@ export const AppLayout = () => {
       try {
         const res = await customerApi.getCart();
         const resCate = await adminApi.getAllCategory();
-        console.log(resCate);
         setCategory(resCate);
         setCartItemCount(res.length);
       } catch (err) {
@@ -73,7 +72,7 @@ export const AppLayout = () => {
   return (
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
       <HideScrollbarStyle />
-      <Navbar cartItemCount={3} />
+      <Navbar cartItemCount={cartItemCount} />
       <main>
         <AuthLoader>
           <Outlet context={{ setCartItemCount }} />
