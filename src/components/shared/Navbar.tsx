@@ -62,6 +62,15 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
 
   const { category, setFilters } = useProductStore();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      setFilters({ search: searchQuery });
+      navigate("/products");
+    }
+  };
 
   const handleClickCategory = (id: string) => {
     setFilters({
@@ -91,12 +100,17 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                 isMobileSearchOpen ? "flex items-center" : "hidden"
               )}
             >
-              <div className="flex items-center w-full px-4">
+              <form
+                className="flex items-center w-full px-4"
+                onSubmit={handleSearch}
+              >
                 <Search className="h-5 w-5 text-neutral-500" />
                 <input
                   type="search"
                   placeholder="Search"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-full px-2 bg-transparent border-0 border-b-2 border-neutral-400 focus:ring-0 focus:outline-none focus:border-neutral-800 hide-search-cancel-button"
                 />
                 <Button
@@ -106,7 +120,7 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                 >
                   <X className="h-6 w-6" />
                 </Button>
-              </div>
+              </form>
             </div>
 
             {/* Main nav */}
@@ -192,14 +206,19 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
                 </div>
 
                 {/* Desktop search */}
-                <div className="hidden md:flex relative items-center">
+                <form
+                  className="hidden md:flex relative items-center"
+                  onSubmit={handleSearch}
+                >
                   <Search className="absolute left-0 h-5 w-5 text-muted-foreground" />
                   <input
                     type="search"
                     placeholder="Search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-7 border-0 border-b-2 border-neutral-300 rounded-none bg-transparent ring-0 shadow-none outline-none focus:ring-0 focus:outline-none focus:shadow-none focus:border-neutral-800"
                   />
-                </div>
+                </form>
               </div>
 
               {/* Logo */}
@@ -243,8 +262,6 @@ export const Navbar = ({ cartItemCount }: { cartItemCount: number }) => {
           </div>
         </div>
 
-        {/* Desktop category nav */}
-        {/* Desktop category nav */}
         <div>
           <div className="w-1/3 border-t border-neutral-900 mx-auto" />
           <nav className="hidden md:flex justify-center items-center gap-6 uppercase tracking-wider py-5">

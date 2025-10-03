@@ -45,7 +45,7 @@ export const AppLayout = () => {
   const { cartItemCount, setCartItemCount } = userStore();
   const { user } = useAuthStore();
 
-  const { setCategory } = useProductStore();
+  const { category, setCategory } = useProductStore();
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -60,13 +60,13 @@ export const AppLayout = () => {
       try {
         const res = await customerApi.getCart();
         const resCate = await adminApi.getAllCategory();
-        setCategory(resCate || []);
+        console.log(resCate);
+        setCategory(resCate);
         setCartItemCount(res.length);
       } catch (err) {
         setCartItemCount(0);
       }
     };
-
     fetchData();
   }, []);
 

@@ -73,6 +73,9 @@ export const ProductListPage = () => {
       </div>
     );
   }
+  useEffect(() => {
+    console.log("Categories in ProductListPage:", categories);
+  }, [categories]);
 
   return (
     <div className="bg-[#F7F2EC] font-sans">

@@ -2,8 +2,6 @@
 import type { GetProductsResponse } from "@/types/product";
 import apiClient from "@/lib/axios";
 
-
-
 export const customerApi = {
     fetchProducts: async (payload?: any): Promise<GetProductsResponse> => {
         try {
@@ -22,13 +20,14 @@ export const customerApi = {
                     query.append("priceMax", String(payload.price.max));
                 }
             }
-
-            // size là string (BE định nghĩa IsString) => FE chỉ gửi 1 giá trị tại 1 request
             if (payload?.size && Array.isArray(payload.size) && payload.size.length > 0) {
-                // nếu FE cho phép chọn nhiều size => gửi từng request hoặc BE phải hỗ trợ mảng
                 query.append("size", payload.size[0]);
             } else if (payload?.size && typeof payload.size === "string") {
                 query.append("size", payload.size);
+            }
+
+            if (payload?.search && payload.search.trim() !== "") {
+                query.append("search", payload.search.trim());
             }
 
             if (payload?.color) query.append("color", payload.color);
