@@ -172,8 +172,11 @@ export const ProductListPage = () => {
                       <Button
                         key={i}
                         onClick={() => setPage(i + 1)}
-                        variant={page === i + 1 ? "default" : "outline"}
-                        className="rounded-full bg-orange-300"
+                        className={`rounded-full ${
+                          page === i + 1
+                            ? "bg-orange-500 text-white"
+                            : "bg-orange-200 text-black"
+                        }`}
                       >
                         {i + 1}
                       </Button>

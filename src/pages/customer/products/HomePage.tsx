@@ -31,7 +31,7 @@ export const HomePage = () => {
   return (
     <div className="bg-[#F7F2EC] text-neutral-800">
       <section className="w-full">
-        <div className="grid grid-cols-1 md:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <video
               src="https://res.cloudinary.com/dzskttedu/video/upload/v1753603101/Astonishing_orange_-_Herm%C3%A8s_tglwbm.mp4"
@@ -45,9 +45,9 @@ export const HomePage = () => {
           </div>
           <div
             className="flex flex-col justify-center items-start 
-   bg-gradient-to-br 
-   from-[#e07b39] via-[#e0bd93] to-[#e8dfd3] 
-   p-6 md:p-10 w-full md:ml-5"
+    bg-gradient-to-br 
+    from-[#e07b39] via-[#e0bd93] to-[#e8dfd3] 
+    p-6 md:p-10 w-full"
           >
             <h2 className="text-2xl md:text-5xl font-semibold uppercase tracking-[0.2em] text-stone-800">
               THE ART OF MOTION
