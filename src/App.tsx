@@ -52,22 +52,31 @@ export const AppLayout = () => {
   }, [pathname]);
 
   React.useEffect(() => {
-    if (!user) {
-      setCartItemCount(0);
-      return;
-    }
-    const fetchData = async () => {
+    const fetchCategories = async () => {
       try {
-        const res = await customerApi.getCart();
         const resCate = await adminApi.getAllCategory();
         setCategory(resCate);
-        setCartItemCount(res.length);
       } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+
+    const fetchCart = async () => {
+      try {
+        const res = await customerApi.getCart();
+        setCartItemCount(res.length);
+      } catch {
         setCartItemCount(0);
       }
     };
-    fetchData();
-  }, []);
+
+    fetchCategories();
+    if (user) {
+      fetchCart();
+    } else {
+      setCartItemCount(0);
+    }
+  }, [user]);
 
   return (
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
