@@ -1,69 +1,100 @@
-# React + TypeScript + Vite
+# E-Commerce UI 🛍️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Đây là dự án frontend cho một nền tảng thương mại điện tử hiện đại, được xây dựng bằng React và TypeScript. Dự án bao gồm một giao diện cho khách hàng (storefront) và một trang quản trị (admin dashboard) để quản lý cửa hàng.
 
-Currently, two official plugins are available:
+## ✨ Tính năng nổi bật
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 👨‍💻 Dành cho Khách hàng
 
-## Expanding the ESLint configuration
+- **Khám phá sản phẩm:** Duyệt, tìm kiếm, và lọc sản phẩm một cách dễ dàng.
+- **Giỏ hàng:** Thêm và quản lý các sản phẩm trong giỏ hàng.
+- **Thanh toán:** Quy trình thanh toán đơn giản và an toàn.
+- **Quản lý tài khoản:** Cập nhật thông tin cá nhân, xem lại lịch sử đơn hàng.
+- **Xác thực:** Đăng ký, đăng nhập tài khoản.
+- **Trò chuyện trực tuyến:** Hỗ trợ, tư vấn trực tiếp với quản trị viên.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### ⚙️ Dành cho Quản trị viên (Admin)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Bảng điều khiển:** Giao diện tổng quan về doanh thu, đơn hàng và người dùng.
+- **Quản lý sản phẩm:** Thêm, sửa, xóa sản phẩm và danh mục.
+- **Quản lý đơn hàng:** Xem và cập nhật trạng thái các đơn hàng.
+- **Quản lý người dùng:** Quản lý tài khoản khách hàng.
+- **Quản lý thanh toán:** Theo dõi các giao dịch thanh toán.
+- **Chat với khách hàng:** Trả lời các thắc mắc của khách hàng qua chat.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 🚀 Công nghệ sử dụng
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Framework:** [React](https://react.dev/)
+- **Ngôn ngữ:** [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
+- **Routing:** [React Router DOM](https://reactrouter.com/)
+- **Data Fetching & State:** [TanStack Query](https://tanstack.com/query/latest)
+- **State Management (Client):** [Zustand](https://zustand-demo.pmnd.rs/)
+- **Form:** [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **HTTP Client:** [Axios](https://axios-http.com/)
+- **Biểu đồ:** [Recharts](https://recharts.org/) (cho trang admin)
+- **Chat API:** [TalkJS](https://talkjs.com/)
+
+## 🏁 Bắt đầu
+
+Làm theo các bước sau để chạy dự án trên máy của bạn.
+
+### Yêu cầu
+
+- [Node.js](https://nodejs.org/) (phiên bản 18.x trở lên)
+- [npm](https://www.npmjs.com/)
+
+### Cài đặt
+
+1.  **Clone repository:**
+
+    ```bash
+    git clone <your-repository-url>
+    cd e_project_fe
+    ```
+
+2.  **Cài đặt dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Thiết lập biến môi trường:**
+    Tạo file `.env` ở thư mục gốc bằng cách sao chép file `.env.example`:
+
+    ```bash
+    copy .env.example .env
+    ```
+
+    Sau đó, cập nhật các giá trị trong file `.env` cho phù hợp với môi trường của bạn.
+
+    ```dotenv
+    # URL của API backend
+    VITE_API_URL=http://localhost:8080/api
+
+    # App ID của bạn từ TalkJS
+    VITE_TALKJS_APP_ID=YOUR_TALKJS_APP_ID
+    ```
+
+### Chạy ứng dụng
+
+Để khởi động server development, chạy lệnh:
+
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Ứng dụng sẽ chạy tại địa chỉ `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Các tập lệnh (Scripts)
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `npm run dev`: Chạy ứng dụng ở chế độ development.
+- `npm run build`: Build ứng dụng cho môi trường production.
+- `npm run lint`: Kiểm tra lỗi code bằng ESLint.
+- `npm run preview`: Chạy bản build production ở local.
+
+## CI/CD
+
+Dự án sử dụng GitHub Actions để tích hợp liên tục (CI). Workflow được định nghĩa tại `.github/workflows/ci.yml` và sẽ tự động chạy khi có push hoặc pull request vào nhánh `main`.
