@@ -18,6 +18,7 @@ import { OrderPage } from "./pages/customer/orders/OrderPage";
 import { OrderResultPage } from "./pages/customer/orders/OrderResultPage";
 import { ProfilePage } from "./pages/customer/profile/ProfilePage";
 import { AuthCallbackPage } from "./pages/auth/AuthCallbackPage";
+import { AuthSuccessHandler } from "./pages/auth/components/AuthSuccessHandler";
 import { AuthLoader } from "./pages/auth/AuthLoader";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import HideScrollbarStyle from "@/components/shared/HideScrollbar";
@@ -80,6 +81,7 @@ export const AppLayout = () => {
 
   return (
     <div className="max-w-screen-2xl mx-auto bg-white shadow-sm">
+      <AuthSuccessHandler />
       <HideScrollbarStyle />
       <Navbar cartItemCount={cartItemCount} />
       <main>

@@ -2,10 +2,10 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://e-project-be-jodo.onrender.com';
 
 const apiClient = axios.create({
-    baseURL: 'https://e-project-be-jodo.onrender.com',
+    baseURL: API_BASE_URL,
     headers: {
         'ngrok-skip-browser-warning': 'true',
         'Content-Type': 'application/json'
