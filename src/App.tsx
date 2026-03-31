@@ -120,6 +120,7 @@ const router = createBrowserRouter([
           { path: "product/:id", element: <ProductDetailPage /> },
           { path: "order-result", element: <OrderResultPage /> },
           { path: "loyalty", element: <LoyaltyPage /> },
+          { path: "auth-success", element: null },
 
           {
             path: "checkout",
