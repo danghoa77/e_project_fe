@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:80',
+    baseURL: 'https://e-project-be-jodo.onrender.com',
     headers: {
         'ngrok-skip-browser-warning': 'true',
         'Content-Type': 'application/json'
